@@ -1,4 +1,5 @@
 import 'package:elyeter/features/order/data/models/pre_order_model.dart';
+import 'package:elyeter/features/order/presentation/model/order_detail_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -26,5 +27,20 @@ void main() {
 
     expect(order.latitude, isNull);
     expect(order.longitude, isNull);
+  });
+
+  test('saved order address is shown as the pickup point', () {
+    final order = PreOrderModel.fromJson({
+      'id': 8,
+      'number': 'PO-000008',
+      'status': 'NEW',
+      'total_price': 280,
+      'address': 'Aşgabat şäheri, Andalyp köçesi 541',
+    });
+
+    expect(
+      OrderDetailData.fromPreOrder(order).pickupPoint,
+      'Aşgabat şäheri, Andalyp köçesi 541',
+    );
   });
 }

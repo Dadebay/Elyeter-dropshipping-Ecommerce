@@ -32,7 +32,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   Future<void> _chooseLanguage() async {
     final localeCubit = context.read<LocaleCubit>();
-    final current = localeCubit.state?.languageCode ?? Localizations.localeOf(context).languageCode;
+    final current =
+        localeCubit.state?.languageCode ??
+        Localizations.localeOf(context).languageCode;
     final selected = await showLanguageDialog(context, current: current);
     if (selected != null && mounted) localeCubit.setLanguageCode(selected);
   }
@@ -41,23 +43,36 @@ class _OnboardingPageState extends State<OnboardingPage> {
     if (_starting) return;
     setState(() => _starting = true);
     try {
-      await getIt<LocalStorage>().setBool(StorageKeys.onboardingSeen, value: true);
+      await getIt<LocalStorage>().setBool(
+        StorageKeys.onboardingSeen,
+        value: true,
+      );
       if (mounted) context.goNamed(AppRoutes.home.name);
     } catch (_) {
       if (!mounted) return;
       setState(() => _starting = false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.errorServer)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.errorServer)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final code = context.watch<LocaleCubit>().state?.languageCode ?? Localizations.localeOf(context).languageCode;
-    final language = supportedLanguageOptions.firstWhere((option) => option.code == code, orElse: () => supportedLanguageOptions.first);
+    final code =
+        context.watch<LocaleCubit>().state?.languageCode ??
+        Localizations.localeOf(context).languageCode;
+    final language = supportedLanguageOptions.firstWhere(
+      (option) => option.code == code,
+      orElse: () => supportedLanguageOptions.first,
+    );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent, systemStatusBarContrastEnforced: false),
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Colors.transparent,
+        systemStatusBarContrastEnforced: false,
+      ),
       child: Scaffold(
         backgroundColor: AppColors.white,
         body: Stack(
@@ -70,7 +85,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   // flutter_svg skips the SVG's Gaussian filters; blur its
                   // original color shapes here to preserve the supplied fade.
                   imageFilter: ImageFilter.blur(sigmaX: 42, sigmaY: 42),
-                  child: SvgPicture.asset(AppAssets.onboardingGradient, fit: BoxFit.cover, alignment: Alignment.topCenter, excludeFromSemantics: true),
+                  child: SvgPicture.asset(
+                    AppAssets.onboardingGradient,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                    excludeFromSemantics: true,
+                  ),
                 ),
               ),
             ),
@@ -83,22 +103,39 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 430),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(AppSpacing.page, 0, AppSpacing.page, 24),
+                          padding: const EdgeInsets.fromLTRB(
+                            AppSpacing.page,
+                            0,
+                            AppSpacing.page,
+                            64,
+                          ),
                           child: Column(
                             children: [
                               const Spacer(),
-                              SvgPicture.asset(AppAssets.logoWhite, width: 100, height: 40),
+                              SvgPicture.asset(
+                                AppAssets.logoWhite,
+                                width: 100,
+                                height: 40,
+                              ),
                               const SizedBox(height: 8),
                               Text(
                                 l10n.onboardingWelcome,
                                 textAlign: TextAlign.center,
-                                style: context.textTheme.headlineLarge?.copyWith(fontSize: 30, fontWeight: FontWeight.w700, color: AppColors.ink),
+                                style: context.textTheme.headlineLarge
+                                    ?.copyWith(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.ink,
+                                    ),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 l10n.onboardingSubtitle,
                                 textAlign: TextAlign.center,
-                                style: context.textTheme.bodySmall?.copyWith(fontSize: 13, color: AppColors.grey700),
+                                style: context.textTheme.bodySmall?.copyWith(
+                                  fontSize: 13,
+                                  color: AppColors.grey700,
+                                ),
                               ),
                               const SizedBox(height: 30),
                               Material(
@@ -112,18 +149,35 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                     width: double.infinity,
                                     height: 54,
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
                                       child: Row(
                                         children: [
-                                          LanguageFlag(languageCode: language.code, semanticsLabel: language.title, size: 25),
+                                          LanguageFlag(
+                                            languageCode: language.code,
+                                            semanticsLabel: language.title,
+                                            size: 25,
+                                          ),
                                           const SizedBox(width: 10),
                                           Expanded(
                                             child: Text(
                                               language.title,
-                                              style: context.textTheme.bodyMedium?.copyWith(color: AppColors.ink, fontSize: 16, fontWeight: FontWeight.w600),
+                                              style: context
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.copyWith(
+                                                    color: AppColors.ink,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                             ),
                                           ),
-                                          const Icon(Icons.keyboard_arrow_down_rounded, size: 20, color: AppColors.grey500),
+                                          const Icon(
+                                            Icons.keyboard_arrow_down_rounded,
+                                            size: 20,
+                                            color: AppColors.grey500,
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -132,7 +186,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               ),
                               const SizedBox(height: 12),
                               DecoratedBox(
-                                decoration: BoxDecoration(gradient: AppColors.primaryGradient, borderRadius: BorderRadius.circular(28)),
+                                decoration: BoxDecoration(
+                                  gradient: AppColors.primaryGradient,
+                                  borderRadius: BorderRadius.circular(28),
+                                ),
                                 child: SizedBox(
                                   width: double.infinity,
                                   height: 54,
@@ -141,14 +198,23 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                     onPressed: _starting ? null : _start,
                                     style: FilledButton.styleFrom(
                                       backgroundColor: Colors.transparent,
-                                      disabledBackgroundColor: Colors.transparent,
+                                      disabledBackgroundColor:
+                                          Colors.transparent,
                                       // foregroundColor: AppColors.white,
                                       // disabledForegroundColor: AppColors.white,
                                       shadowColor: Colors.transparent,
                                       elevation: 0,
                                       shape: const StadiumBorder(),
                                     ),
-                                    child: _starting ? const SizedBox(width: 20, height: 20, child: AppLoader(color: AppColors.white)) : Text(l10n.onboardingStart),
+                                    child: _starting
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: AppLoader(
+                                              color: AppColors.white,
+                                            ),
+                                          )
+                                        : Text(l10n.onboardingStart),
                                   ),
                                 ),
                               ),

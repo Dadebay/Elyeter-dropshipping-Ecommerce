@@ -17,6 +17,7 @@ import '../../../product/domain/entities/product_id.dart';
 import '../../domain/entities/pre_order_check.dart';
 import '../../domain/entities/pre_order_line.dart';
 import '../../domain/repositories/pre_order_repository.dart';
+import '../widgets/order_address_dialog.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -76,15 +77,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
     if (context.read<AuthCubit>().state.isAuthenticated) {
       try {
         final locations = await getIt<ShopApi>().locations();
-        if (mounted && locations.isNotEmpty) {
+        if (mounted) {
+          final defaults = locations.where(
+            (location) =>
+                location.isDefault && orderAddressText(location).isNotEmpty,
+          );
+          final selected = defaults.firstOrNull;
           setState(() {
             _savedLocations = locations;
-            _selectedLocationId = locations.first.id;
-            _address.text = locations.first.address ?? '';
+            _selectedLocationId = selected?.id;
+            _address.text = selected == null ? '' : orderAddressText(selected);
           });
         }
       } on Object {
-        /* Address can be entered manually. */
+        // The address picker retries loading before an order can be placed.
       }
     }
     if (!mounted) return;
@@ -132,10 +138,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
       _working = true;
       _error = null;
     });
+    var address = _address.text.trim();
+    if (_selectedLocationId == null || address.isEmpty) {
+      final location = await requestOrderLocation(context);
+      if (!mounted) return;
+      if (location == null) {
+        setState(() => _working = false);
+        return;
+      }
+      address = orderAddressText(location);
+      _useLocation(location);
+    }
     final result = await getIt<PreOrderRepository>().create(
       lines: _lines,
       customerName: _name.text.trim().isEmpty ? null : _name.text.trim(),
-      address: _address.text.trim().isEmpty ? null : _address.text.trim(),
+      address: address,
       comment: _comment.text.trim().isEmpty ? null : _comment.text.trim(),
       expectedTotal: check.totalPrice,
     );
@@ -167,9 +184,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
   void _selectLocation(int? id) {
     final matches = _savedLocations.where((location) => location.id == id);
     if (matches.isEmpty) return;
+    _useLocation(matches.first);
+  }
+
+  void _useLocation(SavedLocation location) {
     setState(() {
-      _selectedLocationId = id;
-      _address.text = matches.first.address ?? '';
+      _savedLocations = [
+        for (final saved in _savedLocations)
+          if (saved.id == location.id) location else saved,
+        if (!_savedLocations.any((saved) => saved.id == location.id)) location,
+      ];
+      _selectedLocationId = location.id;
+      _address.text = orderAddressText(location);
     });
   }
 
@@ -181,15 +207,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
       if (!mounted) return;
       setState(() {
         _savedLocations = locations;
-        if (locations.isNotEmpty) {
-          _selectedLocationId = locations.first.id;
-          _address.text = locations.first.address ?? '';
-        } else {
-          _selectedLocationId = null;
-        }
+        final selected = locations
+            .where((location) => location.id == _selectedLocationId)
+            .firstOrNull;
+        final fallback = locations
+            .where((location) => location.isDefault)
+            .firstOrNull;
+        final location = selected ?? fallback;
+        _selectedLocationId = location?.id;
+        _address.text = location == null ? '' : orderAddressText(location);
       });
     } on Object {
-      // Manual address entry remains available.
+      // The address picker retries loading before an order can be placed.
     }
   }
 
@@ -205,7 +234,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 DropdownButtonFormField<int>(
                   key: ValueKey(_selectedLocationId),
                   initialValue: _selectedLocationId,
-                  decoration: const InputDecoration(labelText: 'Kayıtlı adres'),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.orderSelectAddressTitle,
+                  ),
                   items: [
                     for (final location in _savedLocations)
                       DropdownMenuItem(
@@ -218,7 +249,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               TextButton.icon(
                 onPressed: _openSavedLocations,
                 icon: const Icon(Icons.add_location_alt_outlined),
-                label: const Text('Haritadan adres ekle veya düzenle'),
+                label: Text(context.l10n.addressAddNew),
               ),
               TextField(
                 controller: _name,
@@ -226,7 +257,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
               TextField(
                 controller: _address,
-                decoration: const InputDecoration(labelText: 'Address'),
+                readOnly: true,
+                onTap: () async {
+                  final location = await requestOrderLocation(
+                    context,
+                    alwaysAsk: true,
+                  );
+                  if (!mounted || location == null) return;
+                  _useLocation(location);
+                },
+                decoration: InputDecoration(
+                  labelText: context.l10n.orderPickupPoint,
+                ),
               ),
               TextField(
                 controller: _comment,

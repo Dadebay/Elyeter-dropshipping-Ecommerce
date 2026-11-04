@@ -11,7 +11,7 @@ import '../../../../core/utils/formatters/currency_formatter.dart';
 import '../model/order_detail_data.dart';
 import 'order_card.dart';
 
-/// What the order came to, and what made it up.
+/// The order total, cargo note, and receipt action.
 class OrderTotalCard extends StatelessWidget {
   const OrderTotalCard({
     super.key,
@@ -75,42 +75,37 @@ class OrderTotalCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
-          _Line(
-            label: l10n.orderProductsTotal,
-            value: CurrencyFormatter.amount(
-              order.productsTotal,
-              locale: l10n.localeName,
-            ),
-          ),
-          _Line(
-            label: l10n.orderDeliveryLabel,
-            // Free delivery is the point, so it is said in words and in the
-            // colour of good news rather than as `0 TMT`.
-            value: order.deliveryFee == 0
-                ? l10n.orderDeliveryFree
-                : CurrencyFormatter.amount(
-                    order.deliveryFee,
-                    locale: l10n.localeName,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryVibrant,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  'i',
+                  style: context.textTheme.labelMedium?.copyWith(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w700,
                   ),
-            valueColor: order.deliveryFee == 0 ? AppColors.success : null,
-            showCurrency: order.deliveryFee != 0,
-          ),
-          if (order.cargoFee != 0)
-            _Line(
-              label: l10n.orderCargo,
-              value: CurrencyFormatter.amount(
-                order.cargoFee,
-                locale: l10n.localeName,
+                ),
               ),
-            ),
-          if (order.discount != 0)
-            _Line(
-              label: l10n.orderDiscount,
-              value:
-                  '-${CurrencyFormatter.amount(order.discount, locale: l10n.localeName)}',
-              valueColor: AppColors.error,
-            ),
-          const SizedBox(height: AppSpacing.lg),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
+                  l10n.orderCargoNote,
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.primaryVibrant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xl),
           _DownloadButton(
             onTap: downloading ? null : onDownload,
             busy: downloading,
@@ -157,74 +152,6 @@ class _Total extends StatelessWidget {
           fontWeight: FontWeight.w700,
           letterSpacing: -0.6,
         ),
-      ),
-    );
-  }
-}
-
-/// A label on the left, its amount on the right.
-class _Line extends StatelessWidget {
-  const _Line({
-    required this.label,
-    required this.value,
-    this.valueColor,
-    this.showCurrency = true,
-  });
-
-  final String label;
-  final String value;
-  final Color? valueColor;
-
-  /// Off for a value that is a word rather than a sum.
-  final bool showCurrency;
-
-  @override
-  Widget build(BuildContext context) {
-    final defaultColor = context.isDark ? AppColors.white : AppColors.black;
-    final color = valueColor ?? defaultColor;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.textTheme.bodyMedium?.copyWith(
-                color: defaultColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: value,
-                  style: context.textTheme.labelSmall?.copyWith(
-                    fontSize: 16,
-                    color: color,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                if (showCurrency) ...[
-                  const TextSpan(text: ' '),
-                  TextSpan(
-                    text: AppConstants.currencySymbol,
-                    style: context.textTheme.labelSmall?.copyWith(color: color),
-                  ),
-                ],
-              ],
-            ),
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }

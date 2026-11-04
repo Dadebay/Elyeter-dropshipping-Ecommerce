@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_spacing.dart';
-import 'app_loader.dart';
+import 'parcel_refresh_motion.dart';
 
-/// Pull-to-refresh with the same spoke loader used in the rest of the app.
+/// Pull-to-refresh with the shared package motion.
 class AppRefreshIndicator extends StatefulWidget {
   const AppRefreshIndicator({
     super.key,
@@ -97,7 +97,7 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
                   shape: const CircleBorder(),
                   child: const Padding(
                     padding: EdgeInsets.all(10),
-                    child: AppLoader(size: 24),
+                    child: ParcelRefreshMotion(size: 30),
                   ),
                 ),
               ),

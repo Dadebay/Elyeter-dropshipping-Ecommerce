@@ -26,11 +26,23 @@ import '../../features/favorite/presentation/cubit/favorite_cubit.dart';
 import '../../features/order/data/datasources/pre_order_remote_data_source.dart';
 import '../../features/order/data/repositories/pre_order_repository_impl.dart';
 import '../../features/order/domain/repositories/pre_order_repository.dart';
+import '../../features/payment/data/datasources/payment_remote_data_source.dart';
+import '../../features/payment/data/repositories/payment_repository_impl.dart';
+import '../../features/payment/domain/repositories/payment_repository.dart';
 import '../../features/product/data/datasources/product_remote_data_source.dart';
 import '../../features/product/data/repositories/product_repository_impl.dart';
 import '../../features/product/domain/repositories/product_repository.dart';
+import '../../features/product_request/data/datasources/product_request_remote_data_source.dart';
+import '../../features/product_request/data/repositories/product_request_repository_impl.dart';
+import '../../features/product_request/domain/repositories/product_request_repository.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../../features/search/data/datasources/search_remote_data_source.dart';
+import '../../features/marketplace/data/datasources/marketplace_remote_data_source.dart';
+import '../../features/marketplace/data/repositories/marketplace_repository_impl.dart';
+import '../../features/marketplace/domain/repositories/marketplace_repository.dart';
+import '../../features/search/data/datasources/image_search_remote_data_source.dart';
+import '../../features/search/data/repositories/image_search_repository_impl.dart';
+import '../../features/search/domain/repositories/image_search_repository.dart';
 import '../../features/search/data/repositories/search_repository_impl.dart';
 import '../../features/search/domain/repositories/search_repository.dart';
 import '../constants/app_environment.dart';
@@ -194,6 +206,26 @@ void _registerCatalog() {
         getIt<SearchRemoteDataSource>(),
         getIt<LocalStorage>(),
       ),
+    )
+    ..registerLazySingleton<MarketplaceRemoteDataSource>(
+      () => MarketplaceRemoteDataSourceImpl(getIt<ApiClient>()),
+    )
+    ..registerLazySingleton<MarketplaceRepository>(
+      () => MarketplaceRepositoryImpl(getIt<MarketplaceRemoteDataSource>()),
+    )
+    ..registerLazySingleton<ImageSearchRemoteDataSource>(
+      () => ImageSearchRemoteDataSourceImpl(getIt<ApiClient>()),
+    )
+    ..registerLazySingleton<ImageSearchRepository>(
+      () => ImageSearchRepositoryImpl(getIt<ImageSearchRemoteDataSource>()),
+    )
+    // "Didn't find a product? Send us a link".
+    ..registerLazySingleton<ProductRequestRemoteDataSource>(
+      () => ProductRequestRemoteDataSourceImpl(getIt<ApiClient>()),
+    )
+    ..registerLazySingleton<ProductRequestRepository>(
+      () =>
+          ProductRequestRepositoryImpl(getIt<ProductRequestRemoteDataSource>()),
     );
 }
 
@@ -206,5 +238,12 @@ void _registerPreOrders() {
     )
     ..registerLazySingleton<PreOrderRepository>(
       () => PreOrderRepositoryImpl(getIt<PreOrderRemoteDataSource>()),
+    )
+    // Online card payment for a placed pre-order.
+    ..registerLazySingleton<PaymentRemoteDataSource>(
+      () => PaymentRemoteDataSourceImpl(getIt<ApiClient>()),
+    )
+    ..registerLazySingleton<PaymentRepository>(
+      () => PaymentRepositoryImpl(getIt<PaymentRemoteDataSource>()),
     );
 }

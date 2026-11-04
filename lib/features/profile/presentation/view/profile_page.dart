@@ -50,7 +50,8 @@ class ProfilePage extends StatelessWidget {
       // Keeps the editable profile in step with the session: it takes the
       // account's number on sign-in and is wiped on sign-out, so the next
       // person to use the phone does not meet someone else's name.
-      listenWhen: (previous, current) => previous.status != current.status || previous.user != current.user,
+      listenWhen: (previous, current) =>
+          previous.status != current.status || previous.user != current.user,
       listener: (context, state) {
         final cubit = context.read<ProfileCubit>();
         final user = state.user;
@@ -110,7 +111,12 @@ class _ProfileViewState extends State<_ProfileView> {
     final auth = context.watch<AuthCubit>().state;
     final signedIn = auth.isAuthenticated;
     final guestTileWeight = signedIn ? null : FontWeight.w500;
-    final guestSectionTitleStyle = signedIn ? null : context.textTheme.titleMedium?.copyWith(color: AppColors.iconSoft, fontWeight: FontWeight.w600);
+    final guestSectionTitleStyle = signedIn
+        ? null
+        : context.textTheme.titleMedium?.copyWith(
+            color: AppColors.iconSoft,
+            fontWeight: FontWeight.w600,
+          );
     if (_loadedAccountId != auth.user?.id) {
       _loadedAccountId = auth.user?.id;
       _orderCount = null;
@@ -132,7 +138,10 @@ class _ProfileViewState extends State<_ProfileView> {
         centerTitle: false,
         title: Text(
           l10n.profileTitle,
-          style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: signedIn ? 20 : 24),
+          style: context.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: signedIn ? 20 : 24,
+          ),
         ),
       ),
       body: SafeArea(
@@ -160,12 +169,20 @@ class _ProfileViewState extends State<_ProfileView> {
                 avatarPath: profile.avatarPath,
                 editLabel: l10n.profileEditProfile,
                 ordersTitle: l10n.profileAllOrders,
-                ordersSubtitle: _orderCount == null ? '' : l10n.profileOrderCount(_orderCount!),
-                onEditProfile: () => context.pushNamed(AppRoutes.editProfile.name),
+                ordersSubtitle: _orderCount == null
+                    ? ''
+                    : l10n.profileOrderCount(_orderCount!),
+                onEditProfile: () =>
+                    context.pushNamed(AppRoutes.editProfile.name),
                 onOrders: () => context.pushNamed(AppRoutes.orders.name),
               )
             else
-              GuestSummaryCard(title: l10n.profileGuestTitle, message: l10n.profileGuestMessage, actionLabel: l10n.profileGuestAction, onSignIn: () => context.pushNamed(AppRoutes.login.name)),
+              GuestSummaryCard(
+                title: l10n.profileGuestTitle,
+                message: l10n.profileGuestMessage,
+                actionLabel: l10n.profileGuestAction,
+                onSignIn: () => context.pushNamed(AppRoutes.login.name),
+              ),
             if (!signedIn) const SizedBox(height: AppSpacing.lg),
             SettingsSection(
               title: l10n.profileSectionGeneral,
@@ -179,8 +196,33 @@ class _ProfileViewState extends State<_ProfileView> {
                   onTap: () => context.pushNamed(AppRoutes.notifications.name),
                 ),
                 if (signedIn) ...[
-                  SettingsTile(icon: AppAssets.iconCubic, label: l10n.profileActiveOrders, onTap: () => _openAccountPage(context, signedIn, AppRoutes.activeOrders.name)),
-                  SettingsTile(icon: AppAssets.iconPinLocation, label: l10n.profileSavedLocations, onTap: () => _openAccountPage(context, signedIn, AppRoutes.addresses.name)),
+                  SettingsTile(
+                    icon: AppAssets.iconCubic,
+                    label: l10n.profileActiveOrders,
+                    onTap: () => _openAccountPage(
+                      context,
+                      signedIn,
+                      AppRoutes.activeOrders.name,
+                    ),
+                  ),
+                  SettingsTile(
+                    icon: AppAssets.iconPinLocation,
+                    label: l10n.profileSavedLocations,
+                    onTap: () => _openAccountPage(
+                      context,
+                      signedIn,
+                      AppRoutes.addresses.name,
+                    ),
+                  ),
+                  SettingsTile(
+                    icon: AppAssets.iconSearch,
+                    label: l10n.productRequestMine,
+                    onTap: () => _openAccountPage(
+                      context,
+                      signedIn,
+                      AppRoutes.productRequests.name,
+                    ),
+                  ),
                 ],
                 SettingsTile(
                   icon: AppAssets.iconGlobe,
@@ -199,12 +241,21 @@ class _ProfileViewState extends State<_ProfileView> {
                     value: _isDark(context, themeMode),
                     onChanged: (on) {
                       final cubit = context.read<ThemeCubit>();
-                      void change() => cubit.setThemeMode(on ? ThemeMode.dark : ThemeMode.light);
+                      void change() => cubit.setThemeMode(
+                        on ? ThemeMode.dark : ThemeMode.light,
+                      );
                       final reveal = ThemeReveal.maybeOf(context);
                       if (reveal == null) {
                         change();
                       } else {
-                        unawaited(reveal.run(change, direction: on ? ThemeRevealDirection.leftToRight : ThemeRevealDirection.rightToLeft));
+                        unawaited(
+                          reveal.run(
+                            change,
+                            direction: on
+                                ? ThemeRevealDirection.leftToRight
+                                : ThemeRevealDirection.rightToLeft,
+                          ),
+                        );
                       }
                     },
                   ),
@@ -223,7 +274,13 @@ class _ProfileViewState extends State<_ProfileView> {
                   labelWeight: guestTileWeight,
                   onTap: () => _openStaticPage(context, 'about'),
                 ),
-                SettingsTile(icon: AppAssets.iconQuestion, label: l10n.profileFaq, verticalPadding: signedIn ? null : 14, labelWeight: guestTileWeight, onTap: () => _openStaticPage(context, 'faq')),
+                SettingsTile(
+                  icon: AppAssets.iconQuestion,
+                  label: l10n.profileFaq,
+                  verticalPadding: signedIn ? null : 14,
+                  labelWeight: guestTileWeight,
+                  onTap: () => _openStaticPage(context, 'faq'),
+                ),
                 SettingsTile(
                   icon: AppAssets.iconDocumentCheck,
                   label: l10n.profileTerms,
@@ -240,26 +297,63 @@ class _ProfileViewState extends State<_ProfileView> {
                 ),
               ],
             ),
-            if (_contacts?.instagramUrl != null || _contacts?.tiktokUrl != null || _contacts?.whatsappUrl != null || _contacts?.telegramUrl != null || _contacts?.imoUrl != null) ...[
+            if (_contacts?.instagramUrl != null ||
+                _contacts?.tiktokUrl != null ||
+                _contacts?.whatsappUrl != null ||
+                _contacts?.telegramUrl != null ||
+                _contacts?.imoUrl != null) ...[
               if (!signedIn) const SizedBox(height: AppSpacing.sm),
               SettingsSection(
                 title: l10n.profileSectionContact,
                 titleStyle: guestSectionTitleStyle,
                 children: [
                   if (_contacts?.instagramUrl case final url?)
-                    SettingsTile(icon: AppAssets.iconInstagram, label: l10n.profileInstagram, trailing: const TileExternal(), labelWeight: guestTileWeight, onTap: () => _open(context, url)),
+                    SettingsTile(
+                      icon: AppAssets.iconInstagram,
+                      label: l10n.profileInstagram,
+                      trailing: const TileExternal(),
+                      labelWeight: guestTileWeight,
+                      onTap: () => _open(context, url),
+                    ),
                   if (_contacts?.tiktokUrl case final url?)
-                    SettingsTile(icon: AppAssets.iconTiktok, label: l10n.profileTiktok, trailing: const TileExternal(), labelWeight: guestTileWeight, onTap: () => _open(context, url)),
+                    SettingsTile(
+                      icon: AppAssets.iconTiktok,
+                      label: l10n.profileTiktok,
+                      trailing: const TileExternal(),
+                      labelWeight: guestTileWeight,
+                      onTap: () => _open(context, url),
+                    ),
                   if (_contacts?.whatsappUrl case final url?)
-                    SettingsTile(icon: AppAssets.iconWhatsapp, label: l10n.profileWhatsapp, trailing: const TileExternal(), labelWeight: guestTileWeight, onTap: () => _open(context, url)),
+                    SettingsTile(
+                      icon: AppAssets.iconWhatsapp,
+                      label: l10n.profileWhatsapp,
+                      trailing: const TileExternal(),
+                      labelWeight: guestTileWeight,
+                      onTap: () => _open(context, url),
+                    ),
                   if (_contacts?.telegramUrl case final url?)
-                    SettingsTile(icon: AppAssets.iconNews, label: 'Telegram', trailing: const TileExternal(), labelWeight: guestTileWeight, onTap: () => _open(context, url)),
+                    SettingsTile(
+                      icon: AppAssets.iconNews,
+                      label: 'Telegram',
+                      trailing: const TileExternal(),
+                      labelWeight: guestTileWeight,
+                      onTap: () => _open(context, url),
+                    ),
                   if (_contacts?.imoUrl case final url?)
-                    SettingsTile(icon: AppAssets.iconPhone, label: 'IMO', trailing: const TileExternal(), labelWeight: guestTileWeight, onTap: () => _open(context, url)),
+                    SettingsTile(
+                      icon: AppAssets.iconPhone,
+                      label: 'IMO',
+                      trailing: const TileExternal(),
+                      labelWeight: guestTileWeight,
+                      onTap: () => _open(context, url),
+                    ),
                 ],
               ),
             ],
-            for (final phone in [_contacts?.phonePrimary, _contacts?.phoneSecondary].whereType<String>()) ...[
+            for (final phone in {
+              _contacts?.phonePrimary,
+              _contacts?.phoneSecondary,
+            }.whereType<String>().where((p) => p.trim().isNotEmpty)) ...[
               SizedBox(height: signedIn ? AppSpacing.xl : AppSpacing.sm),
               SupportCallCard(
                 title: l10n.profileCallTitle,
@@ -270,11 +364,22 @@ class _ProfileViewState extends State<_ProfileView> {
                 onCall: () => _open(context, 'tel:$phone'),
               ),
             ],
-            if (signedIn) ...[const SizedBox(height: AppSpacing.xl), DeleteAccountCard(label: l10n.profileDeleteAccount, onPressed: () => _deleteAccount(context, auth.user?.phone))],
+            if (signedIn) ...[
+              const SizedBox(height: AppSpacing.xl),
+              DeleteAccountCard(
+                label: l10n.profileDeleteAccount,
+                onPressed: () => _deleteAccount(context, auth.user?.phone),
+              ),
+            ],
             if (signedIn) ...[
               const SizedBox(height: AppSpacing.xl),
               Center(
-                child: Text(l10n.profileVersion(AppConstants.appVersion), style: context.textTheme.bodySmall?.copyWith(color: AppColors.grey500)),
+                child: Text(
+                  l10n.profileVersion(AppConstants.appVersion),
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: AppColors.grey500,
+                  ),
+                ),
               ),
             ],
           ],
@@ -295,12 +400,16 @@ class _ProfileViewState extends State<_ProfileView> {
     return auth.user?.phone ?? profile.phone;
   }
 
-  void _openStaticPage(BuildContext context, String slug) => context.pushNamed(AppRoutes.staticPage.name, pathParameters: {'slug': slug});
+  void _openStaticPage(BuildContext context, String slug) => context.pushNamed(
+    AppRoutes.staticPage.name,
+    pathParameters: {'slug': slug},
+  );
 
   bool _isDark(BuildContext context, ThemeMode mode) => switch (mode) {
     ThemeMode.dark => true,
     ThemeMode.light => false,
-    ThemeMode.system => MediaQuery.platformBrightnessOf(context) == Brightness.dark,
+    ThemeMode.system =>
+      MediaQuery.platformBrightnessOf(context) == Brightness.dark,
   };
 
   String _languageLabel(BuildContext context, Locale? locale) {
@@ -313,18 +422,26 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 
   // With the system setting, use the language currently resolved by the app.
-  String _languageCode(BuildContext context, Locale? locale) => locale?.languageCode ?? Localizations.localeOf(context).languageCode;
+  String _languageCode(BuildContext context, Locale? locale) =>
+      locale?.languageCode ?? Localizations.localeOf(context).languageCode;
 
   Future<void> _pickLanguage(BuildContext context) async {
     final cubit = context.read<LocaleCubit>();
-    final picked = await showLanguageDialog(context, current: _languageCode(context, cubit.state));
+    final picked = await showLanguageDialog(
+      context,
+      current: _languageCode(context, cubit.state),
+    );
     if (picked != null) cubit.setLanguageCode(picked);
   }
 
   /// Orders, addresses and notifications all describe one account, so a
   /// signed-out tap asks for the account first and then carries on to the
   /// page that was tapped.
-  Future<void> _openAccountPage(BuildContext context, bool signedIn, String routeName) async {
+  Future<void> _openAccountPage(
+    BuildContext context,
+    bool signedIn,
+    String routeName,
+  ) async {
     if (signedIn) {
       await context.pushNamed(routeName);
       return;
@@ -338,12 +455,20 @@ class _ProfileViewState extends State<_ProfileView> {
   /// and reports its own failures. Nothing is done here on a refusal — the
   /// dialog has already said why, and the account is untouched.
   Future<void> _deleteAccount(BuildContext context, String? phone) async {
-    final deleted = await showDeleteAccountDialog(context, auth: context.read<AuthCubit>(), phone: phone);
+    final deleted = await showDeleteAccountDialog(
+      context,
+      auth: context.read<AuthCubit>(),
+      phone: phone,
+    );
 
     // The session is already gone, so the page has swapped itself back to
     // the guest header by now; this only confirms what happened.
     if (deleted && context.mounted) {
-      AppSnackBar.show(context, context.l10n.profileDeleteDone, overNavBar: true);
+      AppSnackBar.show(
+        context,
+        context.l10n.profileDeleteDone,
+        overNavBar: true,
+      );
     }
   }
 
@@ -368,7 +493,13 @@ class _ProfileViewState extends State<_ProfileView> {
     }
 
     if (!launched && context.mounted) {
-      AppSnackBar.show(context, failed, icon: AppIcons.error, iconColor: AppColors.error, overNavBar: true);
+      AppSnackBar.show(
+        context,
+        failed,
+        icon: AppIcons.error,
+        iconColor: AppColors.error,
+        overNavBar: true,
+      );
     }
   }
 }

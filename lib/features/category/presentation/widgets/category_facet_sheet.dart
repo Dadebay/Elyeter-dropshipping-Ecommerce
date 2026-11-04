@@ -97,11 +97,7 @@ class _CategoryFacetSheetState extends State<CategoryFacetSheet> {
             ),
           Flexible(
             child: widget.facet.isSwatch
-                ? _Swatches(
-                    values: _visible,
-                    picked: _picked,
-                    onTap: _toggle,
-                  )
+                ? _Swatches(values: _visible, picked: _picked, onTap: _toggle)
                 : _Rows(values: _visible, picked: _picked, onTap: _toggle),
           ),
         ],

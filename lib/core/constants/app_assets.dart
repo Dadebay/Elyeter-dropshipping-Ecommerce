@@ -8,6 +8,10 @@ abstract final class AppAssets {
   static const iconCategory = '$_icons/category.svg';
   static const iconCart = '$_icons/cart.svg';
   static const iconShoppingBagOutline = '$_icons/shopping_bag_outline.svg';
+  static const iconCartPlus = '$_icons/cart_plus.svg';
+  static const iconCopy = '$_icons/copy.svg';
+  static const iconCartMinus = '$_icons/cart_minus.svg';
+  static const iconCartCheck = '$_icons/cart_check.svg';
   static const iconFavorite = '$_icons/heart.svg';
   static const iconProfile = '$_icons/people.svg';
 
@@ -33,6 +37,9 @@ abstract final class AppAssets {
   static const iconRepeatOrder = '$_icons/repeat_order.svg';
   static const iconBubbleQuestion = '$_icons/bubble_question.svg';
   static const iconCircleX = '$_icons/circle_x.svg';
+  // Rendered from order_cancelled.svg at 8x resolution. Its blend modes are
+  // not reproduced correctly by flutter_svg on device.
+  static const imageOrderCancelled = '$_images/order_cancelled.png';
   static const iconPencil = '$_icons/pencil.svg';
   static const iconUser = '$_icons/user.svg';
   static const iconCalendar = '$_icons/calendar.svg';
@@ -93,67 +100,6 @@ abstract final class AppAssets {
   static const iconTiktok = '$_icons/tiktok.svg';
   static const iconWhatsapp = '$_icons/whatsapp.svg';
 
-  // Category tile artwork, one file per category. Named exactly as supplied
-  // — the casing and the spelling of `jevelery.svg` are the files' own.
-  static const _category = '$_images/category';
-  static const categoryMakeUp = '$_category/make_up.svg';
-  static const categoryElectronics = '$_category/electronics.svg';
-  static const categoryAutomotive = '$_category/Automotive.svg';
-  static const categoryStationery = '$_category/Stationery.svg';
-  static const categoryJewellery = '$_category/jevelery.svg';
-
   /// Generic tile art, for a category with no picture of its own.
   static const categoryImage = '$_images/category_image.png';
-
-  // Promo banners — full artwork, headline included.
-  static const _banners = '$_images/banners';
-  static const bannerTech = '$_banners/1.png';
-  static const bannerLook = '$_banners/2.png';
-  static const bannerStyle = '$_banners/3.png';
-
-  // Brand logos, in the order the strip shows them.
-  static const _logos = '$_images/logos';
-  static const brandLoroPiana = '$_logos/1.png';
-  static const brandJordan = '$_logos/2.png';
-  static const brandLacoste = '$_logos/3.png';
-  static const brandTissot = '$_logos/4.png';
-  static const brandClothingStore = '$_logos/5.png';
-
-  // Product photography — cut-outs on a transparent background.
-  static const _products = '$_images/products';
-  static const productLoafers = '$_products/1.png';
-  static const productTshirt = '$_products/2.png';
-  static const productWatch = '$_products/3.png';
-  static const productSuitcase = '$_products/4.png';
-  static const productBag = '$_products/5.png';
-  static const productPerfume = '$_products/6.png';
-
-  /// The electronics catalogue, `p1`-`p12` as supplied.
-  static const productAppleTv = '$_products/p1.png';
-  static const productInstax = '$_products/p2.png';
-  static const productPhoneCase = '$_products/p3.png';
-  static const productXiaomi = '$_products/p4.png';
-  static const productCable = '$_products/p5.png';
-  static const productBeats = '$_products/p6.png';
-  static const productIphoneOrange = '$_products/p7.png';
-  static const productIphoneBlue = '$_products/p8.png';
-  static const productIphoneGreen = '$_products/p9.png';
-  static const productIphoneLightBlue = '$_products/p10.png';
-  static const productIphonePink = '$_products/p11.png';
-  static const productIphoneWhite = '$_products/p12.png';
-
-  // Subcategory tiles, `s1`-`s8` as supplied.
-  static const _subcategory = '$_images/subcategory';
-  static const subGamingMice = '$_subcategory/s1.png';
-  static const subEarbuds = '$_subcategory/s2.png';
-  static const subControllers = '$_subcategory/s3.png';
-  static const subSmartwatches = '$_subcategory/s4.png';
-  static const subSmartphones = '$_subcategory/s5.png';
-  static const subPhoneCases = '$_subcategory/s6.png';
-  static const subCameras = '$_subcategory/s7.png';
-  static const subPs5Games = '$_subcategory/s8.png';
-  static const productRing = '$_products/c1.png';
-  static const productPhone = '$_products/c2.png';
-  static const productSneakers = '$_products/c3.png';
-  static const productSmartWatch = '$_products/c4.png';
 }

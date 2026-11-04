@@ -44,7 +44,10 @@ class _FramePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final frame = VisualSearchFrame.frameOf(size);
-    final window = RRect.fromRectAndRadius(frame, const Radius.circular(VisualSearchFrame._radius));
+    final window = RRect.fromRectAndRadius(
+      frame,
+      const Radius.circular(VisualSearchFrame._radius),
+    );
 
     // Everything but the window is dimmed.
     canvas.drawPath(
@@ -76,28 +79,40 @@ class _FramePainter extends CustomPainter {
     path
       ..moveTo(frame.left, frame.top + r + len)
       ..lineTo(frame.left, frame.top + r)
-      ..arcToPoint(Offset(frame.left + r, frame.top), radius: const Radius.circular(r))
+      ..arcToPoint(
+        Offset(frame.left + r, frame.top),
+        radius: const Radius.circular(r),
+      )
       ..lineTo(frame.left + r + len, frame.top);
 
     // Top-right.
     path
       ..moveTo(frame.right - r - len, frame.top)
       ..lineTo(frame.right - r, frame.top)
-      ..arcToPoint(Offset(frame.right, frame.top + r), radius: const Radius.circular(r))
+      ..arcToPoint(
+        Offset(frame.right, frame.top + r),
+        radius: const Radius.circular(r),
+      )
       ..lineTo(frame.right, frame.top + r + len);
 
     // Bottom-right.
     path
       ..moveTo(frame.right, frame.bottom - r - len)
       ..lineTo(frame.right, frame.bottom - r)
-      ..arcToPoint(Offset(frame.right - r, frame.bottom), radius: const Radius.circular(r))
+      ..arcToPoint(
+        Offset(frame.right - r, frame.bottom),
+        radius: const Radius.circular(r),
+      )
       ..lineTo(frame.right - r - len, frame.bottom);
 
     // Bottom-left.
     path
       ..moveTo(frame.left + r + len, frame.bottom)
       ..lineTo(frame.left + r, frame.bottom)
-      ..arcToPoint(Offset(frame.left, frame.bottom - r), radius: const Radius.circular(r))
+      ..arcToPoint(
+        Offset(frame.left, frame.bottom - r),
+        radius: const Radius.circular(r),
+      )
       ..lineTo(frame.left, frame.bottom - r - len);
 
     return path;

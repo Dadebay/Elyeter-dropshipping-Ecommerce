@@ -7,12 +7,24 @@ class ProductReview {
     required this.date,
     required this.rating,
     required this.text,
+    this.id = 0,
+    this.images = const [],
+    this.likes = 0,
+    this.liked = false,
+    this.isMine = false,
   });
 
+  final int id;
   final String author;
   final String date;
   final double rating;
   final String text;
+  final List<String> images;
+  final int likes;
+
+  /// Whether the signed-in customer marked it helpful.
+  final bool liked;
+  final bool isMine;
 }
 
 /// Everything the detail page shows beyond what a catalog card carries.

@@ -1,6 +1,4 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
+import 'package:dio/dio.dart';
 
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
@@ -24,13 +22,26 @@ abstract interface class ProductRemoteDataSource {
     int productId, {
     required int page,
     required int size,
+    int? rating,
+    ReviewSortOption sort = ReviewSortOption.newest,
   });
   Future<void> saveReview(
     int productId, {
     required int rating,
     String? comment,
+    List<String>? images,
   });
   Future<void> deleteMyReview(int productId);
+  Future<ProductReviewImage> uploadReviewImage(String path);
+  Future<ReviewReactionResult> reactToReview(
+    int productId,
+    int reviewId,
+    String reaction,
+  );
+  Future<ReviewReactionResult> removeReviewReaction(
+    int productId,
+    int reviewId,
+  );
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -131,18 +142,20 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     int productId, {
     required int page,
     required int size,
+    int? rating,
+    ReviewSortOption sort = ReviewSortOption.newest,
   }) async {
     final data = await _client.get(
       ApiEndpoints.productReviews(productId),
-      queryParameters: {'page': page, 'size': size},
+      // Null values are stripped by the client; the API rejects empty ones.
+      queryParameters: {
+        'page': page,
+        'size': size,
+        'rating': rating,
+        'sort': sort.sortParam,
+        'has_images': sort.hasImages,
+      },
     );
-    // TODO(debug): remove once the reviewer-name field is confirmed.
-    if (kDebugMode) {
-      const yellow = '\x1B[33m';
-      const reset = '\x1B[0m';
-      final json = const JsonEncoder.withIndent('  ').convert(data);
-      debugPrint('$yellow[REVIEWS product=$productId]\n$json$reset');
-    }
     return ProductReviews.fromJson(asMap(data));
   }
 
@@ -151,15 +164,67 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     int productId, {
     required int rating,
     String? comment,
+    List<String>? images,
   }) async {
     await _client.post(
       ApiEndpoints.productReviews(productId),
-      data: {'rating': rating, 'comment': comment},
+      data: {
+        'rating': rating,
+        'comment': comment,
+        // Left out entirely when null: the server keeps the current photos.
+        'images': ?images,
+      },
     );
   }
 
   @override
   Future<void> deleteMyReview(int productId) async {
     await _client.delete(ApiEndpoints.myProductReview(productId));
+  }
+
+  @override
+  Future<ProductReviewImage> uploadReviewImage(String path) async {
+    final lower = path.toLowerCase();
+    final type = lower.endsWith('.png')
+        ? DioMediaType('image', 'png')
+        : lower.endsWith('.webp')
+        ? DioMediaType('image', 'webp')
+        : DioMediaType('image', 'jpeg');
+    final data = await _client.post(
+      ApiEndpoints.reviewImages,
+      data: FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          path,
+          filename: path.split('/').last,
+          contentType: type,
+        ),
+      }),
+      receiveTimeout: const Duration(seconds: 60),
+    );
+    return ProductReviewImage.fromJson(asMap(data));
+  }
+
+  @override
+  Future<ReviewReactionResult> reactToReview(
+    int productId,
+    int reviewId,
+    String reaction,
+  ) async {
+    final data = await _client.put(
+      ApiEndpoints.reviewReaction(productId, reviewId),
+      data: {'reaction': reaction},
+    );
+    return ReviewReactionResult.fromJson(asMap(data));
+  }
+
+  @override
+  Future<ReviewReactionResult> removeReviewReaction(
+    int productId,
+    int reviewId,
+  ) async {
+    final data = await _client.delete(
+      ApiEndpoints.reviewReaction(productId, reviewId),
+    );
+    return ReviewReactionResult.fromJson(asMap(data));
   }
 }

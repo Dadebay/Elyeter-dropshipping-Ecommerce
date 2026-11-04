@@ -10,7 +10,12 @@ import '../../../../core/constants/app_icons.dart';
 
 /// One deliverable place: a street or neighbourhood inside a city district.
 class DeliveryLocation {
-  const DeliveryLocation({required this.id, required this.city, required this.district, required this.name});
+  const DeliveryLocation({
+    required this.id,
+    required this.city,
+    required this.district,
+    required this.name,
+  });
 
   final String id;
   final String city;
@@ -36,7 +41,11 @@ class DeliveryLocation {
 /// Returns the chosen [DeliveryLocation], or null when dismissed. The sheet
 /// stays white in both themes — it reads as a card floating over the page.
 class LocationPickerDialog extends StatefulWidget {
-  const LocationPickerDialog({super.key, required this.locations, this.selectedId});
+  const LocationPickerDialog({
+    super.key,
+    required this.locations,
+    this.selectedId,
+  });
 
   final List<DeliveryLocation> locations;
   final String? selectedId;
@@ -49,7 +58,8 @@ class LocationPickerDialog extends StatefulWidget {
     return showDialog<DeliveryLocation>(
       context: context,
       barrierColor: AppColors.black.withValues(alpha: 0.45),
-      builder: (_) => LocationPickerDialog(locations: locations, selectedId: selectedId),
+      builder: (_) =>
+          LocationPickerDialog(locations: locations, selectedId: selectedId),
     );
   }
 
@@ -95,8 +105,13 @@ class _LocationPickerDialogState extends State<LocationPickerDialog> {
       surfaceTintColor: AppColors.white,
       elevation: 12,
       shadowColor: AppColors.black.withValues(alpha: 0.2),
-      insetPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl, vertical: AppSpacing.xxxl),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
+      insetPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xxl,
+        vertical: AppSpacing.xxxl,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+      ),
       clipBehavior: Clip.antiAlias,
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -143,13 +158,20 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.xl, AppSpacing.xl, AppSpacing.md),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.xl,
+        AppSpacing.xl,
+        AppSpacing.xl,
+        AppSpacing.md,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             context.l10n.locationTitle,
-            style: AppTypography.textTheme.titleLarge?.copyWith(color: AppColors.black),
+            style: AppTypography.textTheme.titleLarge?.copyWith(
+              color: AppColors.black,
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
           TextField(
@@ -158,28 +180,48 @@ class _Header extends StatelessWidget {
             autofocus: true,
             textInputAction: TextInputAction.search,
             cursorColor: AppColors.primary,
-            style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.black),
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              color: AppColors.black,
+            ),
             decoration: InputDecoration(
               hintText: context.l10n.locationSearchHint,
-              hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.grey500),
+              hintStyle: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: AppColors.grey500,
+              ),
               filled: true,
               fillColor: AppColors.grey100,
               isDense: true,
-              contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: AppSpacing.md,
+              ),
               prefixIcon: Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.md, 0),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.md,
+                  0,
+                ),
                 child: SvgPicture.asset(
                   AppAssets.iconSearch,
                   width: 20,
                   height: 20,
-                  colorFilter: const ColorFilter.mode(AppColors.grey500, BlendMode.srcIn),
+                  colorFilter: const ColorFilter.mode(
+                    AppColors.grey500,
+                    BlendMode.srcIn,
+                  ),
                 ),
               ),
-              prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 0,
+                minHeight: 0,
+              ),
               border: _border,
               enabledBorder: _border,
               focusedBorder: _border.copyWith(
-                borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 1.5,
+                ),
               ),
             ),
           ),
@@ -203,10 +245,18 @@ class _DistrictHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.md, AppSpacing.xl, AppSpacing.sm),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.xl,
+        AppSpacing.md,
+        AppSpacing.xl,
+        AppSpacing.sm,
+      ),
       child: Text(
         district.toUpperCase(),
-        style: AppTypography.textTheme.labelSmall?.copyWith(color: AppColors.grey500, letterSpacing: 0.8),
+        style: AppTypography.textTheme.labelSmall?.copyWith(
+          color: AppColors.grey500,
+          letterSpacing: 0.8,
+        ),
       ),
     );
   }
@@ -214,7 +264,11 @@ class _DistrictHeader extends StatelessWidget {
 
 /// A single tappable address.
 class _LocationRow extends StatelessWidget {
-  const _LocationRow({required this.location, required this.selected, required this.onTap});
+  const _LocationRow({
+    required this.location,
+    required this.selected,
+    required this.onTap,
+  });
 
   final DeliveryLocation location;
   final bool selected;
@@ -229,7 +283,10 @@ class _LocationRow extends StatelessWidget {
       splashColor: AppColors.primarySoft,
       highlightColor: AppColors.primarySoft,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.md),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xl,
+          vertical: AppSpacing.md,
+        ),
         child: Row(
           children: [
             Container(
@@ -265,13 +322,19 @@ class _LocationRow extends StatelessWidget {
                     '${location.district}, ${location.city}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.grey500),
+                    style: AppTypography.textTheme.bodySmall?.copyWith(
+                      color: AppColors.grey500,
+                    ),
                   ),
                 ],
               ),
             ),
             if (selected)
-              const HugeIcon(icon: AppIcons.checkCircle, color: AppColors.primary, size: 22),
+              const HugeIcon(
+                icon: AppIcons.checkCircle,
+                color: AppColors.primary,
+                size: 22,
+              ),
           ],
         ),
       ),
@@ -286,7 +349,10 @@ class _EmptyResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.xxxl),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xl,
+        vertical: AppSpacing.xxxl,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -294,13 +360,18 @@ class _EmptyResult extends StatelessWidget {
             AppAssets.iconMapPin,
             width: 32,
             height: 32,
-            colorFilter: const ColorFilter.mode(AppColors.grey300, BlendMode.srcIn),
+            colorFilter: const ColorFilter.mode(
+              AppColors.grey300,
+              BlendMode.srcIn,
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
             context.l10n.locationEmpty,
             textAlign: TextAlign.center,
-            style: AppTypography.textTheme.bodyMedium?.copyWith(color: AppColors.grey500),
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              color: AppColors.grey500,
+            ),
           ),
         ],
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../core/constants/app_assets.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -47,7 +49,11 @@ class CartLineTile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Photo(product: product, isFavorite: isFavorite, onFavoriteTap: onFavoriteTap),
+          _Photo(
+            product: product,
+            isFavorite: isFavorite,
+            onFavoriteTap: onFavoriteTap,
+          ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
@@ -64,7 +70,10 @@ class CartLineTile extends StatelessWidget {
                         // Weight, not size, is what lifts the product name
                         // above its specs — it gains presence without
                         // taking another line.
-                        style: context.textTheme.bodyMedium?.copyWith(color: AppColors.black, fontWeight: FontWeight.w500),
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.black,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     const SizedBox(width: AppSpacing.sm),
@@ -77,14 +86,20 @@ class CartLineTile extends StatelessWidget {
                     spec,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.bodySmall?.copyWith(color: AppColors.grey500),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: AppColors.grey500,
+                    ),
                   ),
                 ],
                 const SizedBox(height: AppSpacing.md),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _Stepper(quantity: quantity, onIncrease: onIncrease, onDecrease: onDecrease),
+                    _Stepper(
+                      quantity: quantity,
+                      onIncrease: onIncrease,
+                      onDecrease: onDecrease,
+                    ),
                     const SizedBox(width: AppSpacing.sm),
                     // The stepper keeps its size; the price takes what is
                     // left and scales down rather than overflowing on a
@@ -105,7 +120,11 @@ class CartLineTile extends StatelessWidget {
 
 /// The product photo with the favourite toggle over its corner.
 class _Photo extends StatelessWidget {
-  const _Photo({required this.product, required this.isFavorite, required this.onFavoriteTap});
+  const _Photo({
+    required this.product,
+    required this.isFavorite,
+    required this.onFavoriteTap,
+  });
 
   final ProductCardData product;
   final bool isFavorite;
@@ -126,13 +145,23 @@ class _Photo extends StatelessWidget {
                 color: AppColors.grey100,
                 borderRadius: BorderRadius.circular(AppRadius.lg),
                 // The faintest lift, so the photo does not sit flat on the page.
-                boxShadow: const [BoxShadow(color: Color(0x0F000000), blurRadius: 10, offset: Offset(0, 3))],
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x1A000000),
+                    blurRadius: 14,
+                    offset: Offset(0, 4),
+                  ),
+                ],
               ),
               child: image == null
                   // Centred and sized: left to a tight box the glyph would
                   // stretch to fill the whole photo.
                   ? const Center(
-                      child: HugeIcon(icon: AppIcons.image, size: 28, color: AppColors.grey500),
+                      child: HugeIcon(
+                        icon: AppIcons.image,
+                        size: 28,
+                        color: AppColors.grey500,
+                      ),
                     )
                   // Edge to edge, rounded with the tile: the photo covers all of
                   // it rather than floating on the grey. Bundled artwork or an
@@ -140,7 +169,11 @@ class _Photo extends StatelessWidget {
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(AppRadius.lg),
                       child: SizedBox.expand(
-                        child: ProductImageView(source: image, fit: BoxFit.cover, fallbackIconSize: 28),
+                        child: ProductImageView(
+                          source: image,
+                          fit: BoxFit.cover,
+                          fallbackIconSize: 28,
+                        ),
                       ),
                     ),
             ),
@@ -161,7 +194,11 @@ class _Photo extends StatelessWidget {
 /// `-  n  +`: two raised white discs riding a soft grey track, as the design
 /// draws it.
 class _Stepper extends StatelessWidget {
-  const _Stepper({required this.quantity, required this.onIncrease, required this.onDecrease});
+  const _Stepper({
+    required this.quantity,
+    required this.onIncrease,
+    required this.onDecrease,
+  });
 
   /// Height of the track; the discs sit inside it with [_inset] to spare.
   static const _trackHeight = 40.0;
@@ -176,21 +213,31 @@ class _Stepper extends StatelessWidget {
     return Container(
       height: _trackHeight,
       padding: const EdgeInsets.all(_inset),
-      decoration: BoxDecoration(color: AppColors.grey100, borderRadius: BorderRadius.circular(_StepButton._radius + _inset)),
+      decoration: BoxDecoration(
+        color: AppColors.grey100,
+        borderRadius: BorderRadius.circular(_StepButton._radius + _inset),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _StepButton(icon: AppIcons.minus, onTap: onDecrease),
+          _StepButton(
+            asset: AppAssets.iconCartMinus,
+            muted: quantity <= 1,
+            onTap: onDecrease,
+          ),
           // Fixed width so the pill does not resize between 9 and 10.
           SizedBox(
             width: 34,
             child: Text(
               '$quantity',
               textAlign: TextAlign.center,
-              style: context.textTheme.titleSmall?.copyWith(color: AppColors.black, fontWeight: FontWeight.w600),
+              style: context.textTheme.titleSmall?.copyWith(
+                color: AppColors.black,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-          _StepButton(icon: AppIcons.add, onTap: onIncrease),
+          _StepButton(asset: AppAssets.iconCartPlus, onTap: onIncrease),
         ],
       ),
     );
@@ -198,34 +245,58 @@ class _Stepper extends StatelessWidget {
 }
 
 class _StepButton extends StatelessWidget {
-  const _StepButton({required this.icon, required this.onTap});
+  const _StepButton({
+    required this.asset,
+    required this.onTap,
+    this.muted = false,
+  });
 
   static const _size = _Stepper._trackHeight - _Stepper._inset * 2;
 
   /// Rounded square rather than a disc, as the design draws it.
   static const _radius = AppRadius.md;
 
-  /// A `AppIcons.*` constant — the package supplies glyphs as data.
-  final AppIconData icon;
+  final String asset;
+  final bool muted;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.white,
-      borderRadius: BorderRadius.circular(_radius),
-      clipBehavior: Clip.antiAlias,
-      elevation: 1,
-      shadowColor: const Color(0x1A000000),
-      child: InkWell(
-        onTap: onTap,
-        child: SizedBox(
-          width: _size,
-          height: _size,
-          // Centred: under a tight box a HugeIcon stretches to fill it, which
-          // is what made the glyph overflow its button.
-          child: Center(
-            child: HugeIcon(icon: icon, size: 18, color: AppColors.grey700),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(_radius),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x26000000),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(_radius),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: SizedBox(
+            width: _size,
+            height: _size,
+            child: Center(
+              child: SvgPicture.asset(
+                asset,
+                width: 24,
+                height: 24,
+                // The minus fades at quantity 1; the plus keeps its own ink.
+                colorFilter: muted
+                    ? null
+                    : const ColorFilter.mode(
+                        Color(0xFF171717),
+                        BlendMode.srcIn,
+                      ),
+              ),
+            ),
           ),
         ),
       ),
@@ -285,7 +356,12 @@ class _LinePrice extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: AppSpacing.xs),
-                Text('-$discount%', style: context.textTheme.bodySmall?.copyWith(color: AppColors.error)),
+                Text(
+                  '-$discount%',
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: AppColors.error,
+                  ),
+                ),
               ],
             ),
           ),
@@ -302,7 +378,11 @@ class _ShrinkToFit extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerRight, child: child);
+  Widget build(BuildContext context) => FittedBox(
+    fit: BoxFit.scaleDown,
+    alignment: Alignment.centerRight,
+    child: child,
+  );
 }
 
 /// Square tick box, filled soft grey with a dark tick when the line counts
@@ -310,7 +390,7 @@ class _ShrinkToFit extends StatelessWidget {
 class _Tick extends StatelessWidget {
   const _Tick({required this.value, required this.onTap});
 
-  static const size = 24.0;
+  static const size = 28.0;
 
   final bool value;
   final VoidCallback onTap;
@@ -325,14 +405,19 @@ class _Tick extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: value ? AppColors.grey100 : AppColors.white,
-          borderRadius: BorderRadius.circular(AppRadius.xs),
-          // Same width either way; ticked, the edge fades into the fill.
-          border: Border.all(color: value ? AppColors.grey100 : AppColors.grey300, width: 1.5),
+          color: value ? const Color(0xFFEFEFEF) : AppColors.white,
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+          border: value
+              ? null
+              : Border.all(color: AppColors.grey300, width: 1.5),
         ),
         child: value
-            ? const Center(
-                child: HugeIcon(icon: AppIcons.check, size: 16, strokeWidth: 2.2, color: AppColors.black),
+            ? Center(
+                child: SvgPicture.asset(
+                  AppAssets.iconCartCheck,
+                  width: 12,
+                  height: 12,
+                ),
               )
             : null,
       ),

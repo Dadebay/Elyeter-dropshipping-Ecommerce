@@ -49,6 +49,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsEmptyMessage => 'New updates will appear here.';
 
   @override
+  String get notificationsOverviewTitle => 'Updates from Elyeter';
+
+  @override
+  String get notificationsOverviewMessage =>
+      'Offers and important news, all in one place.';
+
+  @override
+  String get notificationsToday => 'Today';
+
+  @override
+  String get notificationsYesterday => 'Yesterday';
+
+  @override
+  String get notificationsEarlier => 'Earlier updates';
+
+  @override
+  String get notificationsNew => 'New';
+
+  @override
+  String get notificationsLoadMore => 'Load more';
+
+  @override
+  String get notificationsRefresh => 'Refresh';
+
+  @override
   String get announcementsEmptyTitle => 'No announcements yet';
 
   @override
@@ -147,6 +172,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderStepDelivered => 'Delivered';
 
   @override
+  String get orderStepStopped => 'Stopped';
+
+  @override
   String get orderProducts => 'Delivery Products';
 
   @override
@@ -162,6 +190,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orderPickupPoint => 'Pick-up point';
+
+  @override
+  String get orderSelectAddressTitle => 'Select an address';
+
+  @override
+  String get orderSelectAddressMessage =>
+      'Choose or add an address before placing your order.';
+
+  @override
+  String get orderAddressLoadFailed =>
+      'Could not load addresses. Please try again.';
 
   @override
   String get orderRecipient => 'Recipient';
@@ -195,6 +234,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orderDownloadCheck => 'Download Check';
+
+  @override
+  String get orderCargoNote =>
+      'Note: Cargo cost is calculated after the goods arrive.';
 
   @override
   String get categoryFilterMaterial => 'Material';
@@ -469,6 +512,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewCommentHint => 'What did you like? What could be better?';
 
   @override
+  String get reviewHowRate => 'How would you rate this product?';
+
+  @override
   String get reviewSubmit => 'Send review';
 
   @override
@@ -494,6 +540,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reviewDeleteMessage => 'You can write a new review later.';
+
+  @override
+  String get reviewHelpful => 'Helpful';
+
+  @override
+  String get reviewSortBy => 'Sort by';
+
+  @override
+  String get reviewRatingFilter => 'Rating';
+
+  @override
+  String get reviewSortNewest => 'Newest first';
+
+  @override
+  String get reviewSortOldest => 'Oldest first';
+
+  @override
+  String get reviewSortMostLiked => 'Most helpful';
+
+  @override
+  String get reviewSortMostDisliked => 'Least helpful';
+
+  @override
+  String get reviewSortWithPhotos => 'With photos';
+
+  @override
+  String get reviewSortWithoutPhotos => 'Without photos';
+
+  @override
+  String get reviewAllRatings => 'All ratings';
+
+  @override
+  String get reviewAddPhotos => 'Add photos';
+
+  @override
+  String get reviewPhotoLimit => 'Up to 5 photos';
+
+  @override
+  String get reviewPhotoUploadError => 'Could not upload the photo.';
+
+  @override
+  String get reviewNoMatches => 'No reviews match these filters';
+
+  @override
+  String get reviewHiddenNotice => 'Your review is hidden from others';
+
+  @override
+  String reviewHelpfulCount(int count) {
+    return 'Helpful ($count)';
+  }
 
   @override
   String productRatingCount(int count) {
@@ -601,6 +697,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get activeOrdersEmptyMessage => 'Orders in progress will appear here.';
+
+  @override
+  String get orderStatusDelivered => 'Delivered';
+
+  @override
+  String orderItemsFor(int count, String amount) {
+    return '$count items for $amount';
+  }
 
   @override
   String orderItemCount(int count) {
@@ -1189,4 +1293,195 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileDeleteDone => 'Your account has been deleted.';
+
+  @override
+  String get commonOk => 'OK';
+
+  @override
+  String get errorPaymentBankFailed =>
+      'The bank didn\'t accept the payment. Try later or choose another bank.';
+
+  @override
+  String get errorPreOrderAlreadyPaid => 'This order has already been paid.';
+
+  @override
+  String get errorPreOrderNotPayable =>
+      'This order can no longer be paid online.';
+
+  @override
+  String get errorBankNotFound =>
+      'This bank is not available right now. Choose another one.';
+
+  @override
+  String get errorProductRequestInvalidLink =>
+      'We couldn\'t find an AliExpress product link in this text.';
+
+  @override
+  String get paymentTitle => 'Payment';
+
+  @override
+  String get paymentChooseBank => 'Choose a bank';
+
+  @override
+  String get paymentChooseBankHint =>
+      'You\'ll enter your card details on the bank\'s page.';
+
+  @override
+  String get paymentNoBanks => 'Online payment is not available right now.';
+
+  @override
+  String get paymentPayOnlineTitle => 'Pay online';
+
+  @override
+  String get paymentPayOnlineMessage =>
+      'Pay for the order by card now — no need to wait for the call.';
+
+  @override
+  String get paymentPay => 'Pay';
+
+  @override
+  String get paymentPaid => 'Paid online';
+
+  @override
+  String get paymentChecking => 'Checking payment…';
+
+  @override
+  String get paymentCheckingMessage => 'This takes a few seconds.';
+
+  @override
+  String get paymentSuccess => 'Payment successful';
+
+  @override
+  String get paymentSuccessMessage => 'Your order is paid. Thank you!';
+
+  @override
+  String get paymentFailed => 'Payment failed';
+
+  @override
+  String get paymentFailedMessage =>
+      'The bank declined the payment. You can try again or choose another bank.';
+
+  @override
+  String get paymentPending => 'Payment is being checked';
+
+  @override
+  String get paymentPendingMessage =>
+      'The bank hasn\'t confirmed it yet. The order will be marked as paid as soon as it does.';
+
+  @override
+  String get paymentNotCompletedMessage =>
+      'The payment wasn\'t completed. If money was taken from your card, the order will be marked as paid within a few minutes.';
+
+  @override
+  String get paymentTryAgain => 'Try again';
+
+  @override
+  String get productRequestTitle => 'Send us a link';
+
+  @override
+  String get productRequestMessage =>
+      'Didn\'t find a product? Paste an AliExpress link and we\'ll add it to the catalog.';
+
+  @override
+  String get productRequestHint => 'AliExpress link or share text';
+
+  @override
+  String get productRequestPaste => 'Paste';
+
+  @override
+  String get productRequestSend => 'Send link';
+
+  @override
+  String get productRequestSendAnother => 'Send another link';
+
+  @override
+  String get productRequestMine => 'My product requests';
+
+  @override
+  String get productRequestSearchAction => 'Send a link to the product';
+
+  @override
+  String get productRequestLoadingTitle => 'Loading the product…';
+
+  @override
+  String get productRequestLoadingMessage =>
+      'This usually takes up to a minute.';
+
+  @override
+  String get productRequestLaterTitle => 'We\'ll notify you';
+
+  @override
+  String get productRequestLaterMessage =>
+      'It\'s taking a little longer. We\'ll send you a notification when the product is available.';
+
+  @override
+  String get productRequestReviewTitle => 'Under review';
+
+  @override
+  String get productRequestReviewMessage =>
+      'The product is under review. We\'ll notify you when it\'s available.';
+
+  @override
+  String get productRequestRejectedTitle => 'Not available';
+
+  @override
+  String get productRequestRejectedMessage =>
+      'Sorry, we can\'t sell this product.';
+
+  @override
+  String get productRequestFailedTitle => 'Couldn\'t load';
+
+  @override
+  String get productRequestFailedMessage =>
+      'Couldn\'t load the product from AliExpress. It may have been removed from sale.';
+
+  @override
+  String get productRequestAvailableTitle => 'Product added';
+
+  @override
+  String get productRequestAvailableMessage =>
+      'The product is in the catalog. Find it in My product requests.';
+
+  @override
+  String get productRequestStatusProcessing => 'Loading';
+
+  @override
+  String get productRequestStatusInReview => 'Under review';
+
+  @override
+  String get productRequestStatusAvailable => 'Available';
+
+  @override
+  String get productRequestStatusRejected => 'Rejected';
+
+  @override
+  String get productRequestStatusFailed => 'Not loaded';
+
+  @override
+  String get productRequestEmptyTitle => 'No requests yet';
+
+  @override
+  String get errorImageSearchInvalidImage => 'Use a JPEG, PNG or WebP photo.';
+
+  @override
+  String get errorImageSearchInProgress =>
+      'The previous search is still being sent. Please wait.';
+
+  @override
+  String get errorImageSearchUnavailable =>
+      'Search is temporarily unavailable. Try again later.';
+
+  @override
+  String get imageSearchTitle => 'Photo search';
+
+  @override
+  String get imageSearchSearching => 'Searching for more…';
+
+  @override
+  String get imageSearchEmpty => 'Nothing similar yet';
+
+  @override
+  String imageSearchRateLimited(int minutes) {
+    return 'Search limit reached. Try again in $minutes min.';
+  }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:elyeter/core/di/injector.dart';
 import 'package:elyeter/core/localization/fallback_localizations.dart';
@@ -18,6 +19,7 @@ import 'package:elyeter/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+import 'package:image/image.dart' as img;
 
 final _date = DateTime(2026, 10, 20, 0, 33);
 final _order = PreOrder(
@@ -110,8 +112,25 @@ void main() {
   test(
     'Turkmen receipt formats dates and amounts without an invalid locale',
     () async {
+      final order = PreOrder(
+        id: 1,
+        number: 'PO-000001',
+        status: PreOrderStatus.newOrder,
+        totalPrice: 100,
+        createdAt: _date,
+        items: const [
+          PreOrderItem(
+            id: 1,
+            productId: 10,
+            name: 'Test product',
+            quantity: 2,
+            price: 50,
+            lineTotal: 100,
+          ),
+        ],
+      );
       final bytes = await OrderReceiptPdf.build(
-        _order,
+        order,
         ReceiptLabels(
           title: 'Çek',
           number: (value) => 'Number $value',
@@ -124,14 +143,15 @@ void main() {
           price: 'Price',
           amount: 'Amount',
           productsTotal: 'Products total',
-          delivery: 'Delivery',
-          free: 'Free',
           cargo: 'Cargo',
           discount: 'Discount',
           total: 'Total',
           thanks: 'Sag boluň',
         ),
         locale: 'tk',
+        productImages: {
+          10: Uint8List.fromList(img.encodePng(img.Image(width: 8, height: 8))),
+        },
       );
       expect(String.fromCharCodes(bytes.take(4)), '%PDF');
     },
@@ -152,6 +172,37 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.text('Okt 20, 00:33'), findsOneWidget);
+  });
+
+  testWidgets('order total card shows cargo note without delivery breakdown', (
+    tester,
+  ) async {
+    final order = OrderDetailData.fromPreOrder(
+      PreOrder(
+        id: 3,
+        number: 'PO-3',
+        status: PreOrderStatus.newOrder,
+        totalPrice: 280,
+        createdAt: _date,
+      ),
+    );
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(_app(Scaffold(body: OrderTotalCard(order: order))));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(
+      find.text('Bellik: Kargo bahasy haryt gelenden soň hasaplanylýar.'),
+      findsOneWidget,
+    );
+    expect(find.text('Eltip berme'), findsNothing);
+    expect(find.text('Harytlaryň jemi'), findsNothing);
+    expect(find.text('Çeki ýükle'), findsOneWidget);
+    expect(find.textContaining('280.00', findRichText: true), findsOneWidget);
   });
 
   testWidgets('order history renders a dated order in Turkmen', (tester) async {

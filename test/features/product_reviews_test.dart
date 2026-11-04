@@ -282,7 +282,7 @@ void main() {
       await tester.tap(save);
       await tester.pumpAndSettle();
 
-      expect(client.posted, {'rating': 4, 'comment': 'Nice product'});
+      expect(client.posted, {'rating': 4, 'comment': 'Nice product', 'images': <String>[]});
       expect(find.byType(Dialog), findsNothing);
       expect(find.text('Great'), findsOneWidget);
       expect(
@@ -332,7 +332,7 @@ void main() {
       await tester.tap(save);
       await tester.pumpAndSettle();
       expect(find.byType(Dialog), findsNothing);
-      expect(client.posted, {'rating': 5, 'comment': 'Keep this comment'});
+      expect(client.posted, {'rating': 5, 'comment': 'Keep this comment', 'images': <String>[]});
       expect(tester.takeException(), isNull);
     },
   );

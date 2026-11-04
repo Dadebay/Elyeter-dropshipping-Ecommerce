@@ -75,8 +75,7 @@ extension JsonMap on Map<String, dynamic> {
 
   int? intOrNull(String key) => (this[key] as num?)?.toInt();
 
-  num numVal(String key, [num fallback = 0]) =>
-      (this[key] as num?) ?? fallback;
+  num numVal(String key, [num fallback = 0]) => (this[key] as num?) ?? fallback;
 
   num? numOrNull(String key) => this[key] as num?;
 
@@ -97,7 +96,9 @@ extension JsonMap on Map<String, dynamic> {
   }
 
   List<Map<String, dynamic>> listOf(String key) =>
-      (this[key] as List? ?? const []).whereType<Map<String, dynamic>>().toList();
+      (this[key] as List? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .toList();
 }
 
 /// Parses a payload the API returns as a bare list.

@@ -6,7 +6,12 @@ import 'app_back_button.dart';
 /// The app bar every pushed sub-page uses: centred bold title and the
 /// shared back button, so pages do not each re-invent the header.
 class AppPageAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const AppPageAppBar({super.key, required this.title, this.actions, this.onBack});
+  const AppPageAppBar({
+    super.key,
+    required this.title,
+    this.actions,
+    this.onBack,
+  });
 
   final String title;
   final List<Widget>? actions;

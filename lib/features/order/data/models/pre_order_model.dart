@@ -18,6 +18,9 @@ abstract final class PreOrderModel {
     createdAt: json.dateOrNull('created_at'),
     statusChangedAt: json.dateOrNull('status_changed_at'),
     canCancel: json.boolVal('can_cancel'),
+    canPay: json.boolVal('can_pay'),
+    isPaid: json.boolVal('is_paid'),
+    paidAt: json.dateOrNull('paid_at'),
     items: json.listOf('items').map(itemFromJson).toList(),
     priceChanged: json.boolVal('price_changed'),
   );

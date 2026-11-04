@@ -12,12 +12,15 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/widgets/app_back_button.dart';
 import '../../../product/domain/entities/product_query.dart';
 import '../../../product/presentation/widgets/catalog_product_grid.dart';
 import '../../../product/presentation/widgets/product_grid_shimmer.dart';
+import '../widgets/photo_search_launcher.dart';
 import '../../domain/entities/search_suggestion.dart';
 import '../../domain/repositories/search_repository.dart';
+import '../../../product_request/presentation/widgets/product_request_sheet.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -141,6 +144,11 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  Future<void> _searchByPhoto() {
+    _focusNode.unfocus();
+    return startPhotoSearch(context);
+  }
+
   void _clear() {
     _controller.clear();
     _changed('');
@@ -236,15 +244,22 @@ class _SearchPageState extends State<SearchPage> {
                   fillColor: surface,
                   // Keep the painted pill 48 px tall even without a suffix.
                   isDense: false,
-                  contentPadding: EdgeInsets.only(
-                    left: 18,
-                    right: hasText ? 4 : 18,
+                  contentPadding: EdgeInsets.only(left: 18, right: 4),
+                  suffixIconConstraints: const BoxConstraints.tightFor(
+                    width: 44,
+                    height: 44,
                   ),
-                  suffixIconConstraints: hasText
-                      ? const BoxConstraints.tightFor(width: 44, height: 44)
-                      : null,
-                  suffixIcon: hasText
+                  suffixIcon: !hasText
                       ? IconButton(
+                          tooltip: context.l10n.visualSearchTitle,
+                          onPressed: _searchByPhoto,
+                          icon: HugeIcon(
+                            icon: AppIcons.camera,
+                            size: 22,
+                            color: context.colors.onSurfaceVariant,
+                          ),
+                        )
+                      : IconButton(
                           tooltip: context.l10n.searchClear,
                           onPressed: _clear,
                           icon: Container(
@@ -262,8 +277,7 @@ class _SearchPageState extends State<SearchPage> {
                               color: context.colors.onSurfaceVariant,
                             ),
                           ),
-                        )
-                      : null,
+                        ),
                   border: _fieldBorder,
                   enabledBorder: _fieldBorder,
                   focusedBorder: _fieldBorder,
@@ -480,6 +494,20 @@ class _SearchStatusView extends StatelessWidget {
                 height: isNotFound ? 1.45 : 1.4,
               ),
             ),
+            if (isNotFound) ...[
+              const SizedBox(height: 28),
+              TextButton(
+                onPressed: () => openProductRequestSheet(context),
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(92, 44),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  backgroundColor: AppColors.primarySoft,
+                  foregroundColor: AppColors.primary,
+                  shape: const StadiumBorder(),
+                ),
+                child: Text(context.l10n.productRequestSearchAction),
+              ),
+            ],
             if (onRetry != null) ...[
               const SizedBox(height: 36),
               TextButton(

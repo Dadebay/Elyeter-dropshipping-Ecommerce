@@ -9,7 +9,12 @@ import '../../../../core/widgets/app_network_image.dart';
 /// One category tile's data. [imageUrl]/[imageAsset] stay optional so the
 /// layout works before the real artwork arrives.
 class CategoryItem {
-  const CategoryItem({required this.id, required this.name, this.imageUrl, this.imageAsset});
+  const CategoryItem({
+    required this.id,
+    required this.name,
+    this.imageUrl,
+    this.imageAsset,
+  });
 
   final String id;
   final String name;
@@ -19,7 +24,13 @@ class CategoryItem {
 
 /// Horizontally scrolling category shortcuts under the header.
 class CategoryStrip extends StatelessWidget {
-  const CategoryStrip({super.key, required this.items, this.onTap, this.tileSize = 72, this.labelColor});
+  const CategoryStrip({
+    super.key,
+    required this.items,
+    this.onTap,
+    this.tileSize = 72,
+    this.labelColor,
+  });
 
   final List<CategoryItem> items;
   final ValueChanged<CategoryItem>? onTap;
@@ -53,7 +64,9 @@ class CategoryStrip extends StatelessWidget {
                     item.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(color: labelColor),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelMedium?.copyWith(color: labelColor),
                   ),
                 ],
               ),
@@ -80,7 +93,10 @@ class _CategoryTile extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         padding: EdgeInsets.only(top: size * 0.2),
         alignment: Alignment.bottomCenter,
-        decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(AppRadius.lg)),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
         child: AppAssetImage(item.imageAsset!, width: size, height: size),
       );
     }

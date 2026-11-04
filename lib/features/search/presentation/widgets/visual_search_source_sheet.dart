@@ -36,7 +36,12 @@ class VisualSearchSourceSheet extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.md, AppSpacing.xl, AppSpacing.xl),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.xl,
+          AppSpacing.md,
+          AppSpacing.xl,
+          AppSpacing.xl,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -46,7 +51,9 @@ class VisualSearchSourceSheet extends StatelessWidget {
             Text(
               context.l10n.visualSearchTitle,
               textAlign: TextAlign.center,
-              style: AppTypography.textTheme.titleLarge?.copyWith(color: AppColors.black),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: AppColors.black,
+              ),
             ),
             const SizedBox(height: AppSpacing.xl),
             IntrinsicHeight(
@@ -57,7 +64,8 @@ class VisualSearchSourceSheet extends StatelessWidget {
                     child: _SourceCard(
                       icon: AppIcons.camera,
                       label: context.l10n.visualSearchCamera,
-                      onTap: () => Navigator.of(context).pop(VisualSearchSource.camera),
+                      onTap: () =>
+                          Navigator.of(context).pop(VisualSearchSource.camera),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
@@ -65,7 +73,8 @@ class VisualSearchSourceSheet extends StatelessWidget {
                     child: _SourceCard(
                       icon: AppIcons.image,
                       label: context.l10n.visualSearchGallery,
-                      onTap: () => Navigator.of(context).pop(VisualSearchSource.gallery),
+                      onTap: () =>
+                          Navigator.of(context).pop(VisualSearchSource.gallery),
                     ),
                   ),
                 ],
@@ -98,7 +107,11 @@ class _Handle extends StatelessWidget {
 }
 
 class _SourceCard extends StatelessWidget {
-  const _SourceCard({required this.icon, required this.label, required this.onTap});
+  const _SourceCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   final HugeIconData icon;
   final String label;
@@ -115,7 +128,10 @@ class _SourceCard extends StatelessWidget {
         splashColor: AppColors.primarySoft,
         highlightColor: AppColors.primarySoft,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xl),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.xl,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -134,7 +150,9 @@ class _SourceCard extends StatelessWidget {
                 label,
                 textAlign: TextAlign.center,
                 maxLines: 2,
-                style: AppTypography.textTheme.titleSmall?.copyWith(color: AppColors.black),
+                style: AppTypography.textTheme.titleSmall?.copyWith(
+                  color: AppColors.black,
+                ),
               ),
             ],
           ),

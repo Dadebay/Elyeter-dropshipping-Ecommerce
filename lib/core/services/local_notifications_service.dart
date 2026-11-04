@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// Draws a push as a native banner while the app is in the **foreground**.
@@ -28,7 +30,9 @@ class LocalNotificationsService {
 
     await _plugin.initialize(
       settings: const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        android: AndroidInitializationSettings(
+          '@drawable/ic_stat_notification',
+        ),
         // All three false: permission is asked once, explicitly, by
         // [PushService.init] — not as a side effect of plugin startup.
         iOS: DarwinInitializationSettings(
@@ -70,6 +74,10 @@ class LocalNotificationsService {
             channelDescription: _channelDescription,
             importance: Importance.max,
             priority: Priority.high,
+            // The status-bar icon is always a silhouette; the full-colour
+            // logo shows beside the text, and the silhouette is tinted yellow.
+            color: Color(0xFFFFFC01),
+            largeIcon: DrawableResourceAndroidBitmap('ic_notification_large'),
           ),
           iOS: DarwinNotificationDetails(),
         ),

@@ -28,7 +28,10 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<LoginCubit>(create: (_) => getIt<LoginCubit>(), child: const _LoginView());
+    return BlocProvider<LoginCubit>(
+      create: (_) => getIt<LoginCubit>(),
+      child: const _LoginView(),
+    );
   }
 }
 
@@ -52,7 +55,8 @@ class _LoginViewState extends State<_LoginView> {
   final _phoneFocus = FocusNode();
   final _code = TextEditingController();
   final _codeFocus = FocusNode();
-  late final TapGestureRecognizer _termsTap = TapGestureRecognizer()..onTap = _openTerms;
+  late final TapGestureRecognizer _termsTap = TapGestureRecognizer()
+    ..onTap = _openTerms;
 
   String get _localPhoneDigits => _phone.text.replaceAll(' ', '');
 
@@ -85,11 +89,16 @@ class _LoginViewState extends State<_LoginView> {
     final background = isDark ? AppColors.backgroundDark : AppColors.white;
 
     return BlocConsumer<LoginCubit, LoginState>(
-      listenWhen: (previous, current) => previous.signedIn != current.signedIn || previous.failure != current.failure || previous.step != current.step,
+      listenWhen: (previous, current) =>
+          previous.signedIn != current.signedIn ||
+          previous.failure != current.failure ||
+          previous.step != current.step,
       listener: (context, state) {
         final failure = state.failure;
         if (failure != null) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.localize(l10n))));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(failure.localize(l10n))));
         }
         // A fresh code deserves an empty field, whether it is the first
         // one or a resend after a wrong entry.
@@ -109,11 +118,56 @@ class _LoginViewState extends State<_LoginView> {
             surfaceTintColor: Colors.transparent,
             elevation: 0,
             leadingWidth: AppBackButton.leadingWidth,
-            leading: AppBackButton.appBarLeading(onPressed: state.step == LoginStep.code ? () => context.read<LoginCubit>().editPhone() : null),
+            leading: AppBackButton.appBarLeading(
+              onPressed: state.step == LoginStep.code
+                  ? () => context.read<LoginCubit>().editPhone()
+                  : null,
+            ),
           ),
-          body: state.step == LoginStep.code ? _codeStep(context, state) : _phoneStep(context, state),
+          body: _stepSwitcher(context, state),
         );
       },
+    );
+  }
+
+  /// Moving on to the code slides the phone step off to the left and the code
+  /// in from the right; going back reverses it.
+  Widget _stepSwitcher(BuildContext context, LoginState state) {
+    final onCode = state.step == LoginStep.code;
+    final forward = onCode;
+
+    return ClipRect(
+      child: AnimatedSwitcher(
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 320),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        layoutBuilder: (current, previous) =>
+            Stack(children: [...previous, ?current]),
+        transitionBuilder: (child, animation) {
+          final entering = child.key == ValueKey(onCode);
+          // The entering page starts one width to the right (or left when
+          // going back); the leaving page's reversed animation carries it off
+          // the opposite side.
+          final from = entering
+              ? (forward ? 1.0 : -1.0)
+              : (forward ? -1.0 : 1.0);
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: Offset(from, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          );
+        },
+        child: KeyedSubtree(
+          key: ValueKey(onCode),
+          child: onCode
+              ? _codeStep(context, state)
+              : _phoneStep(context, state),
+        ),
+      ),
     );
   }
 
@@ -122,7 +176,8 @@ class _LoginViewState extends State<_LoginView> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? AppColors.white : AppColors.black;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
-    final canContinue = _localPhoneDigits.length == _phoneDigits && !state.submitting;
+    final canContinue =
+        _localPhoneDigits.length == _phoneDigits && !state.submitting;
 
     return CustomScrollView(
       slivers: [
@@ -137,7 +192,11 @@ class _LoginViewState extends State<_LoginView> {
                 Text(
                   l10n.loginPhoneTitle,
                   textAlign: TextAlign.center,
-                  style: context.textTheme.headlineLarge?.copyWith(fontSize: 28, fontWeight: FontWeight.w700, color: ink),
+                  style: context.textTheme.headlineLarge?.copyWith(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    color: ink,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 ConstrainedBox(
@@ -145,7 +204,11 @@ class _LoginViewState extends State<_LoginView> {
                   child: Text(
                     l10n.loginPhoneMessage,
                     textAlign: TextAlign.center,
-                    style: context.textTheme.bodySmall?.copyWith(fontSize: 13, height: 1.35, color: isDark ? AppColors.grey300 : AppColors.grey700),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      fontSize: 13,
+                      height: 1.35,
+                      color: isDark ? AppColors.grey300 : AppColors.grey700,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 28),
@@ -158,14 +221,22 @@ class _LoginViewState extends State<_LoginView> {
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.done,
                     inputFormatters: const [_PhoneNumberFormatter()],
-                    style: context.textTheme.bodyMedium?.copyWith(color: ink, fontWeight: FontWeight.w600),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: ink,
+                      fontWeight: FontWeight.w600,
+                    ),
                     decoration: InputDecoration(
                       hintText: l10n.loginPhoneHint,
-                      hintStyle: context.textTheme.bodyMedium?.copyWith(color: AppColors.grey500),
+                      hintStyle: context.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.grey500,
+                      ),
                       prefix: _PhonePrefix(
                         visible: _phoneFocus.hasFocus || _phone.text.isNotEmpty,
                         reduceMotion: reduceMotion,
-                        style: context.textTheme.bodyMedium?.copyWith(color: ink, fontWeight: FontWeight.w600),
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: ink,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       suffixIconConstraints: const BoxConstraints(),
                       suffixIcon: _PhoneClearButton(
@@ -179,11 +250,25 @@ class _LoginViewState extends State<_LoginView> {
                         },
                       ),
                       filled: true,
-                      fillColor: isDark ? AppColors.grey900 : const Color(0xFFF1F1F3),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(28), borderSide: BorderSide.none),
-                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(28), borderSide: BorderSide.none),
-                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(28), borderSide: BorderSide.none),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      fillColor: isDark
+                          ? AppColors.grey900
+                          : const Color(0xFFF1F1F3),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(28),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(28),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(28),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
                     ),
                     onChanged: (value) {
                       setState(() {});
@@ -197,8 +282,12 @@ class _LoginViewState extends State<_LoginView> {
                 const SizedBox(height: 12),
                 DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: canContinue || state.submitting ? AppColors.primaryGradient : null,
-                    color: canContinue || state.submitting ? null : const Color(0xFFFFC39E),
+                    gradient: canContinue || state.submitting
+                        ? AppColors.primaryGradient
+                        : null,
+                    color: canContinue || state.submitting
+                        ? null
+                        : const Color(0xFFFFC39E),
                     borderRadius: BorderRadius.circular(28),
                   ),
                   child: SizedBox(
@@ -215,7 +304,9 @@ class _LoginViewState extends State<_LoginView> {
                         shape: const StadiumBorder(),
                       ),
                       onPressed: canContinue ? () => _sendCode(context) : null,
-                      child: state.submitting ? const _ButtonSpinner() : Text(l10n.loginSendCode),
+                      child: state.submitting
+                          ? const _ButtonSpinner()
+                          : Text(l10n.loginSendCode),
                     ),
                   ),
                 ),
@@ -228,14 +319,21 @@ class _LoginViewState extends State<_LoginView> {
                         TextSpan(text: '${l10n.loginLegalNotice} '),
                         TextSpan(
                           text: l10n.loginReadTerms,
-                          style: TextStyle(color: ink, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            color: ink,
+                            fontWeight: FontWeight.w600,
+                          ),
                           recognizer: _termsTap,
                         ),
                       ],
                     ),
                     key: const Key('login-legal-notice'),
                     textAlign: TextAlign.center,
-                    style: context.textTheme.bodySmall?.copyWith(fontSize: 11, height: 1.35, color: AppColors.grey500),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      fontSize: 11,
+                      height: 1.35,
+                      color: AppColors.grey500,
+                    ),
                   ),
                 ),
               ],
@@ -258,24 +356,40 @@ class _LoginViewState extends State<_LoginView> {
         : ink;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.page, 68, AppSpacing.page, AppSpacing.xxxl),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.page,
+        68,
+        AppSpacing.page,
+        AppSpacing.xxxl,
+      ),
       child: SizedBox(
         width: double.infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset(AppAssets.iconOtpNotification, width: 56, height: 56),
+            SvgPicture.asset(
+              AppAssets.iconOtpNotification,
+              width: 56,
+              height: 56,
+            ),
             const SizedBox(height: 18),
             Text(
               l10n.loginCodeTitle,
               textAlign: TextAlign.center,
-              style: context.textTheme.headlineLarge?.copyWith(fontSize: 28, fontWeight: FontWeight.w700, color: ink),
+              style: context.textTheme.headlineLarge?.copyWith(
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                color: ink,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               l10n.loginCodeMessage(_displayPhone(state.phone)),
               textAlign: TextAlign.center,
-              style: context.textTheme.bodySmall?.copyWith(fontSize: 15, color: isDark ? AppColors.grey300 : AppColors.grey700),
+              style: context.textTheme.bodySmall?.copyWith(
+                fontSize: 15,
+                color: isDark ? AppColors.grey300 : AppColors.grey700,
+              ),
             ),
             const SizedBox(height: 42),
             SizedBox(
@@ -293,11 +407,21 @@ class _LoginViewState extends State<_LoginView> {
                             width: 48,
                             height: 52,
                             alignment: Alignment.center,
-                            decoration: BoxDecoration(color: isDark ? AppColors.grey900 : AppColors.grey100, borderRadius: BorderRadius.circular(15)),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? AppColors.grey900
+                                  : AppColors.grey100,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                             child: index < code.length
                                 ? Text(
                                     code[index],
-                                    style: context.textTheme.headlineSmall?.copyWith(fontSize: 20, fontWeight: FontWeight.w600, color: codeColor),
+                                    style: context.textTheme.headlineSmall
+                                        ?.copyWith(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600,
+                                          color: codeColor,
+                                        ),
                                   )
                                 : code.length == index && !state.submitting
                                 ? Container(width: 2, height: 22, color: ink)
@@ -321,6 +445,9 @@ class _LoginViewState extends State<_LoginView> {
                       style: const TextStyle(color: Colors.transparent),
                       cursorColor: Colors.transparent,
                       showCursor: false,
+                      // The boxes draw the digits; no selection handle (the
+                      // orange drop) should ever show over them.
+                      enableInteractiveSelection: false,
                       decoration: InputDecoration(
                         hintText: l10n.loginCodeLabel,
                         hintStyle: const TextStyle(color: Colors.transparent),
@@ -335,7 +462,8 @@ class _LoginViewState extends State<_LoginView> {
                         contentPadding: EdgeInsets.zero,
                       ),
                       onTap: () {
-                        if (state.failure != null && _code.text.length == _codeDigits) {
+                        if (state.failure != null &&
+                            _code.text.length == _codeDigits) {
                           _code.clear();
                           setState(() {});
                         }
@@ -356,10 +484,21 @@ class _LoginViewState extends State<_LoginView> {
             else
               TextButton(
                 onPressed: state.canResend ? () => _resend(context) : null,
-                style: TextButton.styleFrom(foregroundColor: ink, disabledForegroundColor: AppColors.iconSoft),
+                style: TextButton.styleFrom(
+                  foregroundColor: ink,
+                  disabledForegroundColor: AppColors.iconSoft,
+                ),
                 child: Text(
-                  state.resendIn > 0 ? l10n.loginResendCountdown('${(state.resendIn ~/ 60).toString().padLeft(2, '0')}:${(state.resendIn % 60).toString().padLeft(2, '0')}') : l10n.loginResend,
-                  style: context.textTheme.labelSmall?.copyWith(fontSize: 13, color: state.canResend ? ink : AppColors.iconSoft, fontWeight: FontWeight.w600),
+                  state.resendIn > 0
+                      ? l10n.loginResendCountdown(
+                          '${(state.resendIn ~/ 60).toString().padLeft(2, '0')}:${(state.resendIn % 60).toString().padLeft(2, '0')}',
+                        )
+                      : l10n.loginResend,
+                  style: context.textTheme.labelSmall?.copyWith(
+                    fontSize: 13,
+                    color: state.canResend ? ink : AppColors.iconSoft,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
           ],
@@ -385,7 +524,9 @@ class _LoginViewState extends State<_LoginView> {
 
   void _sendCode(BuildContext context) {
     final cubit = context.read<LoginCubit>();
-    if (cubit.state.submitting || cubit.state.step != LoginStep.phone || _localPhoneDigits.length != _phoneDigits) {
+    if (cubit.state.submitting ||
+        cubit.state.step != LoginStep.phone ||
+        _localPhoneDigits.length != _phoneDigits) {
       return;
     }
     unawaited(cubit.sendCode(_localPhoneDigits));
@@ -403,11 +544,19 @@ class _ButtonSpinner extends StatelessWidget {
   const _ButtonSpinner();
 
   @override
-  Widget build(BuildContext context) => const SizedBox(width: 20, height: 20, child: AppLoader(color: AppColors.white));
+  Widget build(BuildContext context) => const SizedBox(
+    width: 20,
+    height: 20,
+    child: AppLoader(color: AppColors.white),
+  );
 }
 
 class _PhonePrefix extends StatelessWidget {
-  const _PhonePrefix({required this.visible, required this.reduceMotion, required this.style});
+  const _PhonePrefix({
+    required this.visible,
+    required this.reduceMotion,
+    required this.style,
+  });
 
   final bool visible;
   final bool reduceMotion;
@@ -425,7 +574,10 @@ class _PhonePrefix extends StatelessWidget {
         child: Opacity(
           key: const Key('login-phone-prefix-opacity'),
           opacity: progress,
-          child: Transform.translate(offset: Offset(reduceMotion ? 0 : -6 * (1 - progress), 0), child: child),
+          child: Transform.translate(
+            offset: Offset(reduceMotion ? 0 : -6 * (1 - progress), 0),
+            child: child,
+          ),
         ),
       ),
     ),
@@ -437,7 +589,12 @@ class _PhonePrefix extends StatelessWidget {
 }
 
 class _PhoneClearButton extends StatelessWidget {
-  const _PhoneClearButton({required this.visible, required this.reduceMotion, required this.isDark, required this.onPressed});
+  const _PhoneClearButton({
+    required this.visible,
+    required this.reduceMotion,
+    required this.isDark,
+    required this.onPressed,
+  });
 
   final bool visible;
   final bool reduceMotion;
@@ -458,7 +615,10 @@ class _PhoneClearButton extends StatelessWidget {
           child: Opacity(
             key: const Key('login-phone-clear-opacity'),
             opacity: progress,
-            child: Transform.scale(scale: reduceMotion ? 1 : 0.94 + 0.06 * progress, child: child),
+            child: Transform.scale(
+              scale: reduceMotion ? 1 : 0.94 + 0.06 * progress,
+              child: child,
+            ),
           ),
         ),
       ),
@@ -478,8 +638,15 @@ class _PhoneClearButton extends StatelessWidget {
         ),
         onPressed: onPressed,
         icon: DecoratedBox(
-          decoration: BoxDecoration(color: isDark ? AppColors.grey700 : const Color(0xFFE5E5E8), shape: BoxShape.circle),
-          child: const SizedBox(width: 24, height: 24, child: Center(child: Icon(Icons.close, size: 12))),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.grey700 : const Color(0xFFE5E5E8),
+            shape: BoxShape.circle,
+          ),
+          child: const SizedBox(
+            width: 24,
+            height: 24,
+            child: Center(child: Icon(Icons.close, size: 12)),
+          ),
         ),
       ),
     ),
@@ -494,10 +661,18 @@ class _PhoneNumberFormatter extends TextInputFormatter {
   static final _nonDigit = RegExp(r'\D');
 
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     var digits = newValue.text.replaceAll(_nonDigit, '');
-    final selectionEnd = newValue.selection.baseOffset.clamp(0, newValue.text.length).toInt();
-    var digitsBeforeCursor = newValue.text.substring(0, selectionEnd).replaceAll(_nonDigit, '').length;
+    final selectionEnd = newValue.selection.baseOffset
+        .clamp(0, newValue.text.length)
+        .toInt();
+    var digitsBeforeCursor = newValue.text
+        .substring(0, selectionEnd)
+        .replaceAll(_nonDigit, '')
+        .length;
 
     if (digits.length > 8 && digits.startsWith('993')) {
       digits = digits.substring(3);
@@ -505,7 +680,9 @@ class _PhoneNumberFormatter extends TextInputFormatter {
     }
     if (digits.length > 8) digits = digits.substring(0, 8);
 
-    final text = digits.length > 2 ? '${digits.substring(0, 2)} ${digits.substring(2)}' : digits;
+    final text = digits.length > 2
+        ? '${digits.substring(0, 2)} ${digits.substring(2)}'
+        : digits;
     final cursorDigits = digitsBeforeCursor.clamp(0, digits.length).toInt();
     final cursor = cursorDigits > 2 ? cursorDigits + 1 : cursorDigits;
     return TextEditingValue(

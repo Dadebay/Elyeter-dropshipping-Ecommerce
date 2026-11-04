@@ -13,6 +13,14 @@
   "commonRetry": "Retry",
   "notificationsEmptyTitle": "No notifications yet",
   "notificationsEmptyMessage": "New updates will appear here.",
+  "notificationsOverviewTitle": "Updates from Elyeter",
+  "notificationsOverviewMessage": "Offers and important news, all in one place.",
+  "notificationsToday": "Today",
+  "notificationsYesterday": "Yesterday",
+  "notificationsEarlier": "Earlier updates",
+  "notificationsNew": "New",
+  "notificationsLoadMore": "Load more",
+  "notificationsRefresh": "Refresh",
   "announcementsEmptyTitle": "No announcements yet",
   "announcementsEmptyMessage": "New announcements will appear here.",
   "commonCancel": "Cancel",
@@ -58,6 +66,7 @@
   "orderStepShipped": "Shipped to Turkmenistan",
   "orderStepArrived": "Arrived in Turkmenistan",
   "orderStepDelivered": "Delivered",
+  "orderStepStopped": "Stopped",
   "orderProducts": "Delivery Products",
   "orderItemSummary": "{count, plural, =1{1 item for {total}} other{{count} items for {total}}}",
   "@orderItemSummary": {
@@ -71,6 +80,9 @@
     }
   },
   "orderPickupPoint": "Pick-up point",
+  "orderSelectAddressTitle": "Select an address",
+  "orderSelectAddressMessage": "Choose or add an address before placing your order.",
+  "orderAddressLoadFailed": "Could not load addresses. Please try again.",
   "orderRecipient": "Recipient",
   "orderTime": "Order Time",
   "orderPayment": "Payment Method",
@@ -82,6 +94,7 @@
   "orderCargo": "Cargo",
   "orderDiscount": "Discount",
   "orderDownloadCheck": "Download Check",
+  "orderCargoNote": "Note: Cargo cost is calculated after the goods arrive.",
   "categoryFilterMaterial": "Material",
   "categoryFilterColor": "Color",
   "categoryFilterBrand": "Brand",
@@ -218,6 +231,7 @@
   "reviewRatingVeryGood": "Very good",
   "reviewRatingExcellent": "Excellent",
   "reviewCommentHint": "What did you like? What could be better?",
+  "reviewHowRate": "How would you rate this product?",
   "reviewSubmit": "Send review",
   "reviewAnonymous": "Customer",
   "reviewLoadMore": "Load more",
@@ -227,6 +241,29 @@
   "reviewDeleted": "Review deleted",
   "reviewDeleteConfirm": "Delete your review?",
   "reviewDeleteMessage": "You can write a new review later.",
+  "reviewHelpful": "Helpful",
+  "reviewSortBy": "Sort by",
+  "reviewRatingFilter": "Rating",
+  "reviewSortNewest": "Newest first",
+  "reviewSortOldest": "Oldest first",
+  "reviewSortMostLiked": "Most helpful",
+  "reviewSortMostDisliked": "Least helpful",
+  "reviewSortWithPhotos": "With photos",
+  "reviewSortWithoutPhotos": "Without photos",
+  "reviewAllRatings": "All ratings",
+  "reviewAddPhotos": "Add photos",
+  "reviewPhotoLimit": "Up to 5 photos",
+  "reviewPhotoUploadError": "Could not upload the photo.",
+  "reviewNoMatches": "No reviews match these filters",
+  "reviewHiddenNotice": "Your review is hidden from others",
+  "reviewHelpfulCount": "Helpful ({count})",
+  "@reviewHelpfulCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "productRatingCount": "{count} ratings",
   "@productRatingCount": {
     "placeholders": {
@@ -268,6 +305,18 @@
   "orderHistoryEmptyMessage": "Your orders will appear here after you place one.",
   "activeOrdersEmptyTitle": "No active orders",
   "activeOrdersEmptyMessage": "Orders in progress will appear here.",
+  "orderStatusDelivered": "Delivered",
+  "orderItemsFor": "{count} items for {amount}",
+  "@orderItemsFor": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "orderItemCount": "{count, plural, =0{No products} =1{1 product} other{{count} products}}",
   "@orderItemCount": {
     "placeholders": {
@@ -504,5 +553,69 @@
   },
   "profileDeleteKeep": "Keep my account",
   "profileDeleteConfirm": "Delete permanently",
-  "profileDeleteDone": "Your account has been deleted."
+  "profileDeleteDone": "Your account has been deleted.",
+  "commonOk": "OK",
+  "errorPaymentBankFailed": "The bank didn't accept the payment. Try later or choose another bank.",
+  "errorPreOrderAlreadyPaid": "This order has already been paid.",
+  "errorPreOrderNotPayable": "This order can no longer be paid online.",
+  "errorBankNotFound": "This bank is not available right now. Choose another one.",
+  "errorProductRequestInvalidLink": "We couldn't find an AliExpress product link in this text.",
+  "paymentTitle": "Payment",
+  "paymentChooseBank": "Choose a bank",
+  "paymentChooseBankHint": "You'll enter your card details on the bank's page.",
+  "paymentNoBanks": "Online payment is not available right now.",
+  "paymentPayOnlineTitle": "Pay online",
+  "paymentPayOnlineMessage": "Pay for the order by card now — no need to wait for the call.",
+  "paymentPay": "Pay",
+  "paymentPaid": "Paid online",
+  "paymentChecking": "Checking payment…",
+  "paymentCheckingMessage": "This takes a few seconds.",
+  "paymentSuccess": "Payment successful",
+  "paymentSuccessMessage": "Your order is paid. Thank you!",
+  "paymentFailed": "Payment failed",
+  "paymentFailedMessage": "The bank declined the payment. You can try again or choose another bank.",
+  "paymentPending": "Payment is being checked",
+  "paymentPendingMessage": "The bank hasn't confirmed it yet. The order will be marked as paid as soon as it does.",
+  "paymentNotCompletedMessage": "The payment wasn't completed. If money was taken from your card, the order will be marked as paid within a few minutes.",
+  "paymentTryAgain": "Try again",
+  "productRequestTitle": "Send us a link",
+  "productRequestMessage": "Didn't find a product? Paste an AliExpress link and we'll add it to the catalog.",
+  "productRequestHint": "AliExpress link or share text",
+  "productRequestPaste": "Paste",
+  "productRequestSend": "Send link",
+  "productRequestSendAnother": "Send another link",
+  "productRequestMine": "My product requests",
+  "productRequestSearchAction": "Send a link to the product",
+  "productRequestLoadingTitle": "Loading the product…",
+  "productRequestLoadingMessage": "This usually takes up to a minute.",
+  "productRequestLaterTitle": "We'll notify you",
+  "productRequestLaterMessage": "It's taking a little longer. We'll send you a notification when the product is available.",
+  "productRequestReviewTitle": "Under review",
+  "productRequestReviewMessage": "The product is under review. We'll notify you when it's available.",
+  "productRequestRejectedTitle": "Not available",
+  "productRequestRejectedMessage": "Sorry, we can't sell this product.",
+  "productRequestFailedTitle": "Couldn't load",
+  "productRequestFailedMessage": "Couldn't load the product from AliExpress. It may have been removed from sale.",
+  "productRequestAvailableTitle": "Product added",
+  "productRequestAvailableMessage": "The product is in the catalog. Find it in My product requests.",
+  "productRequestStatusProcessing": "Loading",
+  "productRequestStatusInReview": "Under review",
+  "productRequestStatusAvailable": "Available",
+  "productRequestStatusRejected": "Rejected",
+  "productRequestStatusFailed": "Not loaded",
+  "productRequestEmptyTitle": "No requests yet",
+  "errorImageSearchInvalidImage": "Use a JPEG, PNG or WebP photo.",
+  "errorImageSearchInProgress": "The previous search is still being sent. Please wait.",
+  "errorImageSearchUnavailable": "Search is temporarily unavailable. Try again later.",
+  "imageSearchTitle": "Photo search",
+  "imageSearchSearching": "Searching for more…",
+  "imageSearchEmpty": "Nothing similar yet",
+  "imageSearchRateLimited": "Search limit reached. Try again in {minutes} min.",
+  "@imageSearchRateLimited": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  }
 }

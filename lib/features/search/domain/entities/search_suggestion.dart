@@ -39,7 +39,10 @@ class CategorySuggestion extends Equatable {
 
 /// The whole type-ahead answer.
 class SearchSuggestions extends Equatable {
-  const SearchSuggestions({this.products = const [], this.categories = const []});
+  const SearchSuggestions({
+    this.products = const [],
+    this.categories = const [],
+  });
 
   static const empty = SearchSuggestions();
 

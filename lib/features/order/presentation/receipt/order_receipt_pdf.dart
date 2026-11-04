@@ -25,8 +25,6 @@ class ReceiptLabels {
     required this.price,
     required this.amount,
     required this.productsTotal,
-    required this.delivery,
-    required this.free,
     required this.cargo,
     required this.discount,
     required this.total,
@@ -44,8 +42,6 @@ class ReceiptLabels {
   final String price;
   final String amount;
   final String productsTotal;
-  final String delivery;
-  final String free;
   final String cargo;
   final String discount;
   final String total;
@@ -71,6 +67,7 @@ abstract final class OrderReceiptPdf {
     PreOrder order,
     ReceiptLabels labels, {
     required String locale,
+    Map<int, Uint8List> productImages = const {},
   }) async {
     // The date is written in the customer's language, whatever has or has
     // not been loaded for it elsewhere.
@@ -332,36 +329,59 @@ abstract final class OrderReceiptPdf {
                         vertical: 7,
                         horizontal: 6,
                       ),
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      child: pw.Row(
+                        crossAxisAlignment: pw.CrossAxisAlignment.center,
                         children: [
-                          pw.Text(
-                            item.name,
-                            maxLines: 2,
-                            style: pw.TextStyle(
-                              fontSize: 10.5,
-                              color: _ink,
-                              fontWeight: pw.FontWeight.bold,
-                            ),
-                          ),
-                          if (item.variant != null && item.variant!.isNotEmpty)
-                            pw.Padding(
-                              padding: const pw.EdgeInsets.only(top: 2),
-                              child: pw.Text(
-                                item.variant!,
-                                style: const pw.TextStyle(
-                                  fontSize: 9,
-                                  color: _muted,
-                                ),
+                          if (productImages[item.productId]
+                              case final image?) ...[
+                            pw.SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: pw.Image(
+                                pw.MemoryImage(image),
+                                fit: pw.BoxFit.cover,
                               ),
                             ),
+                            pw.SizedBox(width: 8),
+                          ],
+                          pw.Expanded(
+                            child: pw.Column(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Text(
+                                  item.name,
+                                  maxLines: 2,
+                                  style: pw.TextStyle(
+                                    fontSize: 10.5,
+                                    color: _ink,
+                                    fontWeight: pw.FontWeight.bold,
+                                  ),
+                                ),
+                                if (item.variant != null &&
+                                    item.variant!.isNotEmpty)
+                                  pw.Padding(
+                                    padding: const pw.EdgeInsets.only(top: 2),
+                                    child: pw.Text(
+                                      item.variant!,
+                                      style: const pw.TextStyle(
+                                        fontSize: 9,
+                                        color: _muted,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     cell('${item.quantity}', align: pw.TextAlign.center),
-                    cell(amount(item.price), align: pw.TextAlign.right),
                     cell(
-                      amount(item.lineTotal),
+                      '${amount(item.price)} $currency',
+                      align: pw.TextAlign.right,
+                    ),
+                    cell(
+                      '${amount(item.lineTotal)} $currency',
                       align: pw.TextAlign.right,
                       strong: true,
                     ),
@@ -378,7 +398,6 @@ abstract final class OrderReceiptPdf {
               child: pw.Column(
                 children: [
                   row(labels.productsTotal, '${amount(goods)} $currency'),
-                  row(labels.delivery, labels.free, color: _good),
                   if (extra > 0)
                     row(labels.cargo, '${amount(extra)} $currency'),
                   if (extra < 0)

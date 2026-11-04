@@ -6,7 +6,8 @@ extension StringX on String {
       RegExp(r'^[\w.+-]+@[\w-]+\.[\w.-]+$').hasMatch(trim());
 
   /// Turkmen mobile numbers, digits only, 8–15 chars.
-  bool get isValidPhone => RegExp(r'^\+?\d{8,15}$').hasMatch(replaceAll(' ', ''));
+  bool get isValidPhone =>
+      RegExp(r'^\+?\d{8,15}$').hasMatch(replaceAll(' ', ''));
 
   String? get nullIfEmpty => trim().isEmpty ? null : this;
 }

@@ -61,7 +61,9 @@ class AppNetworkImage extends StatelessWidget {
                 : _shimmer(),
             errorWidget: (_, _, _) {
               if (onLoadFailed != null) {
-                WidgetsBinding.instance.addPostFrameCallback((_) => onLoadFailed!());
+                WidgetsBinding.instance.addPostFrameCallback(
+                  (_) => onLoadFailed!(),
+                );
               }
               return _fallback();
             },

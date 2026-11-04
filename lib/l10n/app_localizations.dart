@@ -178,6 +178,54 @@ abstract class AppLocalizations {
   /// **'New updates will appear here.'**
   String get notificationsEmptyMessage;
 
+  /// No description provided for @notificationsOverviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates from Elyeter'**
+  String get notificationsOverviewTitle;
+
+  /// No description provided for @notificationsOverviewMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers and important news, all in one place.'**
+  String get notificationsOverviewMessage;
+
+  /// No description provided for @notificationsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get notificationsToday;
+
+  /// No description provided for @notificationsYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get notificationsYesterday;
+
+  /// No description provided for @notificationsEarlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier updates'**
+  String get notificationsEarlier;
+
+  /// No description provided for @notificationsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get notificationsNew;
+
+  /// No description provided for @notificationsLoadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get notificationsLoadMore;
+
+  /// No description provided for @notificationsRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get notificationsRefresh;
+
   /// No description provided for @announcementsEmptyTitle.
   ///
   /// In en, this message translates to:
@@ -364,6 +412,12 @@ abstract class AppLocalizations {
   /// **'Delivered'**
   String get orderStepDelivered;
 
+  /// No description provided for @orderStepStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped'**
+  String get orderStepStopped;
+
   /// No description provided for @orderProducts.
   ///
   /// In en, this message translates to:
@@ -381,6 +435,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pick-up point'**
   String get orderPickupPoint;
+
+  /// No description provided for @orderSelectAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an address'**
+  String get orderSelectAddressTitle;
+
+  /// No description provided for @orderSelectAddressMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose or add an address before placing your order.'**
+  String get orderSelectAddressMessage;
+
+  /// No description provided for @orderAddressLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load addresses. Please try again.'**
+  String get orderAddressLoadFailed;
 
   /// No description provided for @orderRecipient.
   ///
@@ -447,6 +519,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Download Check'**
   String get orderDownloadCheck;
+
+  /// No description provided for @orderCargoNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: Cargo cost is calculated after the goods arrive.'**
+  String get orderCargoNote;
 
   /// No description provided for @categoryFilterMaterial.
   ///
@@ -928,6 +1006,12 @@ abstract class AppLocalizations {
   /// **'What did you like? What could be better?'**
   String get reviewCommentHint;
 
+  /// No description provided for @reviewHowRate.
+  ///
+  /// In en, this message translates to:
+  /// **'How would you rate this product?'**
+  String get reviewHowRate;
+
   /// No description provided for @reviewSubmit.
   ///
   /// In en, this message translates to:
@@ -981,6 +1065,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can write a new review later.'**
   String get reviewDeleteMessage;
+
+  /// No description provided for @reviewHelpful.
+  ///
+  /// In en, this message translates to:
+  /// **'Helpful'**
+  String get reviewHelpful;
+
+  /// No description provided for @reviewSortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get reviewSortBy;
+
+  /// No description provided for @reviewRatingFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get reviewRatingFilter;
+
+  /// No description provided for @reviewSortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get reviewSortNewest;
+
+  /// No description provided for @reviewSortOldest.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest first'**
+  String get reviewSortOldest;
+
+  /// No description provided for @reviewSortMostLiked.
+  ///
+  /// In en, this message translates to:
+  /// **'Most helpful'**
+  String get reviewSortMostLiked;
+
+  /// No description provided for @reviewSortMostDisliked.
+  ///
+  /// In en, this message translates to:
+  /// **'Least helpful'**
+  String get reviewSortMostDisliked;
+
+  /// No description provided for @reviewSortWithPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'With photos'**
+  String get reviewSortWithPhotos;
+
+  /// No description provided for @reviewSortWithoutPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Without photos'**
+  String get reviewSortWithoutPhotos;
+
+  /// No description provided for @reviewAllRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'All ratings'**
+  String get reviewAllRatings;
+
+  /// No description provided for @reviewAddPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photos'**
+  String get reviewAddPhotos;
+
+  /// No description provided for @reviewPhotoLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 5 photos'**
+  String get reviewPhotoLimit;
+
+  /// No description provided for @reviewPhotoUploadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not upload the photo.'**
+  String get reviewPhotoUploadError;
+
+  /// No description provided for @reviewNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews match these filters'**
+  String get reviewNoMatches;
+
+  /// No description provided for @reviewHiddenNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Your review is hidden from others'**
+  String get reviewHiddenNotice;
+
+  /// No description provided for @reviewHelpfulCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Helpful ({count})'**
+  String reviewHelpfulCount(int count);
 
   /// No description provided for @productRatingCount.
   ///
@@ -1185,6 +1365,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Orders in progress will appear here.'**
   String get activeOrdersEmptyMessage;
+
+  /// No description provided for @orderStatusDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get orderStatusDelivered;
+
+  /// No description provided for @orderItemsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items for {amount}'**
+  String orderItemsFor(int count, String amount);
 
   /// No description provided for @orderItemCount.
   ///
@@ -2229,6 +2421,348 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your account has been deleted.'**
   String get profileDeleteDone;
+
+  /// No description provided for @commonOk.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get commonOk;
+
+  /// No description provided for @errorPaymentBankFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The bank didn\'t accept the payment. Try later or choose another bank.'**
+  String get errorPaymentBankFailed;
+
+  /// No description provided for @errorPreOrderAlreadyPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'This order has already been paid.'**
+  String get errorPreOrderAlreadyPaid;
+
+  /// No description provided for @errorPreOrderNotPayable.
+  ///
+  /// In en, this message translates to:
+  /// **'This order can no longer be paid online.'**
+  String get errorPreOrderNotPayable;
+
+  /// No description provided for @errorBankNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This bank is not available right now. Choose another one.'**
+  String get errorBankNotFound;
+
+  /// No description provided for @errorProductRequestInvalidLink.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find an AliExpress product link in this text.'**
+  String get errorProductRequestInvalidLink;
+
+  /// No description provided for @paymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentTitle;
+
+  /// No description provided for @paymentChooseBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a bank'**
+  String get paymentChooseBank;
+
+  /// No description provided for @paymentChooseBankHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll enter your card details on the bank\'s page.'**
+  String get paymentChooseBankHint;
+
+  /// No description provided for @paymentNoBanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Online payment is not available right now.'**
+  String get paymentNoBanks;
+
+  /// No description provided for @paymentPayOnlineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay online'**
+  String get paymentPayOnlineTitle;
+
+  /// No description provided for @paymentPayOnlineMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay for the order by card now — no need to wait for the call.'**
+  String get paymentPayOnlineMessage;
+
+  /// No description provided for @paymentPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay'**
+  String get paymentPay;
+
+  /// No description provided for @paymentPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid online'**
+  String get paymentPaid;
+
+  /// No description provided for @paymentChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking payment…'**
+  String get paymentChecking;
+
+  /// No description provided for @paymentCheckingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This takes a few seconds.'**
+  String get paymentCheckingMessage;
+
+  /// No description provided for @paymentSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment successful'**
+  String get paymentSuccess;
+
+  /// No description provided for @paymentSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is paid. Thank you!'**
+  String get paymentSuccessMessage;
+
+  /// No description provided for @paymentFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment failed'**
+  String get paymentFailed;
+
+  /// No description provided for @paymentFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The bank declined the payment. You can try again or choose another bank.'**
+  String get paymentFailedMessage;
+
+  /// No description provided for @paymentPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment is being checked'**
+  String get paymentPending;
+
+  /// No description provided for @paymentPendingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The bank hasn\'t confirmed it yet. The order will be marked as paid as soon as it does.'**
+  String get paymentPendingMessage;
+
+  /// No description provided for @paymentNotCompletedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment wasn\'t completed. If money was taken from your card, the order will be marked as paid within a few minutes.'**
+  String get paymentNotCompletedMessage;
+
+  /// No description provided for @paymentTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get paymentTryAgain;
+
+  /// No description provided for @productRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send us a link'**
+  String get productRequestTitle;
+
+  /// No description provided for @productRequestMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t find a product? Paste an AliExpress link and we\'ll add it to the catalog.'**
+  String get productRequestMessage;
+
+  /// No description provided for @productRequestHint.
+  ///
+  /// In en, this message translates to:
+  /// **'AliExpress link or share text'**
+  String get productRequestHint;
+
+  /// No description provided for @productRequestPaste.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste'**
+  String get productRequestPaste;
+
+  /// No description provided for @productRequestSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send link'**
+  String get productRequestSend;
+
+  /// No description provided for @productRequestSendAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Send another link'**
+  String get productRequestSendAnother;
+
+  /// No description provided for @productRequestMine.
+  ///
+  /// In en, this message translates to:
+  /// **'My product requests'**
+  String get productRequestMine;
+
+  /// No description provided for @productRequestSearchAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a link to the product'**
+  String get productRequestSearchAction;
+
+  /// No description provided for @productRequestLoadingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the product…'**
+  String get productRequestLoadingTitle;
+
+  /// No description provided for @productRequestLoadingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This usually takes up to a minute.'**
+  String get productRequestLoadingMessage;
+
+  /// No description provided for @productRequestLaterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll notify you'**
+  String get productRequestLaterTitle;
+
+  /// No description provided for @productRequestLaterMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s taking a little longer. We\'ll send you a notification when the product is available.'**
+  String get productRequestLaterMessage;
+
+  /// No description provided for @productRequestReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get productRequestReviewTitle;
+
+  /// No description provided for @productRequestReviewMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The product is under review. We\'ll notify you when it\'s available.'**
+  String get productRequestReviewMessage;
+
+  /// No description provided for @productRequestRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available'**
+  String get productRequestRejectedTitle;
+
+  /// No description provided for @productRequestRejectedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorry, we can\'t sell this product.'**
+  String get productRequestRejectedMessage;
+
+  /// No description provided for @productRequestFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load'**
+  String get productRequestFailedTitle;
+
+  /// No description provided for @productRequestFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the product from AliExpress. It may have been removed from sale.'**
+  String get productRequestFailedMessage;
+
+  /// No description provided for @productRequestAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Product added'**
+  String get productRequestAvailableTitle;
+
+  /// No description provided for @productRequestAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The product is in the catalog. Find it in My product requests.'**
+  String get productRequestAvailableMessage;
+
+  /// No description provided for @productRequestStatusProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get productRequestStatusProcessing;
+
+  /// No description provided for @productRequestStatusInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get productRequestStatusInReview;
+
+  /// No description provided for @productRequestStatusAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get productRequestStatusAvailable;
+
+  /// No description provided for @productRequestStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get productRequestStatusRejected;
+
+  /// No description provided for @productRequestStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not loaded'**
+  String get productRequestStatusFailed;
+
+  /// No description provided for @productRequestEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests yet'**
+  String get productRequestEmptyTitle;
+
+  /// No description provided for @errorImageSearchInvalidImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a JPEG, PNG or WebP photo.'**
+  String get errorImageSearchInvalidImage;
+
+  /// No description provided for @errorImageSearchInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'The previous search is still being sent. Please wait.'**
+  String get errorImageSearchInProgress;
+
+  /// No description provided for @errorImageSearchUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Search is temporarily unavailable. Try again later.'**
+  String get errorImageSearchUnavailable;
+
+  /// No description provided for @imageSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo search'**
+  String get imageSearchTitle;
+
+  /// No description provided for @imageSearchSearching.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for more…'**
+  String get imageSearchSearching;
+
+  /// No description provided for @imageSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing similar yet'**
+  String get imageSearchEmpty;
+
+  /// No description provided for @imageSearchRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Search limit reached. Try again in {minutes} min.'**
+  String imageSearchRateLimited(int minutes);
 }
 
 class _AppLocalizationsDelegate

@@ -42,7 +42,10 @@ class ApiLogInterceptor extends Interceptor {
   }
 
   @override
-  void onResponse(Response<dynamic> response, ResponseInterceptorHandler handler) {
+  void onResponse(
+    Response<dynamic> response,
+    ResponseInterceptorHandler handler,
+  ) {
     final status = response.statusCode ?? 0;
     final colour = status >= 200 && status < 300
         ? AnsiColor.green

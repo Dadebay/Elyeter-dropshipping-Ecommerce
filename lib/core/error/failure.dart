@@ -94,6 +94,16 @@ abstract final class ApiCodes {
   static const preOrderNotFound = 'pre-order-not-found';
   static const invalidPreOrderTransition = 'invalid-pre-order-transition';
   static const tooManyRequests = 'too-many-requests';
+  static const preOrderAlreadyPaid = 'pre-order-already-paid';
+  static const preOrderNotPayable = 'pre-order-not-payable';
+  static const bankNotFound = 'bank-not-found';
+  static const paymentNotFound = 'payment-not-found';
+  static const productRequestInvalidLink = 'product-request-invalid-link';
+  static const productRequestNotFound = 'product-request-not-found';
+  static const imageSearchInvalidImage = 'image-search-invalid-image';
+  static const imageSearchInProgress = 'image-search-in-progress';
+  static const imageSearchNotFound = 'image-search-not-found';
+  static const marketplaceUnavailable = 'marketplace-unavailable';
 }
 
 extension AppExceptionToFailure on AppException {
@@ -146,7 +156,10 @@ extension AppExceptionToFailure on AppException {
         message: message,
         statusCode: 503,
       ),
-      ServerException() => ServerFailure(message: message, statusCode: statusCode),
+      ServerException() => ServerFailure(
+        message: message,
+        statusCode: statusCode,
+      ),
     };
   }
 }

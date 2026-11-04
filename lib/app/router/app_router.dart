@@ -20,13 +20,16 @@ import '../../features/onboarding/presentation/view/onboarding_page.dart';
 import '../../features/order/presentation/view/order_detail_page.dart';
 import '../../features/order/presentation/view/order_track_page.dart';
 import '../../features/order/presentation/view/checkout_page.dart';
-import '../../features/order/presentation/view/order_list_page.dart';
+import '../../features/order/presentation/view/all_orders_page.dart';
+import '../../features/order/presentation/view/active_orders_page.dart';
 import '../../features/product/domain/entities/product_id.dart';
 import '../../features/product/presentation/view/product_detail_page.dart';
 import '../../features/product/presentation/view/product_reviews_page.dart';
+import '../../features/product_request/presentation/view/product_request_list_page.dart';
 import '../../features/profile/presentation/view/edit_profile_page.dart';
 import '../../features/profile/presentation/view/profile_page.dart';
 import '../../features/search/presentation/view/search_page.dart';
+import '../../features/search/presentation/view/image_search_page.dart';
 import '../../features/search/presentation/widgets/search_reveal_transition.dart';
 import '../../features/settings/presentation/view/settings_page.dart';
 import '../view/home_shell.dart';
@@ -177,24 +180,18 @@ abstract final class AppRouter {
                 name: AppRoutes.profile.name,
                 builder: (context, state) => const ProfilePage(),
                 routes: [
-                  // Two entry points, one page: history and the active
-                  // subset differ by title (and later by filter), not by
-                  // layout.
+                  // Active orders and the finished history are separate pages.
                   GoRoute(
                     path: AppRoutes.orders.path,
                     name: AppRoutes.orders.name,
                     parentNavigatorKey: rootNavigatorKey,
-                    builder: (context, state) =>
-                        OrderListPage(title: context.l10n.profileOrderHistory),
+                    builder: (context, state) => const AllOrdersPage(),
                   ),
                   GoRoute(
                     path: AppRoutes.activeOrders.path,
                     name: AppRoutes.activeOrders.name,
                     parentNavigatorKey: rootNavigatorKey,
-                    builder: (context, state) => OrderListPage(
-                      title: context.l10n.profileActiveOrders,
-                      activeOnly: true,
-                    ),
+                    builder: (context, state) => const ActiveOrdersPage(),
                   ),
                   GoRoute(
                     path: AppRoutes.editProfile.path,
@@ -207,6 +204,12 @@ abstract final class AppRouter {
                     name: AppRoutes.addresses.name,
                     parentNavigatorKey: rootNavigatorKey,
                     builder: (context, state) => const AddressListPage(),
+                  ),
+                  GoRoute(
+                    path: AppRoutes.productRequests.path,
+                    name: AppRoutes.productRequests.name,
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (context, state) => const ProductRequestListPage(),
                   ),
                   GoRoute(
                     path: AppRoutes.notifications.path,
@@ -280,48 +283,24 @@ abstract final class AppRouter {
             OrderTrackPage(orderId: int.parse(state.pathParameters['id']!)),
       ),
       GoRoute(
+        path: AppRoutes.imageSearch.path,
+        name: AppRoutes.imageSearch.name,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            ImageSearchPage(imagePath: state.extra as String),
+      ),
+      GoRoute(
         path: AppRoutes.search.path,
         name: AppRoutes.search.name,
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) {
-          final buttonOrigin = state.extra is SearchButtonOrigin
-              ? state.extra as SearchButtonOrigin
-              : null;
-          final anchor = state.extra is Rect ? state.extra as Rect : null;
-          final reduceMotion = MediaQuery.disableAnimationsOf(context);
-          return CustomTransitionPage<void>(
-            key: state.pageKey,
-            transitionDuration: reduceMotion
-                ? SearchRevealTransition.reducedMotionDuration
-                : SearchRevealTransition.duration,
-            reverseTransitionDuration: reduceMotion
-                ? SearchRevealTransition.reducedMotionDuration
-                : SearchRevealTransition.reverseDuration,
-            child: const SearchPage(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-                  if (buttonOrigin != null) {
-                    return SearchButtonExpandTransition(
-                      animation: animation,
-                      buttonBounds: buttonOrigin.bounds,
-                      child: child,
-                    );
-                  }
-                  return SearchRevealTransition(
-                    animation: animation,
-                    fieldBounds:
-                        anchor ??
-                        Rect.fromLTWH(
-                          16,
-                          MediaQuery.paddingOf(context).top + 8,
-                          MediaQuery.sizeOf(context).width - 32,
-                          48,
-                        ),
-                    child: child,
-                  );
-                },
-          );
-        },
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          transitionDuration: SearchFadeTransition.duration,
+          reverseTransitionDuration: SearchFadeTransition.reverseDuration,
+          child: const SearchPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              SearchFadeTransition(animation: animation, child: child),
+        ),
       ),
     ],
     errorBuilder: (context, state) =>

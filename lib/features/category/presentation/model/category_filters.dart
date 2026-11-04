@@ -167,8 +167,7 @@ abstract final class CategoryFacets {
 
   /// A light colour needs an outline, or a white swatch is invisible on a
   /// white sheet.
-  static bool needsOutline(Color color) =>
-      color.computeLuminance() > 0.8;
+  static bool needsOutline(Color color) => color.computeLuminance() > 0.8;
 }
 
 /// What each ordering is called.

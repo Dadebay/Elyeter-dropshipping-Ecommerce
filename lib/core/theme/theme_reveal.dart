@@ -107,7 +107,7 @@ class ThemeRevealState extends State<ThemeReveal>
       }
       if (boundary == null || boundary.debugNeedsPaint) return null;
       final ratio = MediaQuery.devicePixelRatioOf(context).clamp(1.0, 2.0);
-      return boundary.toImage(pixelRatio: ratio);
+      return await boundary.toImage(pixelRatio: ratio);
     } catch (_) {
       return null;
     }

@@ -79,8 +79,9 @@ class PreOrderItem extends Equatable {
   ];
 }
 
-/// A placed pre-order. There is no payment in the app: a manager calls the
-/// customer back and places the order with the supplier.
+/// A placed pre-order. A manager calls the customer back and places the
+/// order with the supplier; while it is `NEW` or `CONFIRMED` it can also be
+/// paid online by card (see [canPay]).
 class PreOrder extends Equatable {
   const PreOrder({
     required this.id,
@@ -98,6 +99,9 @@ class PreOrder extends Equatable {
     this.createdAt,
     this.statusChangedAt,
     this.canCancel = false,
+    this.canPay = false,
+    this.isPaid = false,
+    this.paidAt,
     this.items = const [],
     this.priceChanged = false,
   });
@@ -126,7 +130,15 @@ class PreOrder extends Equatable {
   final DateTime? statusChangedAt;
 
   /// Whether `POST /pre-orders/:id/cancel` will currently succeed.
+  /// Always false once [isPaid]: a paid order is cancelled only by a manager.
   final bool canCancel;
+
+  /// Whether to offer the "Pay" button — `NEW` or `CONFIRMED`, not paid yet.
+  final bool canPay;
+
+  /// Paid online by card.
+  final bool isPaid;
+  final DateTime? paidAt;
 
   final List<PreOrderItem> items;
 
@@ -150,6 +162,9 @@ class PreOrder extends Equatable {
     createdAt,
     statusChangedAt,
     canCancel,
+    canPay,
+    isPaid,
+    paidAt,
     items,
     priceChanged,
   ];

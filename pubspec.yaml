@@ -40,6 +40,8 @@ dependencies:
   intl: ^0.20.2
 
   # -------------------------------------------------------------------- ui --
+  # Not imported by lib/, but Flutter's own Cupertino widgets draw from its
+  # font; without it the release build tree-shakes those glyphs to boxes.
   cupertino_icons: ^1.0.8
   hugeicons: ^1.1.7
   cached_network_image: ^3.4.1
@@ -75,6 +77,10 @@ dependencies:
   # platform's own apps.
   url_launcher: ^6.3.2
 
+  # The bank's card page for online payment; closed as soon as the bank
+  # redirects to the payment's `return_url`.
+  webview_flutter: ^4.14.1
+
   # System share sheet for the product share button.
   share_plus: ^13.3.0
   flutter_html: ^3.0.0
@@ -107,11 +113,6 @@ flutter:
     - assets/images/
     - assets/images/flags/
     - assets/images/magazynes/
-    - assets/images/category/
-    - assets/images/banners/
-    - assets/images/logos/
-    - assets/images/products/
-    - assets/images/subcategory/
     - assets/icons/
 
   fonts:

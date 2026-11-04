@@ -68,11 +68,7 @@ class ProfileCubit extends HydratedCubit<ProfileState> {
 
     if (state.phone == phone && state.name == nextName) return;
     emit(
-      ProfileState(
-        name: nextName,
-        phone: phone,
-        avatarPath: state.avatarPath,
-      ),
+      ProfileState(name: nextName, phone: phone, avatarPath: state.avatarPath),
     );
   }
 

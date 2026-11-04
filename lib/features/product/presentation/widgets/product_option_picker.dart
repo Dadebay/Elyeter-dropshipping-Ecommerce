@@ -44,9 +44,12 @@ class ProductColorPicker extends StatelessWidget {
                 duration: const Duration(milliseconds: 160),
                 width: _size,
                 height: _size,
-                padding: const EdgeInsets.all(AppSpacing.sm),
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                foregroundDecoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(AppRadius.md),
                   // Black, not the brand orange: the swatch's own colour is
                   // what the customer is choosing, so the marker stays neutral.
@@ -59,6 +62,9 @@ class ProductColorPicker extends StatelessWidget {
                 // not one stretched to fill it.
                 child: ProductImageView(
                   source: images[index],
+                  fit: BoxFit.cover,
+                  // Portrait shots keep the head, not the middle of the body.
+                  alignment: Alignment.topCenter,
                   fallbackIconSize: 22,
                   fallbackColor: Colors.transparent,
                 ),

@@ -7,7 +7,6 @@ import 'package:elyeter/core/network/api_response.dart';
 import 'package:elyeter/core/network/shop_api.dart';
 import 'package:elyeter/core/theme/app_theme.dart';
 import 'package:elyeter/core/utils/result.dart';
-import 'package:elyeter/core/widgets/app_loader.dart';
 import 'package:elyeter/features/auth/domain/repositories/auth_repository.dart';
 import 'package:elyeter/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:elyeter/features/brand/domain/entities/brand.dart';
@@ -19,6 +18,7 @@ import 'package:elyeter/features/favorite/presentation/cubit/favorite_cubit.dart
 import 'package:elyeter/features/home/presentation/view/home_page.dart';
 import 'package:elyeter/features/home/presentation/widgets/home_search_field.dart';
 import 'package:elyeter/features/home/presentation/widgets/home_section_shimmer.dart';
+import 'package:elyeter/core/widgets/parcel_refresh_motion.dart';
 import 'package:elyeter/features/product/domain/entities/product.dart';
 import 'package:elyeter/features/product/domain/entities/product_detail.dart';
 import 'package:elyeter/features/product/domain/entities/product_query.dart';
@@ -207,7 +207,7 @@ void main() {
       await gesture.moveBy(const Offset(0, 400));
       await tester.pump();
       expect(tester.getTopLeft(find.byType(HomeSearchField)), before);
-      expect(find.byType(AppLoader), findsOneWidget);
+      expect(find.byType(ParcelRefreshMotion), findsOneWidget);
       await gesture.up();
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
@@ -216,7 +216,7 @@ void main() {
 
       refresh.complete();
       await tester.pumpAndSettle();
-      expect(find.byType(AppLoader), findsNothing);
+      expect(find.byType(ParcelRefreshMotion), findsNothing);
       expect(tester.takeException(), isNull);
     });
   }

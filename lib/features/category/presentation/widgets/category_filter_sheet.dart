@@ -42,10 +42,9 @@ class _CategoryFilterSheetState extends State<CategoryFilterSheet> {
   bool get _changed =>
       _draft.totalSelected != widget.filters.totalSelected ||
       widget.facets.any(
-        (facet) =>
-            !_draft.selected(facet.id).containsAll(
-              widget.filters.selected(facet.id),
-            ),
+        (facet) => !_draft
+            .selected(facet.id)
+            .containsAll(widget.filters.selected(facet.id)),
       );
 
   void _toggle(FacetDefinition facet, String value) {

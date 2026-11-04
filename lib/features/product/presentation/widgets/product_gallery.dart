@@ -153,6 +153,8 @@ class _Photo extends StatelessWidget {
               child: ProductImageView(
                 source: image,
                 fit: BoxFit.cover,
+                // Portrait shots lose their lower part, never the head.
+                alignment: Alignment.topCenter,
                 wordmarkPlaceholder: true,
               ),
             ),

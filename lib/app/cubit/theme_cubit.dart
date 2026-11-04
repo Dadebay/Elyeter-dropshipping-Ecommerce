@@ -7,9 +7,8 @@ class ThemeCubit extends HydratedCubit<ThemeMode> {
 
   void setThemeMode(ThemeMode mode) => emit(mode);
 
-  void toggle() => emit(
-    state == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
-  );
+  void toggle() =>
+      emit(state == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark);
 
   @override
   ThemeMode? fromJson(Map<String, dynamic> json) =>

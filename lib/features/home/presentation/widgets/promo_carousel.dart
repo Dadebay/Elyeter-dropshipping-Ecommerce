@@ -70,13 +70,15 @@ class _PromoCarouselState extends State<PromoCarousel> {
           children: [
             PageView.builder(
               controller: _controller,
+              padEnds: false,
               itemCount: widget.banners.length,
               onPageChanged: (i) => setState(() => _page = i),
               itemBuilder: (context, index) {
                 final banner = widget.banners[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: PromoCarousel._cardGap,
+                  padding: EdgeInsets.only(
+                    left: index == 0 ? AppSpacing.page : PromoCarousel._cardGap,
+                    right: PromoCarousel._cardGap,
                   ),
                   child: PromoBannerCard(
                     banner: banner,

@@ -22,6 +22,8 @@ class HomeHeader extends StatelessWidget {
     this.onCategoryTap,
     this.onLocationTap,
     this.onMarketplaceTap,
+    this.showCamera = true,
+    this.selectedMarketplaceId,
   });
 
   /// Smallest share of the screen the gradient covers (two sixths). It grows
@@ -30,7 +32,6 @@ class HomeHeader extends StatelessWidget {
   static const minHeightFraction = 2 / 6;
 
   // Temporarily hidden on Home; enable these to restore the existing controls.
-  static const showMarketplaces = false;
   static const showLocation = false;
 
   static const _logoHeight = 24.0;
@@ -52,9 +53,17 @@ class HomeHeader extends StatelessWidget {
   /// Opens a partner marketplace; see `MarketplacePage`.
   final ValueChanged<MarketplaceItem>? onMarketplaceTap;
 
+  /// Id of the marketplace whose products are showing, if one was picked.
+  final String? selectedMarketplaceId;
+
+  /// The photo-search button in the search field.
+  final bool showCamera;
+
   @override
   Widget build(BuildContext context) {
     final topInset = MediaQuery.viewPaddingOf(context).top;
+    // A single store needs no switcher.
+    final showMarketplaces = marketplaces.length > 1;
     final minHeight = showMarketplaces || showLocation
         ? MediaQuery.sizeOf(context).height * minHeightFraction
         : 0.0;
@@ -85,6 +94,7 @@ class HomeHeader extends StatelessWidget {
                   MarketplaceStrip(
                     items: marketplaces,
                     onTap: onMarketplaceTap,
+                    selectedId: selectedMarketplaceId,
                   ),
                   const SizedBox(height: AppSpacing.lg),
                 ],
@@ -100,7 +110,7 @@ class HomeHeader extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.page,
                   ),
-                  child: const HomeSearchField(),
+                  child: HomeSearchField(showCamera: showCamera),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 // Categories live on the gradient, so their labels are white.

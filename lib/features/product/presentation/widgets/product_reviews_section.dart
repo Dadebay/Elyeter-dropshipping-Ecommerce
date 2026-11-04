@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -8,17 +9,27 @@ import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/utils/formatters/date_formatter.dart';
 import '../../domain/entities/product_reviews.dart' as api;
 import '../model/product_detail_data.dart';
+import '../view/product_photo_viewer_page.dart';
 import 'product_review_button.dart';
 import 'product_section_card.dart';
 
 /// Score, the per-star bars and a strip of the most recent reviews.
 class ProductReviewsSection extends StatelessWidget {
-  const ProductReviewsSection({super.key, required this.reviews, this.onReadAll, this.onWrite});
+  const ProductReviewsSection({
+    super.key,
+    required this.reviews,
+    this.onReadAll,
+    this.onWrite,
+  });
 
   /// Height of the review strip: stars, four lines of text and the author
   /// row, with the card's own padding — no more, or every card trails an
   /// empty band under its author.
   static const _stripHeight = 156.0;
+
+  /// Extra room for the photo row (76 high plus its 8 gap) when any card in
+  /// the strip has photos; the strip's cards all share one height.
+  static const _photosHeight = 84.0;
 
   final api.ProductReviews reviews;
   final VoidCallback? onReadAll;
@@ -33,34 +44,68 @@ class ProductReviewsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(context.l10n.productReviews, style: context.textTheme.titleMedium?.copyWith(color: AppColors.black)),
+          Text(
+            context.l10n.productReviews,
+            style: context.textTheme.titleMedium?.copyWith(
+              color: AppColors.black,
+            ),
+          ),
           const SizedBox(height: AppSpacing.md),
           if (reviews.summary.count > 0) ...[
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProductReviewScore(rating: reviews.summary.average ?? 0, ratingCount: reviews.summary.count),
+                ProductReviewScore(
+                  rating: reviews.summary.average ?? 0,
+                  ratingCount: reviews.summary.count,
+                ),
                 const SizedBox(width: AppSpacing.xl),
-                Expanded(child: ProductReviewDistribution(shares: reviews.summary.shares)),
+                Expanded(
+                  child: ProductReviewDistribution(
+                    shares: reviews.summary.shares,
+                  ),
+                ),
               ],
             ),
             if (reviews.items.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.lg),
               SizedBox(
-                height: _stripHeight,
+                height:
+                    _stripHeight +
+                    (reviews.items.any((item) => item.images.isNotEmpty)
+                        ? _photosHeight
+                        : 0),
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   clipBehavior: Clip.none,
                   itemCount: reviews.items.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.md),
-                  itemBuilder: (context, index) => ProductReviewCard(fillHeight: true, review: displayReview(context, reviews.items[index])),
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(width: AppSpacing.md),
+                  itemBuilder: (context, index) => ProductReviewCard(
+                    fillHeight: true,
+                    review: displayReview(context, reviews.items[index]),
+                  ),
                 ),
               ),
             ],
           ] else
-            Text(context.l10n.reviewEmpty, style: context.textTheme.bodyMedium?.copyWith(color: AppColors.grey500)),
+            Text(
+              context.l10n.reviewEmpty,
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: AppColors.grey500,
+              ),
+            ),
           const SizedBox(height: AppSpacing.lg),
-          if (reviews.summary.count == 0) ProductReviewButton(label: context.l10n.reviewWrite, onPressed: onWrite) else _ReadAllButton(onTap: onReadAll, label: context.l10n.productReadAllReviews),
+          if (reviews.summary.count == 0)
+            ProductReviewButton(
+              label: context.l10n.reviewWrite,
+              onPressed: onWrite,
+            )
+          else
+            _ReadAllButton(
+              onTap: onReadAll,
+              label: context.l10n.productReadAllReviews,
+            ),
         ],
       ),
     );
@@ -86,7 +131,13 @@ class _ReadAllButton extends StatelessWidget {
       // Kept shallow so the block's own clip does not shave it off.
       decoration: BoxDecoration(
         borderRadius: radius,
-        boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 10, offset: Offset(0, 3))],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 10,
+            offset: Offset(0, 3),
+          ),
+        ],
       ),
       child: Material(
         color: AppColors.white,
@@ -98,7 +149,12 @@ class _ReadAllButton extends StatelessWidget {
             height: _height,
             width: double.infinity,
             child: Center(
-              child: Text(label, style: context.textTheme.titleSmall?.copyWith(color: AppColors.black)),
+              child: Text(
+                label,
+                style: context.textTheme.titleSmall?.copyWith(
+                  color: AppColors.black,
+                ),
+              ),
             ),
           ),
         ),
@@ -107,19 +163,36 @@ class _ReadAllButton extends StatelessWidget {
   }
 }
 
-ProductReview displayReview(BuildContext context, api.ProductReviewEntry entry) {
+ProductReview displayReview(
+  BuildContext context,
+  api.ProductReviewEntry entry,
+) {
   final createdAt = entry.createdAt;
   return ProductReview(
     author: entry.author ?? '',
-    date: createdAt == null ? '' : DateFormatter.day(createdAt.toLocal(), locale: Localizations.localeOf(context).languageCode),
+    date: createdAt == null
+        ? ''
+        : DateFormatter.day(
+            createdAt.toLocal(),
+            locale: Localizations.localeOf(context).languageCode,
+          ),
     rating: entry.rating.toDouble(),
     text: entry.comment ?? '',
+    id: entry.id,
+    images: [for (final image in entry.images) image.url],
+    likes: entry.likesCount,
+    liked: entry.myReaction == 'like',
+    isMine: entry.isMine,
   );
 }
 
 /// The headline score: the number, its stars and how many ratings it is from.
 class ProductReviewScore extends StatelessWidget {
-  const ProductReviewScore({super.key, required this.rating, required this.ratingCount});
+  const ProductReviewScore({
+    super.key,
+    required this.rating,
+    required this.ratingCount,
+  });
 
   final double rating;
   final int ratingCount;
@@ -129,11 +202,21 @@ class ProductReviewScore extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(rating.toStringAsFixed(1), style: context.textTheme.displayLarge?.copyWith(color: AppColors.black)),
+        Text(
+          rating.toStringAsFixed(1),
+          style: context.textTheme.displayLarge?.copyWith(
+            color: AppColors.black,
+          ),
+        ),
         const SizedBox(height: AppSpacing.xs),
         ProductStars(rating: rating, size: 18),
         const SizedBox(height: AppSpacing.xs),
-        Text(context.l10n.productRatingCount(ratingCount), style: context.textTheme.bodySmall?.copyWith(color: AppColors.grey500)),
+        Text(
+          context.l10n.productRatingCount(ratingCount),
+          style: context.textTheme.bodySmall?.copyWith(
+            color: AppColors.grey500,
+          ),
+        ),
       ],
     );
   }
@@ -160,7 +243,12 @@ class ProductReviewDistribution extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 16,
-                  child: Text('${shares.length - i}', style: context.textTheme.labelMedium?.copyWith(color: AppColors.grey700)),
+                  child: Text(
+                    '${shares.length - i}',
+                    style: context.textTheme.labelMedium?.copyWith(
+                      color: AppColors.grey700,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: AppSpacing.xs),
                 Expanded(
@@ -172,7 +260,9 @@ class ProductReviewDistribution extends StatelessWidget {
                       // White track, not grey: the card underneath is already
                       // grey, so a grey track would disappear into it.
                       backgroundColor: AppColors.white,
-                      valueColor: const AlwaysStoppedAnimation(AppColors.primary),
+                      valueColor: const AlwaysStoppedAnimation(
+                        AppColors.primary,
+                      ),
                     ),
                   ),
                 ),
@@ -188,7 +278,15 @@ class ProductReviewDistribution extends StatelessWidget {
 ///
 /// The author sits inside the card, on its bottom row.
 class ProductReviewCard extends StatelessWidget {
-  const ProductReviewCard({super.key, required this.review, this.width = 285, this.maxLines = 4, this.color = AppColors.white, this.fillHeight = false});
+  const ProductReviewCard({
+    super.key,
+    required this.review,
+    this.width = 285,
+    this.maxLines = 4,
+    this.color = AppColors.white,
+    this.fillHeight = false,
+    this.onHelpful,
+  });
 
   final ProductReview review;
 
@@ -203,6 +301,9 @@ class ProductReviewCard extends StatelessWidget {
   /// Pins the footer to the bottom of a card with a fixed height.
   final bool fillHeight;
 
+  /// Shows the "Helpful" button when set; not drawn on a customer's own review.
+  final VoidCallback? onHelpful;
+
   @override
   Widget build(BuildContext context) {
     final body = review.text.isEmpty
@@ -211,20 +312,33 @@ class ProductReviewCard extends StatelessWidget {
             review.text,
             maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
-            style: context.textTheme.bodySmall?.copyWith(color: AppColors.grey700, height: 1.4),
+            style: context.textTheme.bodySmall?.copyWith(
+              color: AppColors.grey700,
+              height: 1.4,
+            ),
           );
 
     return Container(
       width: width,
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(AppRadius.lg)),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: fillHeight ? MainAxisSize.max : MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.lg, AppSpacing.md, AppSpacing.sm),
-            child: Row(children: [ProductStars(rating: review.rating, size: 16)]),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.sm,
+            ),
+            child: Row(
+              children: [ProductStars(rating: review.rating, size: 16)],
+            ),
           ),
           if (fillHeight)
             Expanded(
@@ -238,25 +352,137 @@ class ProductReviewCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               child: body,
             ),
+          if (review.images.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            _ReviewPhotos(images: review.images, reviewId: review.id),
+          ],
           const SizedBox(height: AppSpacing.sm),
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              0,
+              AppSpacing.md,
+              AppSpacing.md,
+            ),
             child: Row(
               children: [
                 _Avatar(name: review.author),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
-                    [review.author, review.date].where((part) => part.isNotEmpty).join(' • '),
+                    [
+                      review.author,
+                      review.date,
+                    ].where((part) => part.isNotEmpty).join(' • '),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.labelMedium?.copyWith(color: AppColors.grey500),
+                    style: context.textTheme.labelMedium?.copyWith(
+                      color: AppColors.grey500,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
+          if (onHelpful != null && !review.isMine)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                0,
+                AppSpacing.md,
+                AppSpacing.md,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: InkWell(
+                  key: ValueKey('review-helpful-${review.id}'),
+                  onTap: onHelpful,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.xs,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          review.liked
+                              ? Icons.thumb_up_alt_rounded
+                              : Icons.thumb_up_off_alt_rounded,
+                          size: 18,
+                          color: review.liked
+                              ? AppColors.primary
+                              : AppColors.grey500,
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          review.likes > 0
+                              ? context.l10n.reviewHelpfulCount(review.likes)
+                              : context.l10n.reviewHelpful,
+                          style: context.textTheme.labelMedium?.copyWith(
+                            color: review.liked
+                                ? AppColors.primary
+                                : AppColors.grey500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
+      ),
+    );
+  }
+}
+
+/// Photos attached to a review; tapping one opens the full-screen viewer.
+class _ReviewPhotos extends StatelessWidget {
+  const _ReviewPhotos({required this.images, required this.reviewId});
+
+  final List<String> images;
+  final int reviewId;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 76,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+        itemCount: images.length,
+        separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
+        itemBuilder: (context, index) => GestureDetector(
+          onTap: () => ProductPhotoViewerPage.open(
+            context,
+            images: images,
+            initialIndex: index,
+            heroPrefix: 'review-$reviewId',
+          ),
+          child: Container(
+            width: 76,
+            height: 76,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(color: const Color(0xFFE5E5E5), width: 0.75),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.md - 0.75),
+              child: Hero(
+                tag: 'review-$reviewId-$index',
+                child: CachedNetworkImage(
+                  imageUrl: images[index],
+                  fit: BoxFit.cover,
+                  placeholder: (_, _) =>
+                      const ColoredBox(color: AppColors.white),
+                  errorWidget: (_, _, _) =>
+                      const ColoredBox(color: AppColors.white),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -269,7 +495,15 @@ class _Avatar extends StatelessWidget {
   static const _size = 28.0;
 
   /// Light pastels, picked from the name so a reviewer keeps the same colour.
-  static const _tints = [Color(0xFFC9B8FF), Color(0xFFFFC9AD), Color(0xFFB5E6C8), Color(0xFFFFBDD3), Color(0xFFB8D9FF), Color(0xFFFFE08A), Color(0xFFA8E6E0)];
+  static const _tints = [
+    Color(0xFFC9B8FF),
+    Color(0xFFFFC9AD),
+    Color(0xFFB5E6C8),
+    Color(0xFFFFBDD3),
+    Color(0xFFB8D9FF),
+    Color(0xFFFFE08A),
+    Color(0xFFA8E6E0),
+  ];
 
   final String name;
 
@@ -284,7 +518,14 @@ class _Avatar extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       padding: const EdgeInsets.all(0),
       decoration: BoxDecoration(color: tint, shape: BoxShape.circle),
-      child: Transform(transform: Matrix4.translationValues(0, 5, 0), child: SvgPicture.asset(AppAssets.iconReviewUser, width: 24, height: 24)),
+      child: Transform(
+        transform: Matrix4.translationValues(0, 5, 0),
+        child: SvgPicture.asset(
+          AppAssets.iconReviewUser,
+          width: 24,
+          height: 24,
+        ),
+      ),
     );
   }
 }
@@ -299,6 +540,13 @@ class ProductStars extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
-    children: [for (var i = 1; i <= 5; i++) Icon(Icons.star_rounded, size: size, color: i <= rating.round() ? AppColors.primary : AppColors.grey300)],
+    children: [
+      for (var i = 1; i <= 5; i++)
+        Icon(
+          Icons.star_rounded,
+          size: size,
+          color: i <= rating.round() ? AppColors.primary : AppColors.grey300,
+        ),
+    ],
   );
 }

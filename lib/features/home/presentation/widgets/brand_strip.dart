@@ -7,7 +7,12 @@ import '../../../../core/widgets/app_network_image.dart';
 
 /// A brand shortcut card (Lacoste, Tissot, …).
 class BrandItem {
-  const BrandItem({required this.id, required this.name, this.logoUrl, this.logoAsset});
+  const BrandItem({
+    required this.id,
+    required this.name,
+    this.logoUrl,
+    this.logoAsset,
+  });
 
   final String id;
   final String name;
@@ -17,7 +22,13 @@ class BrandItem {
 
 /// Row of brand cards; scrolls horizontally when the list grows.
 class BrandStrip extends StatelessWidget {
-  const BrandStrip({super.key, required this.items, this.onTap, this.height = 56, this.cardWidth = 92});
+  const BrandStrip({
+    super.key,
+    required this.items,
+    this.onTap,
+    this.height = 56,
+    this.cardWidth = 92,
+  });
 
   final List<BrandItem> items;
   final ValueChanged<BrandItem>? onTap;
@@ -42,16 +53,33 @@ class BrandStrip extends StatelessWidget {
             child: Container(
               width: cardWidth + 15,
               alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: AppSpacing.xs,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.white,
                 borderRadius: BorderRadius.circular(AppRadius.lg),
                 border: Border.all(color: AppColors.grey100),
               ),
               child: switch (item) {
-                BrandItem(:final logoAsset?) => AppAssetImage(logoAsset, fit: BoxFit.contain),
-                BrandItem(:final logoUrl?) => AppNetworkImage(url: logoUrl, fit: BoxFit.contain, radius: 0),
-                _ => Text(item.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelLarge),
+                BrandItem(:final logoAsset?) => AppAssetImage(
+                  logoAsset,
+                  fit: BoxFit.contain,
+                ),
+                BrandItem(:final logoUrl?) => AppNetworkImage(
+                  url: logoUrl,
+                  fit: BoxFit.contain,
+                  radius: 0,
+                  wordmarkPlaceholder: true,
+                  wordmarkSize: 14,
+                ),
+                _ => Text(
+                  item.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
               },
             ),
           );

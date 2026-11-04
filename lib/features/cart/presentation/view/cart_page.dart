@@ -12,14 +12,14 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/error/failure.dart';
-import '../../../../core/network/shop_api.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/widgets/sign_in_required_dialog.dart';
 import '../../../favorite/presentation/cubit/favorite_cubit.dart';
 import '../../../order/domain/entities/pre_order_line.dart';
 import '../../../order/domain/repositories/pre_order_repository.dart';
+import '../../../order/presentation/widgets/order_address_dialog.dart';
+import '../../../order/presentation/widgets/order_problem_dialog.dart';
 import '../../../profile/presentation/cubit/profile_cubit.dart';
-import '../../../home/presentation/view/home_placeholder_data.dart';
 import '../../../product/domain/entities/product_detail.dart';
 import '../../../product/domain/entities/product_id.dart';
 import '../../../product/domain/repositories/product_repository.dart';
@@ -105,8 +105,6 @@ class _CartPageState extends State<CartPage> {
 
   /// The line for [id], or null while it is still being fetched.
   ProductCardData? _line(String id, CartState cart) {
-    final placeholder = HomePlaceholderData.productById(id);
-    if (placeholder != null) return placeholder;
     final detail = _details[id];
     if (detail == null) return null;
 
@@ -146,10 +144,7 @@ class _CartPageState extends State<CartPage> {
         final lines = [for (final id in cart.quantities.keys) ?_line(id, cart)];
         final unresolved = cart.quantities.keys
             .where(
-              (id) =>
-                  _failed.contains(id) ||
-                  (ProductId.tryParse(id) == null &&
-                      HomePlaceholderData.productById(id) == null),
+              (id) => _failed.contains(id) || ProductId.tryParse(id) == null,
             )
             .toList();
         // Still fetching: the cart is not empty, so do not say it is.
@@ -398,101 +393,100 @@ class _SummaryState extends State<_Summary> {
   /// What pressing the pill does: places the order for what is ticked and
   /// opens it.
   ///
-  /// The name comes from the profile and the address from the saved default,
-  /// so there is nothing to fill in. The ticked total goes along as the price
-  /// the customer saw: if it has moved, or something has run out, the API
-  /// refuses the order and the checkout page is opened to show why, rather
-  /// than anything being placed at a price they did not agree to.
+  /// A saved default address is used, or the customer chooses one before the
+  /// order is sent. The ticked total goes along as the price they saw: if it
+  /// has moved, the API refuses the order and checkout shows why.
   Future<void> _placeOrder(BuildContext context) async {
     if (_placing) return;
+    setState(() => _placing = true);
     final cart = context.read<CartCubit>();
     final auth = context.read<AuthCubit>();
     final profile = context.read<ProfileCubit>().state;
     final router = GoRouter.of(context);
     final messenger = ScaffoldMessenger.of(context);
 
-    if (!auth.state.isAuthenticated) {
-      if (!await promptSignIn(context) || !context.mounted) return;
-    }
-
-    final selected = [
-      for (final line in widget.lines)
-        if (widget.cart.isSelected(line.id) && line.apiId != null) line,
-    ];
-    if (selected.isEmpty) return;
-
-    final orderLines = [
-      for (final line in selected)
-        PreOrderLine(
-          productId: line.apiId!,
-          quantity: widget.cart.quantityOf(line.id),
-          variantId: widget.cart.variants[line.id],
-        ),
-    ];
-    final expectedTotal = selected.fold<num>(
-      0,
-      (sum, line) => sum + line.price * widget.cart.quantityOf(line.id),
-    );
-    final name = profile.hasName ? profile.name : auth.state.user?.username;
-
-    setState(() => _placing = true);
-    // The order is placed with the supplier live, which takes a moment.
-    unawaited(
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) =>
-            const PopScope(canPop: false, child: Center(child: AppLoader())),
-      ),
-    );
-
-    String? address;
     try {
-      final locations = await getIt<ShopApi>().locations();
-      final home =
-          locations.where((l) => l.isDefault).firstOrNull ??
-          locations.firstOrNull;
-      if (home != null) {
-        address = [
-          home.address,
-          home.details,
-        ].whereType<String>().where((s) => s.isNotEmpty).join(', ');
+      if (!auth.state.isAuthenticated) {
+        if (!await promptSignIn(context) || !context.mounted) return;
       }
-    } on Object {
-      address = null; // The address is optional; the order goes without.
-    }
 
-    final result = await getIt<PreOrderRepository>().create(
-      lines: orderLines,
-      customerName: name,
-      address: address,
-      expectedTotal: expectedTotal,
-    );
+      final selected = [
+        for (final line in widget.lines)
+          if (widget.cart.isSelected(line.id) && line.apiId != null) line,
+      ];
+      if (selected.isEmpty) return;
 
-    if (!context.mounted) return;
-    Navigator.of(context, rootNavigator: true).pop();
-    setState(() => _placing = false);
+      final orderLines = [
+        for (final line in selected)
+          PreOrderLine(
+            productId: line.apiId!,
+            quantity: widget.cart.quantityOf(line.id),
+            variantId: widget.cart.variants[line.id],
+          ),
+      ];
+      final expectedTotal = selected.fold<num>(
+        0,
+        (sum, line) => sum + line.price * widget.cart.quantityOf(line.id),
+      );
+      final name = profile.hasName ? profile.name : auth.state.user?.username;
 
-    final order = result.dataOrNull;
-    if (order != null) {
-      for (final line in selected) {
-        cart.remove(line.id);
-      }
-      // The cart underneath, the order on top: back from the order lands on
-      // the cart rather than leaving nothing to go back to.
-      router.goNamed(AppRoutes.cart.name);
+      final location = await requestOrderLocation(context);
+      if (!context.mounted || location == null) return;
+
+      // The supplier is checked live only after an address has been chosen.
       unawaited(
-        router.pushNamed(
-          AppRoutes.orderDetail.name,
-          pathParameters: {'id': order.id.toString()},
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) =>
+              const PopScope(canPop: false, child: Center(child: AppLoader())),
         ),
       );
-      return;
+
+      final result = await getIt<PreOrderRepository>().create(
+        lines: orderLines,
+        customerName: name,
+        address: orderAddressText(location),
+        expectedTotal: expectedTotal,
+      );
+
+      if (!context.mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+
+      final order = result.dataOrNull;
+      if (order != null) {
+        for (final line in selected) {
+          cart.remove(line.id);
+        }
+        // The cart underneath, the order on top: back from the order lands on
+        // the cart rather than leaving nothing to go back to.
+        router.goNamed(AppRoutes.cart.name);
+        unawaited(
+          router.pushNamed(
+            AppRoutes.orderDetail.name,
+            pathParameters: {'id': order.id.toString()},
+          ),
+        );
+        return;
+      }
+      final failure = result.failureOrNull;
+      final check = failure?.details.asPreOrderCheck;
+      // Only a price that moved is settled on the checkout page, where the
+      // new total can be seen and accepted. Anything unavailable, or a
+      // supplier that did not answer, is told here, on the cart.
+      if (check != null && check.available) {
+        messenger.showSnackBar(SnackBar(content: Text(failure?.message ?? '')));
+        unawaited(router.pushNamed(AppRoutes.checkout.name));
+        return;
+      }
+      await showOrderProblemDialog(
+        context,
+        message: failure?.message,
+        check: check,
+      );
+    } finally {
+      if (mounted) setState(() => _placing = false);
     }
-    messenger.showSnackBar(
-      SnackBar(content: Text(result.failureOrNull?.message ?? '')),
-    );
-    unawaited(router.pushNamed(AppRoutes.checkout.name));
   }
 
   @override

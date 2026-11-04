@@ -69,6 +69,7 @@ abstract final class AppIcons {
 
   // ------------------------------------------------------------ account --
   static const AppIconData user = HugeIcons.strokeRoundedUser;
+  static const AppIconData notification = HugeIcons.strokeRoundedNotification02;
   static const AppIconData camera = HugeIcons.strokeRoundedCamera01;
   static const AppIconData gallery = HugeIcons.strokeRoundedAlbum02;
   static const AppIconData support = HugeIcons.strokeRoundedCustomerService01;

@@ -7,20 +7,23 @@ import '../../../../core/utils/formatters/date_formatter.dart';
 import '../model/order_detail_data.dart';
 import '../../../../core/constants/app_icons.dart';
 
-/// The stages of the order down a rail: reached ones in the brand colour,
-/// the rest greyed out as what is still to come.
+/// The stages of the order down a rail. Cancellation marks the stopped point
+/// in red and labels the remaining steps as stopped.
 class OrderProgressTimeline extends StatelessWidget {
   const OrderProgressTimeline({
     super.key,
     required this.stages,
     this.badgeEveryDone = false,
+    this.cancelled = false,
   });
+
+  static const _cancelledColor = Color(0xFFFF3655);
+  static const _cancelledHalo = Color(0xFFFFE8EC);
 
   /// Width of the rail column — the ring plus the room around it.
   static const _railWidth = 28.0;
 
-  /// The stage markers are rings, not filled dots: an outline reads as a
-  /// stop on a route, a filled disc as a bullet point.
+  /// Ordinary stages use rings; a cancellation uses a filled stop marker.
   static const _ringSize = 18.0;
   static const _ringStroke = 2.5;
 
@@ -38,6 +41,7 @@ class OrderProgressTimeline extends StatelessWidget {
   /// Puts the tick on every stage reached, not just the latest — what a
   /// finished order shows.
   final bool badgeEveryDone;
+  final bool cancelled;
 
   @override
   Widget build(BuildContext context) {
@@ -48,15 +52,18 @@ class OrderProgressTimeline extends StatelessWidget {
         for (var i = 0; i < stages.length; i++)
           _Row(
             entry: stages[i],
+            cancelledOrder: cancelled,
             isCurrent: i == current,
             showBadge: i == current || (badgeEveryDone && stages[i].done),
             isLast: i == stages.length - 1,
             // The connector belongs to the gap below a dot, so the last row
             // ends the rail instead of trailing a line into nothing.
             hasConnector: i < stages.length - 1,
-            // A connector is only lit when the stage after it has also been
-            // reached; otherwise the rail visibly stops at the current step.
-            connectorDone: i < stages.length - 1 && stages[i + 1].done,
+            // Light the connector through the reached stages, including the
+            // cancellation marker, and leave later connectors grey.
+            connectorDone:
+                i < stages.length - 1 &&
+                (stages[i + 1].done || (cancelled && stages[i + 1].cancelled)),
           ),
       ],
     );
@@ -75,6 +82,7 @@ class OrderProgressTimeline extends StatelessWidget {
 class _Row extends StatelessWidget {
   const _Row({
     required this.entry,
+    required this.cancelledOrder,
     required this.isCurrent,
     required this.showBadge,
     required this.isLast,
@@ -83,6 +91,7 @@ class _Row extends StatelessWidget {
   });
 
   final OrderStageEntry entry;
+  final bool cancelledOrder;
   final bool isCurrent;
   final bool showBadge;
 
@@ -110,6 +119,7 @@ class _Row extends StatelessWidget {
                   isCurrent: isCurrent,
                   isLast: isLast,
                   cancelled: entry.cancelled,
+                  cancelledOrder: cancelledOrder,
                 ),
                 if (hasConnector)
                   Expanded(
@@ -121,7 +131,9 @@ class _Row extends StatelessWidget {
                         height: double.infinity,
                         decoration: BoxDecoration(
                           color: connectorDone
-                              ? AppColors.primary
+                              ? cancelledOrder
+                                    ? OrderProgressTimeline._cancelledColor
+                                    : AppColors.primary
                               : AppColors.grey300,
                           borderRadius: BorderRadius.circular(
                             OrderProgressTimeline._connectorWidth,
@@ -149,8 +161,15 @@ class _Row extends StatelessWidget {
                     Text(
                       context.l10n.orderStatusCancelled,
                       style: context.textTheme.labelSmall?.copyWith(
-                        color: AppColors.error,
+                        color: OrderProgressTimeline._cancelledColor,
                         fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  else if (cancelledOrder && !done)
+                    Text(
+                      context.l10n.orderStepStopped,
+                      style: context.textTheme.labelSmall?.copyWith(
+                        color: AppColors.grey500,
                       ),
                     )
                   else if (entry.at case final at?)
@@ -167,12 +186,10 @@ class _Row extends StatelessWidget {
                   Text(
                     _label(context, entry.stage),
                     style: context.textTheme.bodyMedium?.copyWith(
-                      color: entry.cancelled
-                          ? AppColors.error
-                          : done
+                      color: cancelledOrder || done
                           ? AppColors.black
                           : AppColors.grey500,
-                      fontWeight: done || entry.cancelled
+                      fontWeight: cancelledOrder || done
                           ? FontWeight.w600
                           : FontWeight.w400,
                     ),
@@ -217,17 +234,19 @@ class _Ring extends StatelessWidget {
     required this.isCurrent,
     required this.isLast,
     this.cancelled = false,
+    this.cancelledOrder = false,
   });
 
   final bool done;
   final bool isCurrent;
   final bool isLast;
   final bool cancelled;
+  final bool cancelledOrder;
 
   @override
   Widget build(BuildContext context) {
-    final color = cancelled
-        ? AppColors.error
+    final color = cancelled || (cancelledOrder && done)
+        ? OrderProgressTimeline._cancelledColor
         : done
         ? AppColors.primary
         : AppColors.grey300;
@@ -237,7 +256,9 @@ class _Ring extends StatelessWidget {
       height: OrderProgressTimeline._ringSize,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: cancelled
+            ? OrderProgressTimeline._cancelledColor
+            : AppColors.white,
         shape: BoxShape.circle,
         border: Border.all(
           color: color,
@@ -259,8 +280,10 @@ class _Ring extends StatelessWidget {
       height: OrderProgressTimeline._haloSize,
       alignment: Alignment.center,
       decoration: isCurrent
-          ? const BoxDecoration(
-              color: AppColors.primarySoft,
+          ? BoxDecoration(
+              color: cancelledOrder
+                  ? OrderProgressTimeline._cancelledHalo
+                  : AppColors.primarySoft,
               shape: BoxShape.circle,
             )
           : null,

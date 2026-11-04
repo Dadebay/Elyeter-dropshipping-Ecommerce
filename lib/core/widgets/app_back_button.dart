@@ -14,10 +14,24 @@ import 'app_asset_image.dart';
 /// [AppBackButton.leadingWidth]; the bare constructor suits a [Stack] over
 /// artwork.
 class AppBackButton extends StatelessWidget {
-  const AppBackButton({super.key, this.onPressed, this.width = defaultWidth, this.buttonHeight = height, this.tint, this.icon});
+  const AppBackButton({
+    super.key,
+    this.onPressed,
+    this.width = defaultWidth,
+    this.buttonHeight = height,
+    this.tint,
+    this.icon,
+  });
 
   /// Wrapped in the page inset, for `AppBar.leading`. Uses a wide pill by default.
-  const factory AppBackButton.appBarLeading({Key? key, VoidCallback? onPressed, Color? tint, AppIconData? icon, double? width, double? buttonHeight}) = _AppBarBackButton;
+  const factory AppBackButton.appBarLeading({
+    Key? key,
+    VoidCallback? onPressed,
+    Color? tint,
+    AppIconData? icon,
+    double? width,
+    double? buttonHeight,
+  }) = _AppBarBackButton;
 
   /// The control's resting diameter. Exposed so a page drawing its own
   /// counterpart at the other end of the bar can match it — the category
@@ -30,10 +44,13 @@ class AppBackButton extends StatelessWidget {
 
   /// What `AppBar.leadingWidth` must be for the button to sit at the page
   /// inset without being squeezed by the toolbar's default 56pt slot.
-  static const double leadingWidth = appBarWidth + AppSpacing.page + AppSpacing.sm;
+  static const double leadingWidth =
+      appBarWidth + AppSpacing.page + AppSpacing.sm;
 
   /// Deliberately faint: heavier reads as a smudge rather than a lift.
-  static const List<BoxShadow> shadow = [BoxShadow(color: Color(0x0D000000), blurRadius: 6, offset: Offset(0, 2))];
+  static const List<BoxShadow> shadow = [
+    BoxShadow(color: Color(0x0D000000), blurRadius: 6, offset: Offset(0, 2)),
+  ];
 
   final VoidCallback? onPressed;
   final double width;
@@ -68,8 +85,19 @@ class AppBackButton extends StatelessWidget {
               height: buttonHeight,
               child: Center(
                 child: icon == null
-                    ? AppAssetImage(AppAssets.iconBack, width: iconSize, height: iconSize, color: tint ?? (isDark ? AppColors.white : AppColors.ink))
-                    : HugeIcon(icon: icon!, size: iconSize, color: tint ?? (isDark ? AppColors.white : AppColors.ink)),
+                    ? AppAssetImage(
+                        AppAssets.iconBack,
+                        width: iconSize,
+                        height: iconSize,
+                        color:
+                            tint ?? (isDark ? AppColors.white : AppColors.ink),
+                      )
+                    : HugeIcon(
+                        icon: icon!,
+                        size: iconSize,
+                        color:
+                            tint ?? (isDark ? AppColors.white : AppColors.ink),
+                      ),
               ),
             ),
           ),
@@ -80,15 +108,30 @@ class AppBackButton extends StatelessWidget {
 }
 
 class _AppBarBackButton extends AppBackButton {
-  const _AppBarBackButton({super.key, super.onPressed, super.tint, super.icon, double? width, double? buttonHeight})
-    : super(width: width ?? AppBackButton.appBarWidth, buttonHeight: buttonHeight ?? AppBackButton.appBarHeight);
+  const _AppBarBackButton({
+    super.key,
+    super.onPressed,
+    super.tint,
+    super.icon,
+    double? width,
+    double? buttonHeight,
+  }) : super(
+         width: width ?? AppBackButton.appBarWidth,
+         buttonHeight: buttonHeight ?? AppBackButton.appBarHeight,
+       );
 
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(left: AppSpacing.page),
     child: Align(
       alignment: Alignment.centerLeft,
-      child: AppBackButton(onPressed: onPressed, tint: tint, icon: icon, width: width, buttonHeight: buttonHeight),
+      child: AppBackButton(
+        onPressed: onPressed,
+        tint: tint,
+        icon: icon,
+        width: width,
+        buttonHeight: buttonHeight,
+      ),
     ),
   );
 }

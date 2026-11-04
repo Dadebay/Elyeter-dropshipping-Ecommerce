@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:elyeter/core/widgets/app_loader.dart';
 import 'package:elyeter/core/widgets/app_refresh_indicator.dart';
+import 'package:elyeter/core/widgets/parcel_refresh_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -35,11 +35,11 @@ void main() {
     );
     await gesture.moveBy(const Offset(0, -30));
     await tester.pump();
-    expect(find.byType(AppLoader), findsNothing);
+    expect(find.byType(ParcelRefreshMotion), findsNothing);
     await gesture.moveBy(const Offset(0, -300));
     await tester.pump();
     expect(calls, 0);
-    expect(find.byType(AppLoader), findsNothing);
+    expect(find.byType(ParcelRefreshMotion), findsNothing);
     await gesture.up();
   });
 
@@ -77,7 +77,7 @@ void main() {
     for (var i = 0; i < 4; i++) {
       await gesture.moveBy(const Offset(0, -40));
       await tester.pump();
-      expect(find.byType(AppLoader), findsNothing);
+      expect(find.byType(ParcelRefreshMotion), findsNothing);
     }
     expect(nested.currentState!.outerController.offset, greaterThan(0));
     expect(nested.currentState!.innerController.offset, 0);
@@ -88,7 +88,7 @@ void main() {
     // Revealing the header again is ordinary scrolling, not a refresh.
     await tester.drag(find.byType(ListView), const Offset(0, 100));
     await tester.pump();
-    expect(find.byType(AppLoader), findsNothing);
+    expect(find.byType(ParcelRefreshMotion), findsNothing);
     expect(calls, 0);
   });
 
@@ -116,11 +116,11 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
     expect(calls, 1);
-    expect(find.byType(AppLoader), findsOneWidget);
+    expect(find.byType(ParcelRefreshMotion), findsOneWidget);
 
     refresh.complete();
     await tester.pump(const Duration(seconds: 1));
-    expect(find.byType(AppLoader), findsNothing);
+    expect(find.byType(ParcelRefreshMotion), findsNothing);
   });
 
   testWidgets('refresh loader leaves the screen when scrolling into products', (
@@ -151,7 +151,7 @@ void main() {
     await tester.drag(find.byType(ListView), const Offset(0, 500));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
-    expect(find.byType(AppLoader), findsOneWidget);
+    expect(find.byType(ParcelRefreshMotion), findsOneWidget);
 
     await tester.drag(find.byType(ListView), const Offset(0, -600));
     await tester.pump();
@@ -162,6 +162,6 @@ void main() {
           .pixels,
       greaterThan(0),
     );
-    expect(find.byType(AppLoader), findsNothing);
+    expect(find.byType(ParcelRefreshMotion), findsNothing);
   });
 }

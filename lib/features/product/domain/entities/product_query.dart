@@ -21,6 +21,7 @@ class ProductQuery extends Equatable {
     this.categoryId,
     this.brandId,
     this.brandIds = const [],
+    this.marketplaceId,
     this.search,
     this.minPrice,
     this.maxPrice,
@@ -37,6 +38,9 @@ class ProductQuery extends Equatable {
   /// selection of several brands into separate requests and merges them.
   final List<int> brandIds;
 
+  /// Only products from this marketplace (`marketplace_id`).
+  final int? marketplaceId;
+
   /// Every selected brand id, without repeats.
   List<int> get allBrandIds => {?brandId, ...brandIds}.toList();
 
@@ -45,6 +49,7 @@ class ProductQuery extends Equatable {
   ProductQuery forBrand(int id) => ProductQuery(
     categoryId: categoryId,
     brandId: id,
+    marketplaceId: marketplaceId,
     search: search,
     minPrice: minPrice,
     maxPrice: maxPrice,
@@ -71,6 +76,7 @@ class ProductQuery extends Equatable {
     'size': size,
     'sort': sort.value,
     if (categoryId != null) 'category_id': categoryId,
+    if (marketplaceId != null) 'marketplace_id': marketplaceId,
     if (allBrandIds.length == 1) 'brand_id': allBrandIds.single,
     if (search != null && search!.trim().isNotEmpty) 'search': search!.trim(),
     if (minPrice != null) 'min_price': minPrice,
@@ -83,6 +89,7 @@ class ProductQuery extends Equatable {
     int? categoryId,
     int? brandId,
     List<int>? brandIds,
+    int? marketplaceId,
     String? search,
     num? minPrice,
     num? maxPrice,
@@ -94,6 +101,7 @@ class ProductQuery extends Equatable {
     categoryId: categoryId ?? this.categoryId,
     brandId: brandId ?? this.brandId,
     brandIds: brandIds ?? this.brandIds,
+    marketplaceId: marketplaceId ?? this.marketplaceId,
     search: clearSearch ? null : (search ?? this.search),
     minPrice: clearPrices ? null : (minPrice ?? this.minPrice),
     maxPrice: clearPrices ? null : (maxPrice ?? this.maxPrice),
@@ -106,6 +114,7 @@ class ProductQuery extends Equatable {
     categoryId,
     brandId,
     brandIds,
+    marketplaceId,
     search,
     minPrice,
     maxPrice,

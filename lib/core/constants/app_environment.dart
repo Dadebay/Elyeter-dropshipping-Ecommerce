@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Build-time configuration. Pass values with `--dart-define`:
 ///
 /// ```sh
@@ -31,5 +33,8 @@ abstract final class AppEnvironment {
   );
 
   static bool get isProd => flavor == Flavor.prod;
-  static bool get enableLogging => !isProd;
+
+  /// Never in a release build, whatever the flavor: request logs carry
+  /// tokens and phone numbers, and a store build is read with `adb logcat`.
+  static bool get enableLogging => !isProd && !kReleaseMode;
 }

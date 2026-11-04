@@ -9,6 +9,7 @@ class ProductImageView extends StatelessWidget {
     super.key,
     required this.source,
     this.fit = BoxFit.contain,
+    this.alignment = Alignment.center,
     this.wordmarkPlaceholder = false,
     this.wordmarkSize = 24,
     this.fallbackIconSize,
@@ -17,6 +18,9 @@ class ProductImageView extends StatelessWidget {
 
   final String source;
   final BoxFit fit;
+
+  /// Which part of the photo survives when [fit] has to crop.
+  final Alignment alignment;
 
   /// Shows the sweeping brand wordmark while a remote photo loads.
   final bool wordmarkPlaceholder;
@@ -31,10 +35,11 @@ class ProductImageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => source.startsWith('assets/')
-      ? Image.asset(source, fit: fit)
+      ? Image.asset(source, fit: fit, alignment: alignment)
       : AppNetworkImage(
           url: source,
           fit: fit,
+          alignment: alignment,
           radius: 0,
           wordmarkPlaceholder: wordmarkPlaceholder,
           wordmarkSize: wordmarkSize,

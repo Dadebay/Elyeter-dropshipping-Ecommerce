@@ -8,11 +8,21 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
+import '../../../search/presentation/widgets/photo_search_launcher.dart';
 
 /// Pill search box that opens the search page.
 class HomeSearchField extends StatelessWidget {
-  const HomeSearchField({super.key, this.onTap, this.controller});
+  const HomeSearchField({
+    super.key,
+    this.onTap,
+    this.controller,
+    this.showCamera = true,
+  });
+
+  /// A camera button on the right that starts a search by photo.
+  final bool showCamera;
 
   final VoidCallback? onTap;
   final TextEditingController? controller;
@@ -56,6 +66,18 @@ class HomeSearchField extends StatelessWidget {
             color: AppColors.black,
           ),
         ),
+        suffixIcon: showCamera
+            ? IconButton(
+                tooltip: context.l10n.visualSearchTitle,
+                onPressed: () => startPhotoSearch(context),
+                padding: const EdgeInsets.only(right: 8),
+                icon: const HugeIcon(
+                  icon: AppIcons.camera,
+                  size: 24,
+                  color: AppColors.black,
+                ),
+              )
+            : null,
         border: _border,
         enabledBorder: _border,
         focusedBorder: _border,

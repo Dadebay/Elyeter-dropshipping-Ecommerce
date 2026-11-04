@@ -58,6 +58,63 @@ class ProductReviewSummary {
   ];
 }
 
+class ProductReviewImage {
+  const ProductReviewImage({required this.objectName, required this.url});
+
+  factory ProductReviewImage.fromJson(Map<String, dynamic> json) =>
+      ProductReviewImage(
+        objectName: json.strOrNull('object_name') ?? '',
+        url: json.strOrNull('url') ?? '',
+      );
+
+  /// Sent back when saving an edited review; [url] is what gets drawn.
+  final String objectName;
+  final String url;
+}
+
+/// The "Sort by" choices; photo options filter rather than sort.
+enum ReviewSortOption {
+  newest,
+  oldest,
+  mostLiked,
+  mostDisliked,
+  withPhotos,
+  withoutPhotos;
+
+  String? get sortParam => switch (this) {
+    newest || withPhotos || withoutPhotos => null,
+    oldest => 'oldest',
+    mostLiked => 'most_liked',
+    mostDisliked => 'most_disliked',
+  };
+
+  bool? get hasImages => switch (this) {
+    withPhotos => true,
+    withoutPhotos => false,
+    _ => null,
+  };
+}
+
+/// "Helpful" counters returned by the reaction endpoints.
+class ReviewReactionResult {
+  const ReviewReactionResult({
+    required this.likesCount,
+    required this.dislikesCount,
+    this.myReaction,
+  });
+
+  factory ReviewReactionResult.fromJson(Map<String, dynamic> json) =>
+      ReviewReactionResult(
+        likesCount: json.intVal('likes_count'),
+        dislikesCount: json.intVal('dislikes_count'),
+        myReaction: json.strOrNull('my_reaction'),
+      );
+
+  final int likesCount;
+  final int dislikesCount;
+  final String? myReaction;
+}
+
 class ProductReviewEntry {
   const ProductReviewEntry({
     required this.id,
@@ -66,6 +123,11 @@ class ProductReviewEntry {
     this.author,
     this.createdAt,
     this.isMine = false,
+    this.images = const [],
+    this.likesCount = 0,
+    this.dislikesCount = 0,
+    this.myReaction,
+    this.isHidden = false,
   });
 
   factory ProductReviewEntry.fromJson(Map<String, dynamic> json) {
@@ -84,6 +146,11 @@ class ProductReviewEntry {
           json.strOrNull('name'),
       createdAt: json.dateOrNull('created_at'),
       isMine: json.boolVal('is_mine'),
+      images: json.listOf('images').map(ProductReviewImage.fromJson).toList(),
+      likesCount: json.intVal('likes_count'),
+      dislikesCount: json.intVal('dislikes_count'),
+      myReaction: json.strOrNull('my_reaction'),
+      isHidden: json.boolVal('is_hidden'),
     );
   }
 
@@ -95,10 +162,30 @@ class ProductReviewEntry {
     return name.isEmpty ? null : name;
   }
 
+  ProductReviewEntry withReaction(ReviewReactionResult reaction) =>
+      ProductReviewEntry(
+        id: id,
+        rating: rating,
+        comment: comment,
+        author: author,
+        createdAt: createdAt,
+        isMine: isMine,
+        images: images,
+        likesCount: reaction.likesCount,
+        dislikesCount: reaction.dislikesCount,
+        myReaction: reaction.myReaction,
+        isHidden: isHidden,
+      );
+
   final int id;
   final int rating;
   final String? comment;
   final String? author;
   final DateTime? createdAt;
   final bool isMine;
+  final List<ProductReviewImage> images;
+  final int likesCount;
+  final int dislikesCount;
+  final String? myReaction;
+  final bool isHidden;
 }

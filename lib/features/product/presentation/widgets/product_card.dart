@@ -7,7 +7,6 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/utils/formatters/currency_formatter.dart';
 import '../../../../core/widgets/app_network_image.dart';
-import '../../../../core/widgets/cart_fly_animation.dart';
 import '../../../../core/widgets/favorite_button.dart';
 import '../../../../core/constants/app_icons.dart';
 import 'product_image_view.dart';
@@ -148,9 +147,6 @@ class ProductCard extends StatelessWidget {
                 ? (addedLabel ?? context.l10n.commonAdded)
                 : (addToCartLabel ?? context.l10n.commonAddToCart),
             added: isInCart,
-            // Only the photo of the product being added flies; taking it back
-            // out gets no flourish.
-            flyImage: data.images.isEmpty ? null : data.images.first,
             onTap: onAddToCart,
           ),
         ],
@@ -254,6 +250,21 @@ class _GalleryState extends State<_Gallery> {
                         child: _Photo(_images[index]),
                       ),
                     ),
+            ),
+            // Hairline frame (Figma: 0.65px #EBEBEB, inner) so photos with a
+            // white backdrop don't dissolve into the page.
+            Positioned.fill(
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    border: Border.all(
+                      color: const Color(0xFFEBEBEB),
+                      width: 0.65,
+                    ),
+                  ),
+                ),
+              ),
             ),
             Positioned(
               // The button carries its own transparent padding, so it sits
@@ -496,7 +507,6 @@ class _AddToCartButton extends StatelessWidget {
   const _AddToCartButton({
     required this.label,
     required this.added,
-    this.flyImage,
     this.onTap,
   });
 
@@ -511,17 +521,7 @@ class _AddToCartButton extends StatelessWidget {
   final String label;
   final bool added;
 
-  /// Photo that flies to the cart tab when the product is added.
-  final String? flyImage;
-
   final VoidCallback? onTap;
-
-  /// Runs the flourish from this button, then does the actual add. The
-  /// button's own context is the flight's starting point.
-  void _handleTap(BuildContext context) {
-    if (!added) CartFlyAnimation.runFrom(fromContext: context, image: flyImage);
-    onTap?.call();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -543,7 +543,7 @@ class _AddToCartButton extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap == null ? null : () => _handleTap(context),
+          onTap: onTap,
           borderRadius: radius,
           child: Stack(
             alignment: Alignment.center,

@@ -20,9 +20,8 @@ class CategoryGridItem {
   final String? imageUrl;
 }
 
-/// Square card: the name sits top-left and the artwork fills the lower
-/// half, bleeding past the card's edges so it reads as a photo cropped by
-/// the card rather than an icon floating in a box.
+/// Square card: the artwork fills the whole card and the name sits over it
+/// at the top-left.
 class CategoryGridTile extends StatefulWidget {
   const CategoryGridTile({super.key, required this.item, this.onTap});
 
@@ -49,15 +48,16 @@ class _CategoryGridTileState extends State<CategoryGridTile> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final item = widget.item;
-    final hasImage = (item.imageAsset?.isNotEmpty ?? false) ||
+    final hasImage =
+        (item.imageAsset?.isNotEmpty ?? false) ||
         (item.imageUrl?.isNotEmpty ?? false);
 
     return Material(
       color: isDark
           ? AppColors.surfaceDark
           : !hasImage || _imageFailed
-              ? AppColors.background
-              : AppColors.white,
+          ? AppColors.background
+          : AppColors.white,
       borderRadius: BorderRadius.circular(_radius),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -65,27 +65,27 @@ class _CategoryGridTileState extends State<CategoryGridTile> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Deliberately overflowing on three sides; the card clips it.
-            Positioned(
-              top: 30,
-              left: -2,
-              right: -8,
-              bottom: -10,
+            // The artwork covers the whole card; the title sits on top of it.
+            Positioned.fill(
               child: switch (item) {
-                CategoryGridItem(:final imageAsset?) when imageAsset.isNotEmpty => AppAssetImage(
-                  imageAsset,
-                  fit: BoxFit.contain,
-                ),
-                CategoryGridItem(:final imageUrl?) when imageUrl.isNotEmpty => AppNetworkImage(
-                  url: imageUrl,
-                  radius: 0,
-                  fallbackColor: isDark ? AppColors.surfaceDark : AppColors.background,
-                  onLoadFailed: () {
-                    if (mounted && widget.item.imageUrl == imageUrl && !_imageFailed) {
-                      setState(() => _imageFailed = true);
-                    }
-                  },
-                ),
+                CategoryGridItem(:final imageAsset?)
+                    when imageAsset.isNotEmpty =>
+                  AppAssetImage(imageAsset, fit: BoxFit.cover),
+                CategoryGridItem(:final imageUrl?) when imageUrl.isNotEmpty =>
+                  AppNetworkImage(
+                    url: imageUrl,
+                    radius: 0,
+                    fallbackColor: isDark
+                        ? AppColors.surfaceDark
+                        : AppColors.background,
+                    onLoadFailed: () {
+                      if (mounted &&
+                          widget.item.imageUrl == imageUrl &&
+                          !_imageFailed) {
+                        setState(() => _imageFailed = true);
+                      }
+                    },
+                  ),
                 _ => const SizedBox.shrink(),
               },
             ),
@@ -98,8 +98,11 @@ class _CategoryGridTileState extends State<CategoryGridTile> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: isDark ? AppColors.white : AppColors.ink,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  height: 1,
+                  letterSpacing: -0.28,
+                  color: AppColors.ink,
                 ),
               ),
             ),

@@ -56,10 +56,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final data = await _client.patch(
       ApiEndpoints.me,
       // Only the fields being changed: the API rejects unknown or empty ones.
-      data: {
-        'username': ?username,
-        'image': ?image,
-      },
+      data: {'username': ?username, 'image': ?image},
     );
     return UserModel.fromJson(asMap(data));
   }

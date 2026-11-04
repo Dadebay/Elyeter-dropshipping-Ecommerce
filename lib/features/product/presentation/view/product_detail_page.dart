@@ -50,7 +50,7 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   /// Clearance for the sticky button at the foot of the page.
-  static const _bottomInset = 104.0;
+  static const _bottomInset = 112.0;
 
   late Future<Result<ProductDetail>> _future;
   late Future<Result<ProductReviews>> _reviewsFuture;
@@ -326,7 +326,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             Positioned(
               left: AppSpacing.page,
               right: AppSpacing.page,
-              bottom: AppSpacing.lg,
+              bottom: AppSpacing.xxl,
               child: BlocBuilder<CartCubit, CartState>(
                 buildWhen: (before, after) =>
                     before.contains(id) != after.contains(id),

@@ -17,6 +17,8 @@ import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/widgets/sign_in_required_dialog.dart';
 import '../../../brand/domain/repositories/brand_repository.dart';
+import '../../../marketplace/domain/entities/marketplace.dart';
+import '../../../marketplace/domain/repositories/marketplace_repository.dart';
 import '../../../cart/presentation/cubit/cart_cubit.dart';
 import '../../../cart/presentation/cubit/cart_state.dart';
 import '../../../category/domain/repositories/category_repository.dart';
@@ -32,8 +34,8 @@ import '../widgets/brand_strip.dart';
 import '../widgets/category_strip.dart';
 import '../widgets/home_header.dart';
 import '../widgets/home_section_shimmer.dart';
+import '../widgets/marketplace_strip.dart';
 import '../widgets/promo_carousel.dart';
-import 'home_placeholder_data.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -45,6 +47,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<CategoryItem> _categories = [];
   List<BrandItem> _brands = [];
+  List<Marketplace> _marketplaces = [];
+  // The store whose products the page shows; null until one is picked.
+  int? _marketplaceId;
   List<ProductCardData> _products = [];
   Paginated<Product>? _productPage;
   List<PromoBanner> _banners = [];
@@ -57,6 +62,8 @@ class _HomePageState extends State<HomePage> {
   final _scrollController = ScrollController();
   final Map<int, GlobalKey> _prefetchKeys = {};
   int _productRequest = 0;
+  // Falls back to every product when none are flagged as featured.
+  bool _onlyFeatured = true;
   String? _error;
   StreamSubscription<AuthState>? _authSubscription;
   String? _bannerLanguage;
@@ -73,6 +80,28 @@ class _HomePageState extends State<HomePage> {
       }
     });
     _load();
+    unawaited(_loadMarketplaces());
+  }
+
+  /// Switches the store: the page reloads with that marketplace's products.
+  /// Tapping the chosen one again goes back to everything.
+  void _selectMarketplace(MarketplaceItem item) {
+    final id = int.tryParse(item.id);
+    final next = id == _marketplaceId ? null : id;
+    if (next == _marketplaceId) return;
+    setState(() {
+      _marketplaceId = next;
+      _products = [];
+      _productPage = null;
+    });
+    if (_scrollController.hasClients) _scrollController.jumpTo(0);
+    unawaited(_load());
+  }
+
+  Future<void> _loadMarketplaces() async {
+    final result = await getIt<MarketplaceRepository>().list();
+    if (!mounted || result.dataOrNull == null) return;
+    setState(() => _marketplaces = result.dataOrNull!);
   }
 
   @override
@@ -185,13 +214,26 @@ class _HomePageState extends State<HomePage> {
     );
     final brandRequest = getIt<BrandRepository>().list(featuredOnly: true);
     final productRequest = getIt<ProductRepository>().list(
-      query: const ProductQuery(onlyFeatured: true),
+      query: ProductQuery(onlyFeatured: true, marketplaceId: _marketplaceId),
       page: 1,
       size: AppConstants.pageSize,
     );
     final categoryResult = await categoryRequest;
     final brandResult = await brandRequest;
-    final productResult = await productRequest;
+    var productResult = await productRequest;
+    var onlyFeatured = true;
+    if (productResult.dataOrNull case final page? when page.items.isEmpty) {
+      final all = await getIt<ProductRepository>().list(
+        query: ProductQuery(marketplaceId: _marketplaceId),
+        page: 1,
+        size: AppConstants.pageSize,
+      );
+      if (all.dataOrNull != null) {
+        productResult = all;
+        onlyFeatured = false;
+      }
+    }
+    _onlyFeatured = onlyFeatured;
     if (!mounted || request != _productRequest) return;
     setState(() {
       _categories = [
@@ -275,7 +317,10 @@ class _HomePageState extends State<HomePage> {
       _loadMoreFailed = false;
     });
     final result = await getIt<ProductRepository>().list(
-      query: const ProductQuery(onlyFeatured: true),
+      query: ProductQuery(
+        onlyFeatured: _onlyFeatured,
+        marketplaceId: _marketplaceId,
+      ),
       page: previous.page + 1,
       size: AppConstants.pageSize,
     );
@@ -344,7 +389,12 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildHeaderAndBanners(BuildContext context) {
     final header = HomeHeader(
-      marketplaces: HomePlaceholderData.marketplaces,
+      marketplaces: [
+        for (final m in _marketplaces) MarketplaceItem.fromMarketplace(m),
+      ],
+      // Hidden only when the API lists marketplaces and none can search.
+      showCamera:
+          _marketplaces.isEmpty || _marketplaces.any((m) => m.imageSearch),
       categories: _categories,
       categoriesLoading: _loading,
       city: _location?.name ?? 'Ashgabat',
@@ -355,11 +405,8 @@ class _HomePageState extends State<HomePage> {
         extra: item.name,
       ),
       onLocationTap: _pickLocation,
-      onMarketplaceTap: (item) => context.pushNamed(
-        AppRoutes.marketplace.name,
-        pathParameters: {'id': item.id},
-        extra: item.name,
-      ),
+      selectedMarketplaceId: _marketplaceId?.toString(),
+      onMarketplaceTap: _selectMarketplace,
     );
     if (_banners.isEmpty && !_loadingBanners) return header;
 
@@ -379,16 +426,21 @@ class _HomePageState extends State<HomePage> {
               left: 0,
               right: 0,
               bottom: AppSpacing.xs,
-              child: _loadingBanners
-                  ? BannerShimmer(height: bannerHeight)
-                  : PromoCarousel(
-                      key: ValueKey(
-                        _banners.map((banner) => banner.id).join(','),
+              // The white sheet's curved lip cuts the cards peeking at the
+              // sides, as in the design.
+              child: ClipPath(
+                clipper: const _SheetClipper(lipAbove: 0),
+                child: _loadingBanners
+                    ? BannerShimmer(height: bannerHeight)
+                    : PromoCarousel(
+                        key: ValueKey(
+                          _banners.map((banner) => banner.id).join(','),
+                        ),
+                        banners: _banners,
+                        height: bannerHeight,
+                        onTap: _openBanner,
                       ),
-                      banners: _banners,
-                      height: bannerHeight,
-                      onTap: _openBanner,
-                    ),
+              ),
             ),
           ],
         );
@@ -527,4 +579,29 @@ class _HomePageState extends State<HomePage> {
       ),
     ),
   );
+}
+
+/// Clips to the same top-rounded shape as the header's white sheet.
+/// [lipAbove] is how far the sheet's top edge sits above the clipped box.
+class _SheetClipper extends CustomClipper<Path> {
+  const _SheetClipper({required this.lipAbove});
+
+  final double lipAbove;
+
+  @override
+  Path getClip(Size size) => Path()
+    ..addRRect(
+      RRect.fromLTRBAndCorners(
+        0,
+        -lipAbove,
+        size.width,
+        size.height,
+        topLeft: const Radius.circular(6),
+        topRight: const Radius.circular(6),
+      ),
+    );
+
+  @override
+  bool shouldReclip(_SheetClipper oldClipper) =>
+      oldClipper.lipAbove != lipAbove;
 }

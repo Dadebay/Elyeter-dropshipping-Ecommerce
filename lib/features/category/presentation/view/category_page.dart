@@ -86,14 +86,22 @@ class _CategoryView extends StatelessWidget {
                   120,
                 ),
                 sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisSpacing: AppSpacing.md, crossAxisSpacing: AppSpacing.md),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: AppSpacing.md,
+                    crossAxisSpacing: AppSpacing.md,
+                  ),
                   delegate: SliverChildBuilderDelegate(
                     (context, index) => index < items.length
                         ? CategoryGridTile(
                             item: items[index],
                             // The detail page reads its title off `extra`,
                             // so the app bar says "Elektronika", not the slug.
-                            onTap: () => context.pushNamed(AppRoutes.categoryDetail.name, pathParameters: {'id': items[index].id}, extra: items[index].name),
+                            onTap: () => context.pushNamed(
+                              AppRoutes.categoryDetail.name,
+                              pathParameters: {'id': items[index].id},
+                              extra: items[index].name,
+                            ),
                           )
                         : const ElyeterShimmerBox(),
                     childCount: items.length + placeholders,

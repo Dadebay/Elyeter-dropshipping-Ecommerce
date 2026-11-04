@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,6 +27,8 @@ import '../../../../core/utils/result.dart';
 import '../../../../core/widgets/app_back_button.dart';
 import '../../../../core/widgets/app_snack_bar.dart';
 import '../../../cart/presentation/cubit/cart_cubit.dart';
+import '../../../payment/presentation/payment_flow.dart';
+import '../../../product/presentation/widgets/product_review_button.dart';
 import '../../../product/presentation/widgets/product_photos.dart';
 import '../../domain/entities/pre_order.dart';
 import '../../domain/repositories/pre_order_repository.dart';
@@ -169,7 +174,80 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     }
   }
 
+  bool _paying = false;
+
+  /// Bank, card page, status — then the order is read again, since
+  /// `is_paid`, `can_pay` and `can_cancel` all move with a payment.
+  Future<void> _pay(PreOrder order) async {
+    if (_paying) return;
+    setState(() => _paying = true);
+    await PaymentFlow.pay(context, preOrderId: order.id);
+    if (!mounted) return;
+    setState(() => _paying = false);
+    await _reload();
+  }
+
   bool _downloading = false;
+
+  Future<Map<int, Uint8List>> _receiptProductImages(PreOrder order) async {
+    final products = <int, PreOrderItem>{
+      for (final item in order.items) item.productId: item,
+    };
+    final dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 6),
+        receiveTimeout: const Duration(seconds: 8),
+      ),
+    );
+    try {
+      final images = await Future.wait(
+        products.values.map((item) async {
+          final urls = <String>[
+            ?_photos[item.productId],
+            ...?ProductPhotos.cached(item.productId),
+          ];
+          if (urls.isEmpty && item.productSlug != null) {
+            try {
+              urls.addAll(await ProductPhotos.load(item.productId));
+            } on Object {
+              // The order's saved image can still be used below.
+            }
+          }
+          if (item.image case final url?) urls.add(url);
+
+          for (final url in urls.toSet()) {
+            if (url.isEmpty) continue;
+            try {
+              final response = await dio.get<List<int>>(
+                url,
+                options: Options(responseType: ResponseType.bytes),
+              );
+              final bytes = response.data;
+              if (bytes == null) continue;
+              final decoded = img.decodeImage(Uint8List.fromList(bytes));
+              if (decoded == null) continue;
+              final thumbnail = decoded.width > 120
+                  ? img.copyResize(decoded, width: 120)
+                  : decoded;
+              return MapEntry(
+                item.productId,
+                Uint8List.fromList(img.encodePng(thumbnail)),
+              );
+            } on Object {
+              // Try the next available image URL.
+            }
+          }
+          return null;
+        }),
+      );
+      return {
+        for (final image in images)
+          if (image != null) image.key: image.value,
+      };
+    } finally {
+      dio.close();
+    }
+  }
 
   /// Builds the order's receipt as a PDF and hands the file to the system
   /// share sheet — which is where a phone offers "Save to Files" / "Save to
@@ -181,6 +259,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     final locale = Localizations.localeOf(context).toString();
     setState(() => _downloading = true);
     try {
+      final productImages = await _receiptProductImages(order);
       final bytes = await OrderReceiptPdf.build(
         order,
         ReceiptLabels(
@@ -201,14 +280,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           price: l10n.orderReceiptPrice,
           amount: l10n.orderReceiptAmount,
           productsTotal: l10n.orderProductsTotal,
-          delivery: l10n.orderDeliveryLabel,
-          free: l10n.orderDeliveryFree,
           cargo: l10n.orderCargo,
           discount: l10n.orderDiscount,
           total: l10n.orderTotalTitle,
           thanks: l10n.orderReceiptThanks,
         ),
         locale: locale,
+        productImages: productImages,
       );
       final dir = await getTemporaryDirectory();
       final file = File('${dir.path}/${order.number}.pdf');
@@ -288,6 +366,14 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   onAsk: _ask,
                   onCancel: _cancel,
                 ),
+                if (order.canPay || order.isPaid) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  _Payment(
+                    order: order,
+                    paying: _paying,
+                    onPay: () => _pay(order),
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.md),
                 _Progress(
                   order: data,
@@ -353,29 +439,51 @@ class _Header extends StatelessWidget {
     };
 
     return OrderCard(
+      padding: order.outcome == OrderOutcome.cancelled
+          ? const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.xxxl,
+              AppSpacing.lg,
+              AppSpacing.lg,
+            )
+          : const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         children: [
           if (order.outcome != OrderOutcome.active) ...[
             _OutcomeBadge(outcome: order.outcome),
-            const SizedBox(height: AppSpacing.md),
+            SizedBox(
+              height: order.outcome == OrderOutcome.cancelled
+                  ? AppSpacing.xl
+                  : AppSpacing.md,
+            ),
           ],
           Text(
             title,
             textAlign: TextAlign.center,
-            style: context.textTheme.headlineSmall?.copyWith(
-              color: AppColors.black,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.3,
-            ),
+            style:
+                (order.outcome == OrderOutcome.cancelled
+                        ? context.textTheme.headlineLarge
+                        : context.textTheme.headlineSmall)
+                    ?.copyWith(
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
+                    ),
           ),
           const SizedBox(height: AppSpacing.xxs),
           Text(
             l10n.orderNumber(order.number),
-            style: context.textTheme.labelSmall?.copyWith(
-              color: AppColors.grey500,
-            ),
+            style:
+                (order.outcome == OrderOutcome.cancelled
+                        ? context.textTheme.bodySmall
+                        : context.textTheme.labelSmall)
+                    ?.copyWith(color: AppColors.grey500),
           ),
-          const SizedBox(height: AppSpacing.lg),
+          SizedBox(
+            height: order.outcome == OrderOutcome.cancelled
+                ? AppSpacing.xxl
+                : AppSpacing.lg,
+          ),
           Row(
             children: [
               Expanded(
@@ -424,16 +532,26 @@ class _OutcomeBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final done = outcome == OrderOutcome.completed;
 
+    if (!done) {
+      return Image.asset(
+        AppAssets.imageOrderCancelled,
+        width: 72,
+        height: 72,
+        filterQuality: FilterQuality.high,
+        semanticLabel: context.l10n.orderCancelled,
+      );
+    }
+
     return Container(
       width: 64,
       height: 64,
       decoration: BoxDecoration(
-        color: done ? AppColors.success : AppColors.error,
+        color: AppColors.success,
         shape: BoxShape.circle,
       ),
       child: Center(
         child: HugeIcon(
-          icon: done ? AppIcons.check : AppIcons.close,
+          icon: AppIcons.check,
           size: 34,
           strokeWidth: 3,
           color: AppColors.white,
@@ -500,6 +618,102 @@ class _Action extends StatelessWidget {
   }
 }
 
+/// Online payment: the "Pay" button while the order can be paid, and a
+/// "Paid" line once it has been.
+class _Payment extends StatelessWidget {
+  const _Payment({
+    required this.order,
+    required this.paying,
+    required this.onPay,
+  });
+
+  final PreOrder order;
+  final bool paying;
+  final VoidCallback onPay;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = context.textTheme;
+
+    if (!order.isPaid) {
+      return OrderCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.paymentPayOnlineTitle,
+              style: theme.titleMedium?.copyWith(
+                color: AppColors.black,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xxs),
+            Text(
+              l10n.paymentPayOnlineMessage,
+              style: theme.bodySmall?.copyWith(color: AppColors.grey500),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            ProductReviewButton(
+              label: l10n.paymentPay,
+              loading: paying,
+              onPressed: onPay,
+            ),
+          ],
+        ),
+      );
+    }
+
+    final paidAt = order.paidAt;
+    return OrderCard(
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: const BoxDecoration(
+              color: AppColors.success,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: HugeIcon(
+                icon: AppIcons.check,
+                size: 20,
+                strokeWidth: 2.5,
+                color: AppColors.white,
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.paymentPaid,
+                  style: theme.titleSmall?.copyWith(
+                    color: AppColors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (paidAt != null)
+                  Text(
+                    DateFormatter.dayTime(
+                      paidAt,
+                      locale: Localizations.localeOf(context).toString(),
+                      fullMonth: true,
+                    ),
+                    style: theme.bodySmall?.copyWith(color: AppColors.grey500),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _Progress extends StatelessWidget {
   const _Progress({required this.order, required this.onTrack});
 
@@ -512,12 +726,22 @@ class _Progress extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // The chevron opens the order on the map.
-          OrderCardHeader(title: context.l10n.orderProgress, onTap: onTrack),
+          // Only orders still in progress or completed can open the map.
+          if (order.outcome == OrderOutcome.cancelled)
+            Text(
+              context.l10n.orderProgress,
+              style: context.textTheme.titleMedium?.copyWith(
+                color: AppColors.black,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          else
+            OrderCardHeader(title: context.l10n.orderProgress, onTap: onTrack),
           const SizedBox(height: AppSpacing.lg),
           OrderProgressTimeline(
             stages: order.stages,
             badgeEveryDone: order.outcome == OrderOutcome.completed,
+            cancelled: order.outcome == OrderOutcome.cancelled,
           ),
         ],
       ),
@@ -542,7 +766,11 @@ class _Products extends StatelessWidget {
           Text(
             context.l10n.orderItemSummary(
               order.itemCount,
-              CurrencyFormatter.format(order.productsTotal, locale: context.l10n.localeName, decimals: 0),
+              CurrencyFormatter.format(
+                order.productsTotal,
+                locale: context.l10n.localeName,
+                decimals: 0,
+              ),
             ),
             style: context.textTheme.labelSmall?.copyWith(
               color: AppColors.grey500,
@@ -588,14 +816,12 @@ class _Details extends StatelessWidget {
       OrderInfoRow(
         icon: AppAssets.iconCalendar,
         label: l10n.orderTime,
-        value: DateFormatter.dayTime(order.placedAt, locale: locale, fullMonth: true),
-      ),
-      if (order.comment != null && order.comment!.isNotEmpty)
-        OrderInfoRow(
-          icon: AppAssets.iconBubbleQuestion,
-          label: l10n.orderComment,
-          value: order.comment!,
+        value: DateFormatter.dayTime(
+          order.placedAt,
+          locale: locale,
+          fullMonth: true,
         ),
+      ),
     ];
 
     return OrderCard(

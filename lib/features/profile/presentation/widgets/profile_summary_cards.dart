@@ -52,9 +52,13 @@ class ProfileSummaryCards extends StatelessWidget {
         .split(RegExp(r'\s+'))
         .where(
           (word) =>
-              word.isNotEmpty && RegExp(r'^\p{L}', unicode: true).hasMatch(word),
+              word.isNotEmpty &&
+              RegExp(r'^\p{L}', unicode: true).hasMatch(word),
         );
-    return words.take(2).map((word) => word.characters.first.toUpperCase()).join();
+    return words
+        .take(2)
+        .map((word) => word.characters.first.toUpperCase())
+        .join();
   }
 
   /// The number, unless the title is already showing it — in which case the
@@ -167,11 +171,7 @@ class _Avatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fallback = initials.isEmpty
-        ? const HugeIcon(
-            icon: AppIcons.user,
-            size: 24,
-            color: AppColors.white,
-          )
+        ? const HugeIcon(icon: AppIcons.user, size: 24, color: AppColors.white)
         : Text(
             initials,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(

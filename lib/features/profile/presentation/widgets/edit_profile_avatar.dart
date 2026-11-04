@@ -123,7 +123,9 @@ class _Circle extends StatelessWidget {
         boxShadow: hasPhoto
             ? [
                 BoxShadow(
-                  color: AppColors.black.withValues(alpha: isDark ? 0.35 : 0.16),
+                  color: AppColors.black.withValues(
+                    alpha: isDark ? 0.35 : 0.16,
+                  ),
                   blurRadius: 18,
                   spreadRadius: 1,
                   offset: const Offset(0, 5),

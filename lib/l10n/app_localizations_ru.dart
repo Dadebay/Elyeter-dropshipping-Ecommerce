@@ -49,6 +49,31 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notificationsEmptyMessage => 'Новые уведомления появятся здесь.';
 
   @override
+  String get notificationsOverviewTitle => 'Новости от Elyeter';
+
+  @override
+  String get notificationsOverviewMessage =>
+      'Предложения и важные новости в одном месте.';
+
+  @override
+  String get notificationsToday => 'Сегодня';
+
+  @override
+  String get notificationsYesterday => 'Вчера';
+
+  @override
+  String get notificationsEarlier => 'Ранее';
+
+  @override
+  String get notificationsNew => 'Новое';
+
+  @override
+  String get notificationsLoadMore => 'Загрузить ещё';
+
+  @override
+  String get notificationsRefresh => 'Обновить';
+
+  @override
   String get announcementsEmptyTitle => 'Пока нет объявлений';
 
   @override
@@ -147,6 +172,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get orderStepDelivered => 'Доставлен';
 
   @override
+  String get orderStepStopped => 'Остановлено';
+
+  @override
   String get orderProducts => 'Товары в доставке';
 
   @override
@@ -163,6 +191,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get orderPickupPoint => 'Пункт выдачи';
+
+  @override
+  String get orderSelectAddressTitle => 'Выберите адрес';
+
+  @override
+  String get orderSelectAddressMessage =>
+      'Выберите или добавьте адрес перед оформлением заказа.';
+
+  @override
+  String get orderAddressLoadFailed =>
+      'Не удалось загрузить адреса. Повторите попытку.';
 
   @override
   String get orderRecipient => 'Получатель';
@@ -196,6 +235,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get orderDownloadCheck => 'Скачать чек';
+
+  @override
+  String get orderCargoNote =>
+      'Примечание: стоимость карго рассчитывается после прибытия товара.';
 
   @override
   String get categoryFilterMaterial => 'Материал';
@@ -471,6 +514,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reviewCommentHint => 'Что понравилось? Что можно улучшить?';
 
   @override
+  String get reviewHowRate => 'Как бы вы оценили этот товар?';
+
+  @override
   String get reviewSubmit => 'Отправить отзыв';
 
   @override
@@ -496,6 +542,56 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reviewDeleteMessage => 'Позже вы сможете написать новый отзыв.';
+
+  @override
+  String get reviewHelpful => 'Полезно';
+
+  @override
+  String get reviewSortBy => 'Сортировка';
+
+  @override
+  String get reviewRatingFilter => 'Оценка';
+
+  @override
+  String get reviewSortNewest => 'Сначала новые';
+
+  @override
+  String get reviewSortOldest => 'Сначала старые';
+
+  @override
+  String get reviewSortMostLiked => 'Больше лайков';
+
+  @override
+  String get reviewSortMostDisliked => 'Больше дизлайков';
+
+  @override
+  String get reviewSortWithPhotos => 'С фото';
+
+  @override
+  String get reviewSortWithoutPhotos => 'Без фото';
+
+  @override
+  String get reviewAllRatings => 'Все оценки';
+
+  @override
+  String get reviewAddPhotos => 'Добавить фото';
+
+  @override
+  String get reviewPhotoLimit => 'До 5 фото';
+
+  @override
+  String get reviewPhotoUploadError => 'Не удалось загрузить фото.';
+
+  @override
+  String get reviewNoMatches => 'Нет отзывов по этим фильтрам';
+
+  @override
+  String get reviewHiddenNotice => 'Ваш отзыв скрыт от других';
+
+  @override
+  String reviewHelpfulCount(int count) {
+    return 'Полезно ($count)';
+  }
 
   @override
   String productRatingCount(int count) {
@@ -604,6 +700,14 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get activeOrdersEmptyMessage =>
       'Здесь появятся заказы в процессе выполнения.';
+
+  @override
+  String get orderStatusDelivered => 'Доставлен';
+
+  @override
+  String orderItemsFor(int count, String amount) {
+    return '$count шт. на сумму $amount';
+  }
 
   @override
   String orderItemCount(int count) {
@@ -1195,4 +1299,196 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileDeleteDone => 'Ваш аккаунт удалён.';
+
+  @override
+  String get commonOk => 'ОК';
+
+  @override
+  String get errorPaymentBankFailed =>
+      'Банк не принял платёж. Попробуйте позже или выберите другой банк.';
+
+  @override
+  String get errorPreOrderAlreadyPaid => 'Этот заказ уже оплачен.';
+
+  @override
+  String get errorPreOrderNotPayable =>
+      'Этот заказ больше нельзя оплатить онлайн.';
+
+  @override
+  String get errorBankNotFound =>
+      'Этот банк сейчас недоступен. Выберите другой.';
+
+  @override
+  String get errorProductRequestInvalidLink =>
+      'Мы не нашли ссылку на товар AliExpress в этом тексте.';
+
+  @override
+  String get paymentTitle => 'Оплата';
+
+  @override
+  String get paymentChooseBank => 'Выберите банк';
+
+  @override
+  String get paymentChooseBankHint =>
+      'Данные карты вы введёте на странице банка.';
+
+  @override
+  String get paymentNoBanks => 'Онлайн-оплата сейчас недоступна.';
+
+  @override
+  String get paymentPayOnlineTitle => 'Оплатить онлайн';
+
+  @override
+  String get paymentPayOnlineMessage =>
+      'Оплатите заказ картой сейчас — не дожидаясь звонка.';
+
+  @override
+  String get paymentPay => 'Оплатить';
+
+  @override
+  String get paymentPaid => 'Оплачено онлайн';
+
+  @override
+  String get paymentChecking => 'Проверяем оплату…';
+
+  @override
+  String get paymentCheckingMessage => 'Это займёт несколько секунд.';
+
+  @override
+  String get paymentSuccess => 'Оплата прошла успешно';
+
+  @override
+  String get paymentSuccessMessage => 'Ваш заказ оплачен. Спасибо!';
+
+  @override
+  String get paymentFailed => 'Оплата не прошла';
+
+  @override
+  String get paymentFailedMessage =>
+      'Банк отклонил платёж. Попробуйте ещё раз или выберите другой банк.';
+
+  @override
+  String get paymentPending => 'Платёж проверяется';
+
+  @override
+  String get paymentPendingMessage =>
+      'Банк ещё не подтвердил платёж. Заказ будет отмечен оплаченным, как только это произойдёт.';
+
+  @override
+  String get paymentNotCompletedMessage =>
+      'Оплата не завершена. Если деньги списались с карты, заказ будет отмечен оплаченным в течение нескольких минут.';
+
+  @override
+  String get paymentTryAgain => 'Попробовать снова';
+
+  @override
+  String get productRequestTitle => 'Отправьте нам ссылку';
+
+  @override
+  String get productRequestMessage =>
+      'Не нашли товар? Вставьте ссылку с AliExpress, и мы добавим его в каталог.';
+
+  @override
+  String get productRequestHint =>
+      'Ссылка AliExpress или текст из «Поделиться»';
+
+  @override
+  String get productRequestPaste => 'Вставить';
+
+  @override
+  String get productRequestSend => 'Отправить ссылку';
+
+  @override
+  String get productRequestSendAnother => 'Отправить другую ссылку';
+
+  @override
+  String get productRequestMine => 'Мои запросы товаров';
+
+  @override
+  String get productRequestSearchAction => 'Отправить ссылку на товар';
+
+  @override
+  String get productRequestLoadingTitle => 'Загружаем товар…';
+
+  @override
+  String get productRequestLoadingMessage => 'Обычно это занимает до минуты.';
+
+  @override
+  String get productRequestLaterTitle => 'Мы сообщим вам';
+
+  @override
+  String get productRequestLaterMessage =>
+      'Это занимает чуть больше времени. Мы пришлём уведомление, когда товар станет доступен.';
+
+  @override
+  String get productRequestReviewTitle => 'На проверке';
+
+  @override
+  String get productRequestReviewMessage =>
+      'Товар на проверке. Мы сообщим, когда он станет доступен.';
+
+  @override
+  String get productRequestRejectedTitle => 'Недоступно';
+
+  @override
+  String get productRequestRejectedMessage =>
+      'К сожалению, мы не можем продавать этот товар.';
+
+  @override
+  String get productRequestFailedTitle => 'Не удалось загрузить';
+
+  @override
+  String get productRequestFailedMessage =>
+      'Не удалось загрузить товар с AliExpress. Возможно, он снят с продажи.';
+
+  @override
+  String get productRequestAvailableTitle => 'Товар добавлен';
+
+  @override
+  String get productRequestAvailableMessage =>
+      'Товар в каталоге. Найдите его в «Мои запросы товаров».';
+
+  @override
+  String get productRequestStatusProcessing => 'Загружается';
+
+  @override
+  String get productRequestStatusInReview => 'На проверке';
+
+  @override
+  String get productRequestStatusAvailable => 'Доступен';
+
+  @override
+  String get productRequestStatusRejected => 'Отклонён';
+
+  @override
+  String get productRequestStatusFailed => 'Не загружен';
+
+  @override
+  String get productRequestEmptyTitle => 'Запросов пока нет';
+
+  @override
+  String get errorImageSearchInvalidImage =>
+      'Используйте фото JPEG, PNG или WebP.';
+
+  @override
+  String get errorImageSearchInProgress =>
+      'Предыдущий поиск ещё отправляется. Подождите.';
+
+  @override
+  String get errorImageSearchUnavailable =>
+      'Поиск временно недоступен, попробуйте позже.';
+
+  @override
+  String get imageSearchTitle => 'Поиск по фото';
+
+  @override
+  String get imageSearchSearching => 'Ищем ещё…';
+
+  @override
+  String get imageSearchEmpty => 'Ничего похожего пока нет';
+
+  @override
+  String imageSearchRateLimited(int minutes) {
+    return 'Лимит поисков исчерпан. Повторите через $minutes мин.';
+  }
 }

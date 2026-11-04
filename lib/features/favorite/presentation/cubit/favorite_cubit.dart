@@ -25,7 +25,8 @@ class FavoriteCubit extends Cubit<Set<String>> {
   bool contains(String id) => state.contains(id);
 
   void _onAuthChanged(AuthState auth) {
-    if (_authenticated == auth.isAuthenticated && _accountId == auth.user?.id) return;
+    if (_authenticated == auth.isAuthenticated && _accountId == auth.user?.id)
+      return;
     _authenticated = auth.isAuthenticated;
     _accountId = auth.user?.id;
     ++_generation;
@@ -40,7 +41,11 @@ class FavoriteCubit extends Cubit<Set<String>> {
       final ids = await _api.favoriteIds();
       if (!isClosed && generation == _generation) {
         for (final pending in _pending) {
-          if (state.contains(pending)) { ids.add(pending); } else { ids.remove(pending); }
+          if (state.contains(pending)) {
+            ids.add(pending);
+          } else {
+            ids.remove(pending);
+          }
         }
         emit(ids);
       }

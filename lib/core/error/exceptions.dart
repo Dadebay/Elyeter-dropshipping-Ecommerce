@@ -44,19 +44,13 @@ class UnauthorizedException extends AppException {
 
 /// 403 — today always `user-blocked`, which can also hit a live session.
 class ForbiddenException extends AppException {
-  const ForbiddenException(
-    super.message, {
-    super.code,
-    super.details,
-  }) : super(statusCode: 403);
+  const ForbiddenException(super.message, {super.code, super.details})
+    : super(statusCode: 403);
 }
 
 class NotFoundException extends AppException {
-  const NotFoundException(
-    super.message, {
-    super.code,
-    super.details,
-  }) : super(statusCode: 404);
+  const NotFoundException(super.message, {super.code, super.details})
+    : super(statusCode: 404);
 }
 
 /// 400 with an `errors: string[]` array, one entry per invalid field.
@@ -74,30 +68,21 @@ class ValidationException extends AppException {
 /// 409 — `pre-order-items-unavailable`, `pre-order-price-changed`,
 /// `invalid-pre-order-transition`. Nothing was created.
 class ConflictException extends AppException {
-  const ConflictException(
-    super.message, {
-    super.code,
-    super.details,
-  }) : super(statusCode: 409);
+  const ConflictException(super.message, {super.code, super.details})
+    : super(statusCode: 409);
 }
 
 /// 429 `too-many-requests` — 20 pre-order calls per minute per user.
 class RateLimitException extends AppException {
-  const RateLimitException(
-    super.message, {
-    super.code,
-    super.details,
-  }) : super(statusCode: 429);
+  const RateLimitException(super.message, {super.code, super.details})
+    : super(statusCode: 429);
 }
 
 /// 503 — the supplier did not answer. Not "out of stock": keep the cart and
 /// offer a retry.
 class ServiceUnavailableException extends AppException {
-  const ServiceUnavailableException(
-    super.message, {
-    super.code,
-    super.details,
-  }) : super(statusCode: 503);
+  const ServiceUnavailableException(super.message, {super.code, super.details})
+    : super(statusCode: 503);
 }
 
 class CacheException extends AppException {

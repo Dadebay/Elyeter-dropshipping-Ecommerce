@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- Visual search: the in-app camera screen. The device does not have to
          have a camera for the rest of the app to work. -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -7,8 +8,17 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
+    <!-- Merged in by plugins for features the app does not use. Play asks for
+         a written justification and a demo video for a location foreground
+         service, so they are stripped rather than declared. The camera is
+         opened with enableAudio: false; location is only read in the
+         foreground, on the address map. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" tools:node="remove" />
+
     <application
-        android:label="elyeter"
+        android:label="Elyeter"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -45,6 +55,21 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <service
+            android:name="com.lyokone.location.FlutterLocationService"
+            tools:node="remove" />
+        <!-- Pushes that arrive while the app is in the background are drawn
+             by FCM itself: give them the same monochrome icon and channel
+             LocalNotificationsService uses in the foreground. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/notification_accent" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="elyeter_default" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

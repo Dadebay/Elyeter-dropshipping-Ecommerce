@@ -20,7 +20,11 @@ Future<void> bootstrap(Widget Function() builder) async {
     AppLogger.e(details.exceptionAsString(), details.exception, details.stack);
   };
 
-  HydratedBloc.storage = await HydratedStorage.build(storageDirectory: HydratedStorageDirectory((await getApplicationDocumentsDirectory()).path));
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: HydratedStorageDirectory(
+      (await getApplicationDocumentsDirectory()).path,
+    ),
+  );
 
   // Hide Android's navigation bar and keep the status bar: the app draws
   // its own floating bottom bar, and two stacked bars waste the space.

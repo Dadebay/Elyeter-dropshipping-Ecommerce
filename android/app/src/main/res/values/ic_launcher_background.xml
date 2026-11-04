@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#FF6600</color>
+    <!-- Tint of the monochrome notification icon: the bag's yellow. -->
+    <color name="notification_accent">#FFFC01</color>
+</resources>

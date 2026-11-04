@@ -13,11 +13,7 @@ import '../../../../core/constants/app_icons.dart';
 /// resists past the fully open position instead of stopping dead, and lands
 /// where the flick was heading rather than where the finger happened to lift.
 class SwipeToDelete extends StatefulWidget {
-  const SwipeToDelete({
-    super.key,
-    required this.child,
-    required this.onDelete,
-  });
+  const SwipeToDelete({super.key, required this.child, required this.onDelete});
 
   /// Width of the uncovered panel, and so how far the row travels.
   static const _actionWidth = 96.0;
@@ -71,7 +67,8 @@ class _SwipeToDeleteState extends State<SwipeToDelete>
     _controller.value = next <= SwipeToDelete._actionWidth
         ? next.clamp(0.0, SwipeToDelete._actionWidth)
         // Past open the row keeps moving, but gives less the further it goes.
-        : SwipeToDelete._actionWidth + _resist(next - SwipeToDelete._actionWidth);
+        : SwipeToDelete._actionWidth +
+              _resist(next - SwipeToDelete._actionWidth);
   }
 
   /// Progressive resistance, so the edge reads as "nothing more here" rather

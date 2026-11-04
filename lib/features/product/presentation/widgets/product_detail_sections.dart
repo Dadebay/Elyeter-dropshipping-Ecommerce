@@ -2,8 +2,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart' as html;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hugeicons/hugeicons.dart';
 
+import '../../../../core/constants/app_assets.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -32,10 +34,21 @@ class ProductRatingRow extends StatelessWidget {
       children: [
         if (score != null) ...[
           DecoratedBox(
-            decoration: BoxDecoration(color: AppColors.success, borderRadius: BorderRadius.circular(AppRadius.sm)),
+            decoration: BoxDecoration(
+              color: AppColors.success,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+            ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 3),
-              child: Text(score.toStringAsFixed(1), style: context.textTheme.titleSmall?.copyWith(color: AppColors.white)),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: 3,
+              ),
+              child: Text(
+                score.toStringAsFixed(1),
+                style: context.textTheme.titleSmall?.copyWith(
+                  color: AppColors.white,
+                ),
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -46,7 +59,9 @@ class ProductRatingRow extends StatelessWidget {
               context.l10n.productOrderCount(orderCount),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: context.textTheme.bodyMedium?.copyWith(color: AppColors.black),
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: AppColors.black,
+              ),
             ),
           ),
       ],
@@ -61,12 +76,20 @@ class ProductOptionLabel extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => Text(text, style: context.textTheme.bodyMedium?.copyWith(color: AppColors.grey700));
+  Widget build(BuildContext context) => Text(
+    text,
+    style: context.textTheme.bodyMedium?.copyWith(color: AppColors.grey700),
+  );
 }
 
 /// Burgundy price, with the previous amount and orange discount beside it.
 class ProductPriceCard extends StatelessWidget {
-  const ProductPriceCard({super.key, required this.name, required this.price, this.oldPrice});
+  const ProductPriceCard({
+    super.key,
+    required this.name,
+    required this.price,
+    this.oldPrice,
+  });
 
   static const _priceColor = Color(0xFFAD1F2B);
 
@@ -77,10 +100,17 @@ class ProductPriceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final was = oldPrice;
-    final discount = was != null && was > price ? ((was - price) / was * 100).round() : null;
+    final discount = was != null && was > price
+        ? ((was - price) / was * 100).round()
+        : null;
 
     return GestureDetector(
-      onTap: () => showProductPriceDetailsSheet(context, name: name, price: price, oldPrice: oldPrice),
+      onTap: () => showProductPriceDetailsSheet(
+        context,
+        name: name,
+        price: price,
+        oldPrice: oldPrice,
+      ),
 
       child: ProductSectionCard(
         padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 8, AppSpacing.sm, 8),
@@ -95,23 +125,43 @@ class ProductPriceCard extends StatelessWidget {
                   textBaseline: TextBaseline.alphabetic,
                   children: [
                     Text(
-                      CurrencyFormatter.amount(price, locale: context.l10n.localeName),
+                      CurrencyFormatter.amount(
+                        price,
+                        locale: context.l10n.localeName,
+                      ),
                       maxLines: 1,
-                      style: context.textTheme.headlineLarge?.copyWith(color: _priceColor),
+                      style: context.textTheme.headlineLarge?.copyWith(
+                        color: _priceColor,
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     Text(
                       AppConstants.currencySymbol,
-                      style: context.textTheme.labelMedium?.copyWith(color: _priceColor, fontWeight: FontWeight.w700),
+                      style: context.textTheme.labelMedium?.copyWith(
+                        color: _priceColor,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     if (discount != null) ...[
                       const SizedBox(width: AppSpacing.sm),
                       Text(
-                        CurrencyFormatter.amount(was!, locale: context.l10n.localeName),
-                        style: context.textTheme.bodySmall?.copyWith(color: AppColors.grey500, decoration: TextDecoration.lineThrough, decorationColor: AppColors.grey500),
+                        CurrencyFormatter.amount(
+                          was!,
+                          locale: context.l10n.localeName,
+                        ),
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: AppColors.grey500,
+                          decoration: TextDecoration.lineThrough,
+                          decorationColor: AppColors.grey500,
+                        ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      Text('-$discount%', style: context.textTheme.bodySmall?.copyWith(color: AppColors.primaryVibrant)),
+                      Text(
+                        '-$discount%',
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: AppColors.primaryVibrant,
+                        ),
+                      ),
                     ],
                   ],
                 ),
@@ -122,7 +172,11 @@ class ProductPriceCard extends StatelessWidget {
               child: const SizedBox.square(
                 dimension: 40,
                 child: Center(
-                  child: HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01, size: 20, color: AppColors.grey700),
+                  child: HugeIcon(
+                    icon: HugeIcons.strokeRoundedArrowRight01,
+                    size: 20,
+                    color: AppColors.grey700,
+                  ),
                 ),
               ),
             ),
@@ -142,20 +196,34 @@ class ProductArticleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProductSectionCard(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.md,
+        AppSpacing.sm,
+      ),
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(context.l10n.productArticle, style: context.textTheme.titleSmall?.copyWith(color: AppColors.black, fontSize: 13)),
+                Text(
+                  context.l10n.productArticle,
+                  style: context.textTheme.titleSmall?.copyWith(
+                    color: AppColors.black,
+                    fontSize: 13,
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.xxs),
                 Text(
                   article,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.bodyMedium?.copyWith(color: AppColors.grey700, fontSize: 13),
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.grey700,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
@@ -175,21 +243,43 @@ class _CopyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.white,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => _copy(context),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.md),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(context.l10n.productCopy, style: context.textTheme.labelLarge?.copyWith(color: AppColors.black)),
-              const SizedBox(width: AppSpacing.sm),
-              const HugeIcon(icon: AppIcons.copy, size: 16, color: AppColors.black),
-            ],
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        // Figma: two drop shadows, #0E121B at 3.14% and 5.88%.
+        boxShadow: const [
+          BoxShadow(color: Color(0x080E121B), blurRadius: 4),
+          BoxShadow(
+            color: Color(0x0F0E121B),
+            blurRadius: 10,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => _copy(context),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.xl,
+              vertical: AppSpacing.md,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  context.l10n.productCopy,
+                  style: context.textTheme.labelLarge?.copyWith(
+                    color: AppColors.black,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                SvgPicture.asset(AppAssets.iconCopy, width: 18, height: 18),
+              ],
+            ),
           ),
         ),
       ),
@@ -216,9 +306,18 @@ class ProductDescriptionCard extends StatefulWidget {
 
   /// Paragraph and line breaks kept, tags and entities gone.
   static String plainText(String source) {
-    final spaced = source.replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n').replaceAll(RegExp(r'</(p|div|li|h[1-6]|tr)>', caseSensitive: false), '\n');
+    final spaced = source
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+        .replaceAll(
+          RegExp(r'</(p|div|li|h[1-6]|tr)>', caseSensitive: false),
+          '\n',
+        );
     final text = html.parse(spaced).documentElement?.text ?? '';
-    return text.replaceAll(' ', ' ').replaceAll(RegExp(r'[ \t]+\n'), '\n').replaceAll(RegExp(r'\n{3,}'), '\n\n').trim();
+    return text
+        .replaceAll(' ', ' ')
+        .replaceAll(RegExp(r'[ \t]+\n'), '\n')
+        .replaceAll(RegExp(r'\n{3,}'), '\n\n')
+        .trim();
   }
 
   @override
@@ -228,7 +327,8 @@ class ProductDescriptionCard extends StatefulWidget {
 class _ProductDescriptionCardState extends State<ProductDescriptionCard> {
   static const _collapsedLines = 5;
 
-  late final TapGestureRecognizer _tap = TapGestureRecognizer()..onTap = () => setState(() => _expanded = !_expanded);
+  late final TapGestureRecognizer _tap = TapGestureRecognizer()
+    ..onTap = () => setState(() => _expanded = !_expanded);
   bool _expanded = false;
 
   @override
@@ -242,21 +342,36 @@ class _ProductDescriptionCardState extends State<ProductDescriptionCard> {
     final text = ProductDescriptionCard.plainText(widget.description);
     if (text.isEmpty) return const SizedBox.shrink();
 
-    final body = context.textTheme.bodyMedium!.copyWith(color: AppColors.grey700);
+    final body = context.textTheme.bodyMedium!.copyWith(
+      color: AppColors.grey700,
+    );
     final link = body.copyWith(color: AppColors.info);
 
     return ProductSectionCard(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(context.l10n.productDescription, style: context.textTheme.titleMedium?.copyWith(color: AppColors.black)),
+          Text(
+            context.l10n.productDescription,
+            style: context.textTheme.titleMedium?.copyWith(
+              color: AppColors.black,
+            ),
+          ),
           const SizedBox(height: AppSpacing.sm),
           AnimatedSize(
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOut,
             alignment: Alignment.topCenter,
-            child: LayoutBuilder(builder: (context, constraints) => Text.rich(_span(context, text, constraints.maxWidth, body, link), style: body)),
+            child: LayoutBuilder(
+              builder: (context, constraints) => Text.rich(
+                _span(context, text, constraints.maxWidth, body, link),
+                style: body,
+              ),
+            ),
           ),
         ],
       ),
@@ -266,9 +381,21 @@ class _ProductDescriptionCardState extends State<ProductDescriptionCard> {
   /// The paragraph with the link on the end of it. Flutter drops any span
   /// past `maxLines`, so the text is measured and cut here, leaving exactly
   /// enough room for the link on the last line.
-  TextSpan _span(BuildContext context, String text, double maxWidth, TextStyle body, TextStyle link) {
+  TextSpan _span(
+    BuildContext context,
+    String text,
+    double maxWidth,
+    TextStyle body,
+    TextStyle link,
+  ) {
     final direction = Directionality.of(context);
-    final linkSpan = TextSpan(text: _expanded ? '  ${context.l10n.productReadLess}' : ' ${context.l10n.productReadMore}...', style: link, recognizer: _tap);
+    final linkSpan = TextSpan(
+      text: _expanded
+          ? '  ${context.l10n.productReadLess}'
+          : ' ${context.l10n.productReadMore}...',
+      style: link,
+      recognizer: _tap,
+    );
 
     if (_expanded) {
       return TextSpan(text: text, style: body, children: [linkSpan]);
@@ -285,13 +412,23 @@ class _ProductDescriptionCardState extends State<ProductDescriptionCard> {
       return TextSpan(text: text, style: body);
     }
 
-    final linkPainter = TextPainter(text: linkSpan, textDirection: direction)..layout();
-    final cut = painter.getPositionForOffset(Offset(maxWidth - linkPainter.width, painter.size.height - painter.preferredLineHeight / 2));
+    final linkPainter = TextPainter(text: linkSpan, textDirection: direction)
+      ..layout();
+    final cut = painter.getPositionForOffset(
+      Offset(
+        maxWidth - linkPainter.width,
+        painter.size.height - painter.preferredLineHeight / 2,
+      ),
+    );
     final end = painter.getOffsetBefore(cut.offset) ?? cut.offset;
     painter.dispose();
     linkPainter.dispose();
 
-    return TextSpan(text: '${text.substring(0, end).trimRight()}…', style: body, children: [linkSpan]);
+    return TextSpan(
+      text: '${text.substring(0, end).trimRight()}…',
+      style: body,
+      children: [linkSpan],
+    );
   }
 }
 
@@ -307,18 +444,23 @@ class ProductCharacteristicsCard extends StatefulWidget {
   final List<ProductAttribute> attributes;
 
   @override
-  State<ProductCharacteristicsCard> createState() => _ProductCharacteristicsCardState();
+  State<ProductCharacteristicsCard> createState() =>
+      _ProductCharacteristicsCardState();
 }
 
-class _ProductCharacteristicsCardState extends State<ProductCharacteristicsCard> {
+class _ProductCharacteristicsCardState
+    extends State<ProductCharacteristicsCard> {
   bool _expanded = false;
 
   @override
   Widget build(BuildContext context) {
     if (widget.attributes.isEmpty) return const SizedBox.shrink();
 
-    final rows = _expanded ? widget.attributes : widget.attributes.take(ProductCharacteristicsCard._preview);
-    final hasMore = widget.attributes.length > ProductCharacteristicsCard._preview;
+    final rows = _expanded
+        ? widget.attributes
+        : widget.attributes.take(ProductCharacteristicsCard._preview);
+    final hasMore =
+        widget.attributes.length > ProductCharacteristicsCard._preview;
 
     return ProductSectionCard(
       child: AnimatedSize(
@@ -328,12 +470,23 @@ class _ProductCharacteristicsCardState extends State<ProductCharacteristicsCard>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(context.l10n.productCharacteristics, style: context.textTheme.titleMedium?.copyWith(color: AppColors.black)),
+            Text(
+              context.l10n.productCharacteristics,
+              style: context.textTheme.titleMedium?.copyWith(
+                color: AppColors.black,
+              ),
+            ),
             const SizedBox(height: AppSpacing.md),
-            for (final row in rows) ProductCharacteristicRow(label: row.name, value: row.value),
+            for (final row in rows)
+              ProductCharacteristicRow(label: row.name, value: row.value),
             if (hasMore) ...[
               const SizedBox(height: AppSpacing.sm),
-              ProductOutlineButton(label: _expanded ? context.l10n.commonClose : context.l10n.productAllCharacteristics, onTap: () => setState(() => _expanded = !_expanded)),
+              ProductOutlineButton(
+                label: _expanded
+                    ? context.l10n.commonClose
+                    : context.l10n.productAllCharacteristics,
+                onTap: () => setState(() => _expanded = !_expanded),
+              ),
             ],
           ],
         ),
@@ -346,7 +499,11 @@ class _ProductCharacteristicsCardState extends State<ProductCharacteristicsCard>
 /// texts are capped at a share of the row rather than made flexible, which
 /// would wrap a long value and leave the leader dangling.
 class ProductCharacteristicRow extends StatelessWidget {
-  const ProductCharacteristicRow({super.key, required this.label, required this.value});
+  const ProductCharacteristicRow({
+    super.key,
+    required this.label,
+    required this.value,
+  });
 
   static const _labelShare = 0.42;
   static const _valueShare = 0.50;
@@ -363,28 +520,39 @@ class ProductCharacteristicRow extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: constraints.maxWidth * _labelShare),
+              constraints: BoxConstraints(
+                maxWidth: constraints.maxWidth * _labelShare,
+              ),
               child: Text(
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.textTheme.bodyMedium?.copyWith(color: AppColors.grey500),
+                style: context.textTheme.bodyMedium?.copyWith(
+                  color: AppColors.grey500,
+                ),
               ),
             ),
             const Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 6),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: 6,
+                ),
                 child: ProductDottedLine(),
               ),
             ),
             ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: constraints.maxWidth * _valueShare),
+              constraints: BoxConstraints(
+                maxWidth: constraints.maxWidth * _valueShare,
+              ),
               child: Text(
                 value,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.end,
-                style: context.textTheme.bodyMedium?.copyWith(color: AppColors.black),
+                style: context.textTheme.bodyMedium?.copyWith(
+                  color: AppColors.black,
+                ),
               ),
             ),
           ],
@@ -398,7 +566,12 @@ class ProductCharacteristicRow extends StatelessWidget {
 /// gradient pill; once the product is in the cart it steps back to a soft
 /// brand tint, still tappable since tapping takes it out again.
 class ProductStickyAddToCart extends StatelessWidget {
-  const ProductStickyAddToCart({super.key, required this.added, required this.onTap, this.enabled = true});
+  const ProductStickyAddToCart({
+    super.key,
+    required this.added,
+    required this.onTap,
+    this.enabled = true,
+  });
 
   static const _height = 56.0;
   static const _iconSlot = 24.0;
@@ -429,8 +602,19 @@ class ProductStickyAddToCart extends StatelessWidget {
             ? AppColors.primarySoft
             : null,
         borderRadius: BorderRadius.circular(AppRadius.pill),
-        border: Border.all(color: added && enabled ? AppColors.primary : Colors.transparent, width: 1.5),
-        boxShadow: added || !enabled ? null : [BoxShadow(color: AppColors.primary.withValues(alpha: 0.28), blurRadius: 16, offset: const Offset(0, 6))],
+        border: Border.all(
+          color: added && enabled ? AppColors.primary : Colors.transparent,
+          width: 1.5,
+        ),
+        boxShadow: added || !enabled
+            ? null
+            : [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.28),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -446,11 +630,22 @@ class ProductStickyAddToCart extends StatelessWidget {
                   SizedBox(
                     width: _iconSlot,
                     height: _iconSlot,
-                    child: HugeIcon(icon: AppIcons.check, size: 20, color: foreground),
+                    child: HugeIcon(
+                      icon: AppIcons.check,
+                      size: 20,
+                      color: foreground,
+                    ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
                 ],
-                Text(added ? context.l10n.commonAdded : context.l10n.commonAddToCart, style: context.textTheme.titleSmall?.copyWith(color: foreground)),
+                Text(
+                  added
+                      ? context.l10n.commonAdded
+                      : context.l10n.commonAddToCart,
+                  style: context.textTheme.titleSmall?.copyWith(
+                    color: foreground,
+                  ),
+                ),
               ],
             ),
           ),

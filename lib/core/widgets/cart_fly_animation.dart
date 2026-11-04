@@ -38,7 +38,11 @@ abstract final class CartFlyAnimation {
     );
   }
 
-  static void run({required BuildContext context, required Offset startCenter, String? image}) {
+  static void run({
+    required BuildContext context,
+    required Offset startCenter,
+    String? image,
+  }) {
     // No cart tab on screen (a full-screen page, a test) — nothing to fly to.
     final cartContext = cartIconKey.currentContext;
     if (cartContext == null) return;
@@ -78,11 +82,22 @@ class _FlyingThumb extends StatelessWidget {
         shape: BoxShape.circle,
         color: AppColors.white,
         border: Border.all(color: AppColors.primary, width: 2),
-        boxShadow: [BoxShadow(color: AppColors.black.withValues(alpha: 0.25), blurRadius: 8)],
-        image: image == null ? null : DecorationImage(image: image!, fit: BoxFit.cover),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.25),
+            blurRadius: 8,
+          ),
+        ],
+        image: image == null
+            ? null
+            : DecorationImage(image: image!, fit: BoxFit.cover),
       ),
       child: image == null
-          ? const HugeIcon(icon: AppIcons.cart, color: AppColors.primary, size: 18)
+          ? const HugeIcon(
+              icon: AppIcons.cart,
+              color: AppColors.primary,
+              size: 18,
+            )
           : null,
     );
   }
@@ -105,7 +120,8 @@ class _FlyingItem extends StatefulWidget {
   State<_FlyingItem> createState() => _FlyingItemState();
 }
 
-class _FlyingItemState extends State<_FlyingItem> with SingleTickerProviderStateMixin {
+class _FlyingItemState extends State<_FlyingItem>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _curve;
 
@@ -115,7 +131,10 @@ class _FlyingItemState extends State<_FlyingItem> with SingleTickerProviderState
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 650));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 650),
+    );
     _curve = CurvedAnimation(parent: _controller, curve: Curves.easeInCubic);
     _controller.forward().whenComplete(widget.onCompleted);
   }
@@ -135,7 +154,9 @@ class _FlyingItemState extends State<_FlyingItem> with SingleTickerProviderState
         final dx = ui.lerpDouble(widget.start.dx, widget.end.dx, t)!;
         // Parabola: the flight bulges upwards instead of cutting a straight
         // line down to the cart tab.
-        final dy = ui.lerpDouble(widget.start.dy, widget.end.dy, t)! - _arcHeight * t * (1 - t);
+        final dy =
+            ui.lerpDouble(widget.start.dy, widget.end.dy, t)! -
+            _arcHeight * t * (1 - t);
         final scale = ui.lerpDouble(1, 0.25, t)!;
         final opacity = t < 0.8 ? 1.0 : (1 - (t - 0.8) / 0.2).clamp(0.0, 1.0);
 

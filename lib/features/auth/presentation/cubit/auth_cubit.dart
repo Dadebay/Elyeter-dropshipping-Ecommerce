@@ -59,9 +59,8 @@ class AuthCubit extends Cubit<AuthState> {
   void onSignedIn(AppUser user) =>
       emit(AuthState(status: AuthStatus.authenticated, user: user));
 
-  void onUserUpdated(AppUser user) => emit(
-    AuthState(status: AuthStatus.authenticated, user: user),
-  );
+  void onUserUpdated(AppUser user) =>
+      emit(AuthState(status: AuthStatus.authenticated, user: user));
 
   /// The token was refused mid-session (401, or 403 `user-blocked`).
   void onSessionExpired(Failure failure) =>

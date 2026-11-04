@@ -27,9 +27,8 @@ class AppUser extends Equatable {
   final DateTime? lastLoginAt;
 
   /// What the profile header shows when the customer has not set a name.
-  String get displayName => (username?.trim().isNotEmpty ?? false)
-      ? username!.trim()
-      : phone;
+  String get displayName =>
+      (username?.trim().isNotEmpty ?? false) ? username!.trim() : phone;
 
   @override
   List<Object?> get props => [

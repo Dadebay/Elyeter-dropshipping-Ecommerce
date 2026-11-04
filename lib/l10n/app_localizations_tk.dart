@@ -50,6 +50,31 @@ class AppLocalizationsTk extends AppLocalizations {
       'Täze bildirişler şu ýerde peýda bolar.';
 
   @override
+  String get notificationsOverviewTitle => 'Elyeter-den täzelikler';
+
+  @override
+  String get notificationsOverviewMessage =>
+      'Teklipler we möhüm habarlar bir ýerde.';
+
+  @override
+  String get notificationsToday => 'Şu gün';
+
+  @override
+  String get notificationsYesterday => 'Düýn';
+
+  @override
+  String get notificationsEarlier => 'Öňki bildirişler';
+
+  @override
+  String get notificationsNew => 'Täze';
+
+  @override
+  String get notificationsLoadMore => 'Has köp görkez';
+
+  @override
+  String get notificationsRefresh => 'Täzele';
+
+  @override
   String get announcementsEmptyTitle => 'Heniz habar ýok';
 
   @override
@@ -149,6 +174,9 @@ class AppLocalizationsTk extends AppLocalizations {
   String get orderStepDelivered => 'Eltildi';
 
   @override
+  String get orderStepStopped => 'Togtadyldy';
+
+  @override
   String get orderProducts => 'Eltilýän harytlar';
 
   @override
@@ -164,6 +192,17 @@ class AppLocalizationsTk extends AppLocalizations {
 
   @override
   String get orderPickupPoint => 'Almak nokady';
+
+  @override
+  String get orderSelectAddressTitle => 'Salgyny saýlaň';
+
+  @override
+  String get orderSelectAddressMessage =>
+      'Sargyt bermezden öň salgy saýlaň ýa-da täze salgy goşuň.';
+
+  @override
+  String get orderAddressLoadFailed =>
+      'Salgylary ýükläp bolmady. Gaýtadan synanyşyň.';
 
   @override
   String get orderRecipient => 'Alyjy';
@@ -197,6 +236,10 @@ class AppLocalizationsTk extends AppLocalizations {
 
   @override
   String get orderDownloadCheck => 'Çeki ýükle';
+
+  @override
+  String get orderCargoNote =>
+      'Bellik: Kargo bahasy haryt gelenden soň hasaplanylýar.';
 
   @override
   String get categoryFilterMaterial => 'Material';
@@ -473,6 +516,9 @@ class AppLocalizationsTk extends AppLocalizations {
       'Näme göwnüňize ýarady? Nämäni gowulandyryp bolar?';
 
   @override
+  String get reviewHowRate => 'Bu haryda nähili baha berýärsiňiz?';
+
+  @override
   String get reviewSubmit => 'Teswiri iber';
 
   @override
@@ -498,6 +544,56 @@ class AppLocalizationsTk extends AppLocalizations {
 
   @override
   String get reviewDeleteMessage => 'Soňra täze teswir ýazyp bilersiňiz.';
+
+  @override
+  String get reviewHelpful => 'Peýdaly';
+
+  @override
+  String get reviewSortBy => 'Tertiplemek';
+
+  @override
+  String get reviewRatingFilter => 'Baha';
+
+  @override
+  String get reviewSortNewest => 'Täzeler ilki';
+
+  @override
+  String get reviewSortOldest => 'Köneler ilki';
+
+  @override
+  String get reviewSortMostLiked => 'Iň köp like';
+
+  @override
+  String get reviewSortMostDisliked => 'Iň köp dislike';
+
+  @override
+  String get reviewSortWithPhotos => 'Suratly';
+
+  @override
+  String get reviewSortWithoutPhotos => 'Suratsyz';
+
+  @override
+  String get reviewAllRatings => 'Ähli bahalar';
+
+  @override
+  String get reviewAddPhotos => 'Surat goş';
+
+  @override
+  String get reviewPhotoLimit => '5 suratdan köp däl';
+
+  @override
+  String get reviewPhotoUploadError => 'Surat ýüklenmedi.';
+
+  @override
+  String get reviewNoMatches => 'Bu süzgüçler boýunça syn ýok';
+
+  @override
+  String get reviewHiddenNotice => 'Synyňyz beýlekilerden gizlenen';
+
+  @override
+  String reviewHelpfulCount(int count) {
+    return 'Peýdaly ($count)';
+  }
 
   @override
   String productRatingCount(int count) {
@@ -605,6 +701,14 @@ class AppLocalizationsTk extends AppLocalizations {
   @override
   String get activeOrdersEmptyMessage =>
       'Dowam edýän sargytlaryňyz şu ýerde görüner.';
+
+  @override
+  String get orderStatusDelivered => 'Gowşuryldy';
+
+  @override
+  String orderItemsFor(int count, String amount) {
+    return '$count haryt, $amount';
+  }
 
   @override
   String orderItemCount(int count) {
@@ -1194,4 +1298,196 @@ class AppLocalizationsTk extends AppLocalizations {
 
   @override
   String get profileDeleteDone => 'Hasabyňyz pozuldy.';
+
+  @override
+  String get commonOk => 'Bolýar';
+
+  @override
+  String get errorPaymentBankFailed =>
+      'Bank tölegi kabul etmedi. Soňrak synanyşyň ýa-da başga bank saýlaň.';
+
+  @override
+  String get errorPreOrderAlreadyPaid => 'Bu sargyt eýýäm tölenildi.';
+
+  @override
+  String get errorPreOrderNotPayable =>
+      'Bu sargydy indi onlaýn tölemek bolmaýar.';
+
+  @override
+  String get errorBankNotFound =>
+      'Bu bank häzir elýeterli däl. Başgasyny saýlaň.';
+
+  @override
+  String get errorProductRequestInvalidLink =>
+      'Bu tekstde AliExpress haryt salgysy tapylmady.';
+
+  @override
+  String get paymentTitle => 'Töleg';
+
+  @override
+  String get paymentChooseBank => 'Bank saýlaň';
+
+  @override
+  String get paymentChooseBankHint =>
+      'Kart maglumatlaryny bankyň sahypasynda girizersiňiz.';
+
+  @override
+  String get paymentNoBanks => 'Onlaýn töleg häzir elýeterli däl.';
+
+  @override
+  String get paymentPayOnlineTitle => 'Onlaýn töle';
+
+  @override
+  String get paymentPayOnlineMessage =>
+      'Sargydy häzir kart bilen töläň — jaňa garaşmagyň zerurlygy ýok.';
+
+  @override
+  String get paymentPay => 'Töle';
+
+  @override
+  String get paymentPaid => 'Onlaýn tölenildi';
+
+  @override
+  String get paymentChecking => 'Töleg barlanýar…';
+
+  @override
+  String get paymentCheckingMessage => 'Bu birnäçe sekunt alar.';
+
+  @override
+  String get paymentSuccess => 'Töleg üstünlikli geçdi';
+
+  @override
+  String get paymentSuccessMessage => 'Sargydyňyz tölenildi. Sag boluň!';
+
+  @override
+  String get paymentFailed => 'Töleg geçmedi';
+
+  @override
+  String get paymentFailedMessage =>
+      'Bank tölegi ret etdi. Gaýtadan synanyşyň ýa-da başga bank saýlaň.';
+
+  @override
+  String get paymentPending => 'Töleg barlanýar';
+
+  @override
+  String get paymentPendingMessage =>
+      'Bank tölegi entek tassyklamady. Tassyklan badyna sargyt tölenen diýlip bellener.';
+
+  @override
+  String get paymentNotCompletedMessage =>
+      'Töleg tamamlanmady. Eger kartyňyzdan pul alnan bolsa, sargyt birnäçe minudyň dowamynda tölenen diýlip bellener.';
+
+  @override
+  String get paymentTryAgain => 'Gaýtadan synanyş';
+
+  @override
+  String get productRequestTitle => 'Bize salgy iberiň';
+
+  @override
+  String get productRequestMessage =>
+      'Haryt tapmadyňyzmy? AliExpress salgysyny goýuň, biz ony kataloga goşarys.';
+
+  @override
+  String get productRequestHint => 'AliExpress salgysy ýa-da paýlaşmak teksti';
+
+  @override
+  String get productRequestPaste => 'Goý';
+
+  @override
+  String get productRequestSend => 'Salgyny iber';
+
+  @override
+  String get productRequestSendAnother => 'Başga salgy iber';
+
+  @override
+  String get productRequestMine => 'Haryt haýyşlarym';
+
+  @override
+  String get productRequestSearchAction => 'Haryt salgysyny iber';
+
+  @override
+  String get productRequestLoadingTitle => 'Haryt ýüklenýär…';
+
+  @override
+  String get productRequestLoadingMessage =>
+      'Bu adatça bir minuda çenli wagt alýar.';
+
+  @override
+  String get productRequestLaterTitle => 'Size habar bereris';
+
+  @override
+  String get productRequestLaterMessage =>
+      'Bu birneme köp wagt alýar. Haryt elýeterli bolanda size bildiriş ibereris.';
+
+  @override
+  String get productRequestReviewTitle => 'Barlagda';
+
+  @override
+  String get productRequestReviewMessage =>
+      'Haryt barlanýar. Elýeterli bolanda size habar bereris.';
+
+  @override
+  String get productRequestRejectedTitle => 'Elýeterli däl';
+
+  @override
+  String get productRequestRejectedMessage =>
+      'Bagyşlaň, bu harydy satyp bilmeýäris.';
+
+  @override
+  String get productRequestFailedTitle => 'Ýüklenip bilmedi';
+
+  @override
+  String get productRequestFailedMessage =>
+      'Haryt AliExpress-den ýüklenip bilmedi. Ol satuwdan aýrylan bolmagy mümkin.';
+
+  @override
+  String get productRequestAvailableTitle => 'Haryt goşuldy';
+
+  @override
+  String get productRequestAvailableMessage =>
+      'Haryt katalogda. Ony «Haryt haýyşlarym» bölüminde tapyň.';
+
+  @override
+  String get productRequestStatusProcessing => 'Ýüklenýär';
+
+  @override
+  String get productRequestStatusInReview => 'Barlagda';
+
+  @override
+  String get productRequestStatusAvailable => 'Elýeterli';
+
+  @override
+  String get productRequestStatusRejected => 'Ret edildi';
+
+  @override
+  String get productRequestStatusFailed => 'Ýüklenmedi';
+
+  @override
+  String get productRequestEmptyTitle => 'Heniz haýyş ýok';
+
+  @override
+  String get errorImageSearchInvalidImage =>
+      'JPEG, PNG ýa-da WebP surat ulanyň.';
+
+  @override
+  String get errorImageSearchInProgress =>
+      'Öňki gözleg heniz ugradylýar. Garaşyň.';
+
+  @override
+  String get errorImageSearchUnavailable =>
+      'Gözleg wagtlaýyn elýeterli däl. Soňrak synanşyň.';
+
+  @override
+  String get imageSearchTitle => 'Surat boýunça gözleg';
+
+  @override
+  String get imageSearchSearching => 'Ýene gözleýäris…';
+
+  @override
+  String get imageSearchEmpty => 'Entek meňzeş zat ýok';
+
+  @override
+  String imageSearchRateLimited(int minutes) {
+    return 'Gözleg çägi doldy. $minutes min soň synanşyň.';
+  }
 }
