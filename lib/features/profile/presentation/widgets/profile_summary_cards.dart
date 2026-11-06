@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/extensions/context_extensions.dart';
+
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -125,7 +127,9 @@ class _Card extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Material(
-      color: isDark ? AppColors.surfaceDark : AppColors.surfaceMuted,
+      color: isDark
+          ? AppColors.surfaceDark
+          : context.adapt(AppColors.surfaceMuted, AppColors.categoryDark),
       borderRadius: BorderRadius.circular(AppRadius.lg),
       clipBehavior: Clip.antiAlias,
       child: InkWell(

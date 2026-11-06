@@ -286,8 +286,10 @@ abstract final class AppRouter {
         path: AppRoutes.imageSearch.path,
         name: AppRoutes.imageSearch.name,
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            ImageSearchPage(imagePath: state.extra as String),
+        builder: (context, state) => ImageSearchPage(
+          imagePath: state.extra as String?,
+          searchId: int.tryParse(state.uri.queryParameters['id'] ?? ''),
+        ),
       ),
       GoRoute(
         path: AppRoutes.search.path,

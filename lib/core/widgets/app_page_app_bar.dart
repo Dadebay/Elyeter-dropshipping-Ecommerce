@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../utils/extensions/context_extensions.dart';
+
 import '../theme/app_colors.dart';
 import 'app_back_button.dart';
 
@@ -25,6 +27,7 @@ class AppPageAppBar extends StatelessWidget implements PreferredSizeWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AppBar(
+      clipBehavior: Clip.none,
       centerTitle: true,
       leadingWidth: AppBackButton.leadingWidth,
       leading: AppBackButton.appBarLeading(onPressed: onBack),
@@ -32,7 +35,7 @@ class AppPageAppBar extends StatelessWidget implements PreferredSizeWidget {
         title,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.w700,
-          color: isDark ? AppColors.white : AppColors.ink,
+          color: isDark ? AppColors.white : context.inkColor,
         ),
       ),
       actions: actions,

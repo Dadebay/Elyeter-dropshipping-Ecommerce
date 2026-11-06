@@ -25,8 +25,8 @@ Future<Payment?> showBankPickerSheet(
   context: context,
   useRootNavigator: true,
   isScrollControlled: true,
-  backgroundColor: AppColors.white,
-  barrierColor: AppColors.black.withValues(alpha: 0.45),
+  backgroundColor: context.adapt(AppColors.white, AppColors.categoryDark),
+  barrierColor: AppColors.black.withValues(alpha: context.isDark ? 0.7 : 0.45),
   shape: const RoundedRectangleBorder(
     borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
   ),
@@ -91,7 +91,10 @@ class _BankPickerSheetState extends State<_BankPickerSheet> {
               height: 4,
               margin: const EdgeInsets.symmetric(vertical: AppSpacing.md),
               decoration: BoxDecoration(
-                color: AppColors.grey300,
+                color: context.adapt(
+                  AppColors.grey300,
+                  const Color(0xFF404040),
+                ),
                 borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
             ),
@@ -106,7 +109,7 @@ class _BankPickerSheetState extends State<_BankPickerSheet> {
             child: Text(
               l10n.paymentChooseBank,
               style: theme.titleLarge?.copyWith(
-                color: AppColors.black,
+                color: context.inkColor,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -221,7 +224,7 @@ class _BankTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.grey100,
+      color: context.adapt(AppColors.grey100, AppColors.categoryDark),
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -251,7 +254,7 @@ class _BankTile extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: context.textTheme.titleSmall?.copyWith(
-                    color: AppColors.black,
+                    color: context.inkColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

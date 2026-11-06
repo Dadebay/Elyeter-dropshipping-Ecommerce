@@ -18,7 +18,7 @@ class AppNetworkImage extends StatelessWidget {
     this.alignment = Alignment.center,
     this.radius = AppRadius.md,
     this.fallbackIconSize,
-    this.fallbackColor = AppColors.grey100,
+    this.fallbackColor,
     this.onLoadFailed,
     this.wordmarkPlaceholder = false,
     this.wordmarkSize = 18,
@@ -37,7 +37,9 @@ class AppNetworkImage extends StatelessWidget {
   /// Size of the glyph shown when there is no image. Null lets the icon
   /// take the package default.
   final double? fallbackIconSize;
-  final Color fallbackColor;
+
+  /// Defaults to the theme's muted fill (dark: #262626).
+  final Color? fallbackColor;
   final VoidCallback? onLoadFailed;
 
   /// While the image loads, show the sweeping "elýeter" wordmark instead of a
@@ -49,7 +51,7 @@ class AppNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final child = url == null || url!.isEmpty
-        ? _fallback()
+        ? _fallback(context)
         : CachedNetworkImage(
             imageUrl: url!,
             width: width,
@@ -58,30 +60,39 @@ class AppNetworkImage extends StatelessWidget {
             alignment: alignment,
             placeholder: (_, _) => wordmarkPlaceholder
                 ? ElyeterShimmerBox(radius: 0, wordmarkSize: wordmarkSize)
-                : _shimmer(),
+                : _shimmer(context),
             errorWidget: (_, _, _) {
               if (onLoadFailed != null) {
                 WidgetsBinding.instance.addPostFrameCallback(
                   (_) => onLoadFailed!(),
                 );
               }
-              return _fallback();
+              return _fallback(context);
             },
           );
 
     return ClipRRect(borderRadius: BorderRadius.circular(radius), child: child);
   }
 
-  Widget _shimmer() => Shimmer.fromColors(
-    baseColor: AppColors.grey100,
-    highlightColor: AppColors.white,
-    child: Container(width: width, height: height, color: AppColors.grey100),
-  );
+  Widget _shimmer(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final base = isDark ? AppColors.categoryDark : AppColors.grey100;
 
-  Widget _fallback() => Container(
+    return Shimmer.fromColors(
+      baseColor: base,
+      highlightColor: isDark ? const Color(0xFF3A3A3A) : AppColors.white,
+      child: Container(width: width, height: height, color: base),
+    );
+  }
+
+  Widget _fallback(BuildContext context) => Container(
     width: width,
     height: height,
-    color: fallbackColor,
+    color:
+        fallbackColor ??
+        (Theme.of(context).brightness == Brightness.dark
+            ? AppColors.categoryDark
+            : AppColors.grey100),
     // Without a size the glyph keeps filling its box, as it always has;
     // with one it is drawn at that size in the middle.
     child: fallbackIconSize == null

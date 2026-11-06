@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/extensions/context_extensions.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 
@@ -88,7 +90,7 @@ class LegalDocumentView extends StatelessWidget {
               child: Text(
                 section.body,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.grey700,
+                  color: context.adapt(AppColors.grey700, AppColors.iconSoft),
                   height: 1.55,
                 ),
               ),

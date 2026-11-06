@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/widgets/app_close_button.dart';
+
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -23,8 +25,10 @@ Future<void> showOrderItemsSheet(
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    backgroundColor: AppColors.white,
-    barrierColor: AppColors.black.withValues(alpha: 0.45),
+    backgroundColor: context.adapt(AppColors.white, AppColors.categoryDark),
+    barrierColor: AppColors.black.withValues(
+      alpha: context.isDark ? 0.7 : 0.45,
+    ),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
     ),
@@ -69,7 +73,7 @@ class _ItemsSheet extends StatelessWidget {
             height: 4,
             margin: const EdgeInsets.symmetric(vertical: AppSpacing.md),
             decoration: BoxDecoration(
-              color: AppColors.grey300,
+              color: context.adapt(AppColors.grey300, const Color(0xFF404040)),
               borderRadius: BorderRadius.circular(AppRadius.pill),
             ),
           ),
@@ -89,7 +93,7 @@ class _ItemsSheet extends StatelessWidget {
                       Text(
                         l10n.orderProducts,
                         style: theme.titleLarge?.copyWith(
-                          color: AppColors.black,
+                          color: context.inkColor,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -104,30 +108,14 @@ class _ItemsSheet extends StatelessWidget {
                     ],
                   ),
                 ),
-                Material(
-                  color: AppColors.background,
-                  shape: const CircleBorder(),
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    onTap: () => Navigator.of(context).maybePop(),
-                    child: const SizedBox(
-                      width: 32,
-                      height: 32,
-                      child: Center(
-                        child: HugeIcon(
-                          icon: AppIcons.close,
-                          size: 14,
-                          strokeWidth: 2.2,
-                          color: AppColors.grey700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                const AppCloseButton(),
               ],
             ),
           ),
-          const Divider(height: 1, color: AppColors.grey100),
+          Divider(
+            height: 1,
+            color: context.adapt(AppColors.grey100, AppColors.backgroundDark),
+          ),
           Flexible(
             child: ListView.separated(
               shrinkWrap: true,
@@ -138,8 +126,13 @@ class _ItemsSheet extends StatelessWidget {
                 AppSpacing.md,
               ),
               itemCount: order.items.length,
-              separatorBuilder: (_, _) =>
-                  const Divider(height: 1, color: AppColors.grey100),
+              separatorBuilder: (_, _) => Divider(
+                height: 1,
+                color: context.adapt(
+                  AppColors.grey100,
+                  AppColors.backgroundDark,
+                ),
+              ),
               itemBuilder: (context, index) {
                 final item = order.items[index];
                 return _ItemRow(
@@ -153,7 +146,10 @@ class _ItemsSheet extends StatelessWidget {
               },
             ),
           ),
-          const Divider(height: 1, color: AppColors.grey100),
+          Divider(
+            height: 1,
+            color: context.adapt(AppColors.grey100, AppColors.backgroundDark),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.xl,
@@ -166,13 +162,18 @@ class _ItemsSheet extends StatelessWidget {
                 Expanded(
                   child: Text(
                     l10n.orderTotalTitle,
-                    style: theme.titleSmall?.copyWith(color: AppColors.grey700),
+                    style: theme.titleSmall?.copyWith(
+                      color: context.adapt(
+                        AppColors.grey700,
+                        AppColors.iconSoft,
+                      ),
+                    ),
                   ),
                 ),
                 Text(
                   '${CurrencyFormatter.amount(order.totalPrice, locale: l10n.localeName, decimals: 2)} ${order.currency}',
                   style: theme.titleLarge?.copyWith(
-                    color: AppColors.black,
+                    color: context.inkColor,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -216,7 +217,10 @@ class _ItemRow extends StatelessWidget {
               child: SizedBox.square(
                 dimension: _thumb,
                 child: ColoredBox(
-                  color: AppColors.grey100,
+                  color: context.adapt(
+                    AppColors.grey100,
+                    AppColors.backgroundDark,
+                  ),
                   child: photo == null
                       ? const Center(
                           child: HugeIcon(
@@ -243,7 +247,7 @@ class _ItemRow extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.bodyMedium?.copyWith(
-                      color: AppColors.black,
+                      color: context.inkColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -251,7 +255,10 @@ class _ItemRow extends StatelessWidget {
                     const SizedBox(height: AppSpacing.xs),
                     DecoratedBox(
                       decoration: BoxDecoration(
-                        color: AppColors.grey100,
+                        color: context.adapt(
+                          AppColors.grey100,
+                          AppColors.backgroundDark,
+                        ),
                         borderRadius: BorderRadius.circular(AppRadius.xs),
                       ),
                       child: Padding(
@@ -264,7 +271,10 @@ class _ItemRow extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.labelSmall?.copyWith(
-                            color: AppColors.grey700,
+                            color: context.adapt(
+                              AppColors.grey700,
+                              AppColors.iconSoft,
+                            ),
                           ),
                         ),
                       ),
@@ -283,7 +293,7 @@ class _ItemRow extends StatelessWidget {
                       Text(
                         '${CurrencyFormatter.amount(item.lineTotal, locale: context.l10n.localeName)} ${AppConstants.currencySymbol}',
                         style: theme.titleSmall?.copyWith(
-                          color: AppColors.black,
+                          color: context.inkColor,
                           fontWeight: FontWeight.w800,
                         ),
                       ),

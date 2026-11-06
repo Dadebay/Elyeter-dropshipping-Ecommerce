@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -136,9 +138,14 @@ class ProductCard extends StatelessWidget {
             data.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
+            // Figma: Inter Display Medium 12 / 16, letter spacing -0.6%,
+            // text/sub-600 (#5C5C5C).
             style: context.textTheme.bodyMedium?.copyWith(
-              color: AppColors.grey700,
-              fontWeight: FontWeight.w400,
+              color: const Color(0xFF5C5C5C),
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              height: 16 / 12,
+              letterSpacing: -12 * 0.006,
             ),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -436,10 +443,11 @@ class _Dots extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shown = count.clamp(0, _maxDots);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: isDark ? AppColors.categoryDark : AppColors.white,
         borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Padding(
@@ -455,7 +463,9 @@ class _Dots extends StatelessWidget {
                 width: i == index ? 10 : 5,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: i == index ? AppColors.grey900 : AppColors.grey300,
+                  color: i == index
+                      ? (isDark ? AppColors.white : AppColors.grey900)
+                      : (isDark ? AppColors.grey700 : AppColors.grey300),
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
               ),
@@ -525,78 +535,177 @@ class _AddToCartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foreground = added ? AppColors.white : Colors.black;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final idleForeground = isDark ? AppColors.white : Colors.black;
+    final idleFill = isDark ? AppColors.categoryDark : const Color(0xFFF3F5F7);
     final radius = BorderRadius.circular(AppRadius.md);
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
-      curve: Curves.easeOut,
-      // Always the cell's full width. The Column above hands its children
-      // loose width, and a Stack would otherwise shrink to its label — so
-      // "Added" came out narrower than "Add to Card".
-      width: double.infinity,
-      height: _height,
-      decoration: BoxDecoration(
-        color: added ? AppColors.primary : const Color(0xFFF3F5F7),
-        borderRadius: radius,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: radius,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // The glyph holds the left edge and the label the middle, as
-              // the design draws it, rather than the two huddled together.
-              Positioned(
-                left: _edgeInset,
-                child: SizedBox(
-                  width: _iconSlot,
-                  height: _iconSlot,
-                  child: Center(
-                    child: added
-                        ? HugeIcon(
-                            icon: AppIcons.check,
-                            size: _iconSize,
-                            color: foreground,
-                          )
-                        : SvgPicture.asset(
-                            AppAssets.iconShoppingBagOutline,
-                            width: _iconSize,
-                            height: _iconSize,
-                            colorFilter: ColorFilter.mode(
-                              foreground,
-                              BlendMode.srcIn,
+    // The brand colour grows in from both side edges and meets in the
+    // middle; tapping again pulls it back out the same way.
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(end: added ? 1 : 0),
+      duration: const Duration(milliseconds: 620),
+      curve: Curves.easeInOutCubic,
+      builder: (context, progress, _) {
+        final foreground = Color.lerp(
+          idleForeground,
+          AppColors.white,
+          Curves.easeIn.transform(progress),
+        )!;
+        final showTick = progress >= 0.5;
+
+        return SizedBox(
+          // Always the cell's full width. The Column above hands its
+          // children loose width, and a Stack would otherwise shrink to its
+          // label, so "Added" came out narrower than "Add to Card".
+          width: double.infinity,
+          height: _height,
+          child: ClipRRect(
+            borderRadius: radius,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ColoredBox(color: idleFill),
+                if (progress > 0)
+                  Positioned.fill(
+                    child: CustomPaint(
+                      painter: _LiquidFillPainter(
+                        progress: progress,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: onTap,
+                    borderRadius: radius,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // The glyph holds the left edge and the label the middle, as
+                        // the design draws it, rather than the two huddled together.
+                        Positioned(
+                          left: _edgeInset,
+                          child: SizedBox(
+                            width: _iconSlot,
+                            height: _iconSlot,
+                            child: Center(
+                              child: showTick
+                                  ? HugeIcon(
+                                      icon: AppIcons.check,
+                                      size: _iconSize,
+                                      color: foreground,
+                                    )
+                                  : SvgPicture.asset(
+                                      AppAssets.iconShoppingBagOutline,
+                                      width: _iconSize,
+                                      height: _iconSize,
+                                      colorFilter: ColorFilter.mode(
+                                        foreground,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
                             ),
                           ),
-                  ),
-                ),
-              ),
-              // Clear of the glyph on both sides, so the label stays centred
-              // and never runs under it. Scaled down rather than cut if the
-              // cell is too narrow for it: the whole label always shows.
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: _iconSlot + _edgeInset + AppSpacing.xs,
-                ),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    style: context.textTheme.titleSmall?.copyWith(
-                      color: foreground,
-                      fontWeight: FontWeight.w500,
+                        ),
+                        // Clear of the glyph on both sides, so the label stays centred
+                        // and never runs under it. Scaled down rather than cut if the
+                        // cell is too narrow for it: the whole label always shows.
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: _iconSlot + _edgeInset + AppSpacing.xs,
+                          ),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              label,
+                              maxLines: 1,
+                              // Figma: Inter Display Medium 14 / 20, letter spacing -2%.
+                              style: context.textTheme.titleSmall?.copyWith(
+                                color: foreground,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                height: 20 / 14,
+                                letterSpacing: -14 * 0.02,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
+}
+
+/// Two liquid fronts, one pouring in from each side edge. Their leading edges
+/// bulge and ripple while they travel, then settle flat as they meet in the
+/// middle, so the motion reads as liquid rather than a wipe.
+class _LiquidFillPainter extends CustomPainter {
+  const _LiquidFillPainter({required this.progress, required this.color});
+
+  final double progress;
+  final Color color;
+
+  /// How far the front may bulge past its mean position, in logical pixels.
+  static const _bulge = 16.0;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..isAntiAlias = true;
+
+    // The ripple is strongest mid-way and gone at both ends, so the fill
+    // starts and finishes with a clean edge.
+    final energy = math.sin(progress * math.pi);
+    final amplitude = _bulge * energy;
+    final phase = progress * math.pi * 3;
+
+    // Each front travels half the width, plus the bulge so the two overlap
+    // at the end and leave no seam.
+    final travel = progress * (size.width / 2 + _bulge);
+
+    final left = Path()..moveTo(0, 0);
+    for (var y = 0.0; y <= size.height; y += 2) {
+      left.lineTo(travel + _edge(y / size.height, amplitude, phase), y);
+    }
+    left
+      ..lineTo(0, size.height)
+      ..close();
+
+    final right = Path()..moveTo(size.width, 0);
+    for (var y = 0.0; y <= size.height; y += 2) {
+      // Mirrored, with the ripple in counter-phase.
+      right.lineTo(
+        size.width - travel - _edge(y / size.height, amplitude, -phase),
+        y,
+      );
+    }
+    right
+      ..lineTo(size.width, size.height)
+      ..close();
+
+    canvas
+      ..drawPath(left, paint)
+      ..drawPath(right, paint);
+  }
+
+  /// A rounded nose in the middle of the front, with a ripple riding on it.
+  static double _edge(double t, double amplitude, double phase) {
+    final nose = math.cos(math.pi * (t - 0.5));
+    final ripple = math.sin(t * math.pi * 2 + phase);
+    return amplitude * (0.75 * nose + 0.25 * ripple);
+  }
+
+  @override
+  bool shouldRepaint(_LiquidFillPainter oldDelegate) =>
+      oldDelegate.progress != progress || oldDelegate.color != color;
 }

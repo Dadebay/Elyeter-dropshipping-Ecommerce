@@ -419,7 +419,7 @@ class AppLocalizationsTk extends AppLocalizations {
   String get productArticle => 'Haryt kody:';
 
   @override
-  String get productPriceDetails => 'Bahanyň jikme-jigi';
+  String get productPriceDetails => 'Baha barada';
 
   @override
   String get productPricePerItem => 'Bir harydyň bahasy';
@@ -892,8 +892,19 @@ class AppLocalizationsTk extends AppLocalizations {
       'Ýerleşişi alyp bolmady. Kartadan saýlaň.';
 
   @override
+  String get addressLocationServiceOff =>
+      'Ýerleşiş hyzmaty öçük. Sazlamalardan açyň ýa-da kartadan saýlaň.';
+
+  @override
+  String get addressLocationPermissionDenied =>
+      'Ýerleşişe rugsat berilmedi. Sazlamalardan rugsat beriň ýa-da kartadan saýlaň.';
+
+  @override
+  String get addressOpenSettings => 'Sazlamalary aç';
+
+  @override
   String get addressLookupFailed =>
-      'Köçe salgysy tapylmady. Koordinatlar goşuldy; salgyny özüňiz ýazyň.';
+      'Köçe salgysy tapylmady. Salgyny özüňiz ýazyň.';
 
   @override
   String get addressEmptyTitle => 'Heniz salgy saklanmady';
@@ -942,7 +953,7 @@ class AppLocalizationsTk extends AppLocalizations {
   String get profileCallTitle => 'Ähli soraglar üçin jaň ediň:';
 
   @override
-  String get profileCallAction => 'Operatora jaň et';
+  String get profileCallAction => 'Jaň et';
 
   @override
   String get profileCallHours =>
@@ -1490,4 +1501,12 @@ class AppLocalizationsTk extends AppLocalizations {
   String imageSearchRateLimited(int minutes) {
     return 'Gözleg çägi doldy. $minutes min soň synanşyň.';
   }
+
+  @override
+  String imageSearchInReview(int count) {
+    return 'Suratyňyz işlenildi. Ýene $count haryt moderator tarapyndan barlanýar — habarnama ugradarys.';
+  }
+
+  @override
+  String get imageSearchFailed => 'AliExpress-den harytlary ýükläp bolmady.';
 }

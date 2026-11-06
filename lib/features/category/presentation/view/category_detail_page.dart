@@ -211,7 +211,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
             SubcategoryItem(
               id: child.slug,
               name: child.name,
-              imageUrl: child.imageSmall ?? child.imageLarge,
+              imageUrl: child.imageLarge ?? child.imageSmall,
             ),
         ],
         onTap: (child) => context.pushNamed(
@@ -224,6 +224,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
+        clipBehavior: Clip.none,
         leadingWidth: AppBackButton.leadingWidth,
         leading: const AppBackButton.appBarLeading(),
         titleSpacing: 0,

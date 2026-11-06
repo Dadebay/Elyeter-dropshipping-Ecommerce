@@ -64,7 +64,7 @@ class OrderInfoRow extends StatelessWidget {
               Text(
                 value,
                 style: context.textTheme.titleSmall?.copyWith(
-                  color: AppColors.black,
+                  color: context.inkColor,
                   height: 1.4,
                 ),
               ),

@@ -43,8 +43,12 @@ abstract final class AppColors {
   static const white = Color(0xFFFFFFFF);
 
   // Dark surfaces
-  static const backgroundDark = Color(0xFF121212);
+  static const backgroundDark = Color(0xFF171717);
   static const surfaceDark = Color(0xFF1E1E1E);
+
+  /// Category card fill behind the (transparent) artwork: dark / light mode.
+  static const categoryDark = Color(0xFF262626);
+  static const categoryLight = Color(0xFFF7F7F7);
 
   // Semantic — order statuses in the designs
   static const success = Color(0xFF2ECC71);

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/extensions/context_extensions.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 
@@ -10,7 +12,7 @@ class ProductSectionCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(AppSpacing.lg),
-    this.color = AppColors.background,
+    this.color,
     this.bordered = false,
     this.onTap,
   });
@@ -20,7 +22,8 @@ class ProductSectionCard extends StatelessWidget {
 
   /// The block's fill. Defaults to the page's soft grey; pass white for a
   /// control that has to read as raised against it.
-  final Color color;
+  /// Defaults to the soft grey block (dark: #262626).
+  final Color? color;
 
   /// Outlines the block. A white block on the white page needs it to read as
   /// a control rather than as empty space.
@@ -32,13 +35,19 @@ class ProductSectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: color,
+      color:
+          color ?? context.adapt(AppColors.background, AppColors.categoryDark),
       clipBehavior: Clip.antiAlias,
       // Shape only: [Material] rejects `shape` and `borderRadius` together.
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.lg),
         side: bordered
-            ? const BorderSide(color: AppColors.grey300)
+            ? BorderSide(
+                color: context.adapt(
+                  AppColors.grey300,
+                  const Color(0xFF404040),
+                ),
+              )
             : BorderSide.none,
       ),
       child: InkWell(
@@ -54,24 +63,32 @@ class ProductDottedLine extends StatelessWidget {
   const ProductDottedLine({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      const SizedBox(height: 1, child: CustomPaint(painter: _DotsPainter()));
+  Widget build(BuildContext context) => SizedBox(
+    height: 1,
+    child: CustomPaint(
+      painter: _DotsPainter(
+        context.adapt(AppColors.grey300, const Color(0xFF404040)),
+      ),
+    ),
+  );
 }
 
 class _DotsPainter extends CustomPainter {
-  const _DotsPainter();
+  const _DotsPainter(this.color);
+
+  final Color color;
 
   static const _radius = 0.7;
   static const _step = 4.0;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = AppColors.grey300;
+    final paint = Paint()..color = color;
     for (var x = 0.0; x < size.width; x += _step) {
       canvas.drawCircle(Offset(x, size.height / 2), _radius, paint);
     }
   }
 
   @override
-  bool shouldRepaint(_DotsPainter oldDelegate) => false;
+  bool shouldRepaint(_DotsPainter oldDelegate) => oldDelegate.color != color;
 }

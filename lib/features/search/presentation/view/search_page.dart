@@ -37,6 +37,10 @@ class _SearchPageState extends State<SearchPage> {
   Failure? _suggestionFailure;
   Failure? _productFailure;
   String? _submitted;
+
+  /// What the customer has typed (after a short pause): its products are
+  /// listed as cards straight away, without needing to press search.
+  String? _live;
   int _request = 0;
   Animation<double>? _routeAnimation;
   bool _initialFocusRequested = false;
@@ -109,11 +113,14 @@ class _SearchPageState extends State<SearchPage> {
       _suggestionFailure = null;
       _productFailure = null;
     });
-    if (query.length < 2) return;
-    _debounce = Timer(
-      const Duration(milliseconds: 300),
-      () => _loadSuggestions(query, request),
-    );
+    if (query.length < 2) {
+      if (_live != null) setState(() => _live = null);
+      return;
+    }
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted || request != _request) return;
+      setState(() => _live = query);
+    });
   }
 
   Future<void> _loadSuggestions(String query, int request) async {
@@ -172,6 +179,7 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
+        clipBehavior: Clip.none,
         backgroundColor: background,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -303,10 +311,17 @@ class _SearchPageState extends State<SearchPage> {
     if (failure != null) {
       return _SearchStatusView.error(failure: failure, onRetry: _retry);
     }
-    if (_submitted != null) {
+    final results = _submitted ?? _live;
+    if (results != null) {
       return CatalogProductGrid(
-        key: ValueKey(_submitted),
-        query: ProductQuery(search: _submitted),
+        // Typing keeps one grid and just changes its query; pressing search
+        // starts a fresh one.
+        key: ValueKey(
+          _submitted != null && _submitted != _live
+              ? 'submitted:$_submitted'
+              : 'live',
+        ),
+        query: ProductQuery(search: results),
         loadingState: const ProductGridShimmer(),
         loadingMoreState: const ProductGridShimmer.more(),
         emptyState: const _SearchStatusView.notFound(),

@@ -7,8 +7,13 @@ abstract final class AppAssets {
   static const iconHome = '$_icons/nav_home.svg';
   static const iconCategory = '$_icons/category.svg';
   static const iconCart = '$_icons/cart.svg';
+  static const iconClearCircle = '$_icons/clear_circle.svg';
+  static const iconClearCircleDark = '$_icons/clear_circle_dark.svg';
+  static const iconTrash = '$_icons/trash.svg';
   static const iconShoppingBagOutline = '$_icons/shopping_bag_outline.svg';
   static const iconCartPlus = '$_icons/cart_plus.svg';
+  static const iconChevronRight = '$_icons/chevron_right.svg';
+  static const iconCrossSmall = '$_icons/cross_small.svg';
   static const iconCopy = '$_icons/copy.svg';
   static const iconCartMinus = '$_icons/cart_minus.svg';
   static const iconCartCheck = '$_icons/cart_check.svg';
@@ -22,6 +27,8 @@ abstract final class AppAssets {
 
   static const iconFavoriteEmpty = '$_icons/favorite_empty.svg';
   static const iconFavoriteFull = '$_icons/favorite_full.svg';
+  static const iconFavoriteEmptyDark = '$_icons/favorite_empty_dark.svg';
+  static const iconFavoriteFullDark = '$_icons/favorite_full_dark.svg';
 
   /// Ticket-shaped badge behind the discount percentage on a product card.
   /// The `-20%` baked into the file is drawn in the same green as its
@@ -40,6 +47,7 @@ abstract final class AppAssets {
   // Rendered from order_cancelled.svg at 8x resolution. Its blend modes are
   // not reproduced correctly by flutter_svg on device.
   static const imageOrderCancelled = '$_images/order_cancelled.png';
+  static const iconEdit = '$_icons/edit.svg';
   static const iconPencil = '$_icons/pencil.svg';
   static const iconUser = '$_icons/user.svg';
   static const iconCalendar = '$_icons/calendar.svg';
@@ -99,6 +107,9 @@ abstract final class AppAssets {
   static const iconInstagram = '$_icons/instagram.svg';
   static const iconTiktok = '$_icons/tiktok.svg';
   static const iconWhatsapp = '$_icons/whatsapp.svg';
+  static const iconTelegram = '$_icons/telegram.svg';
+  static const iconImo = '$_icons/imo.svg';
+  static const iconExternalLink = '$_icons/external_link.svg';
 
   /// Generic tile art, for a category with no picture of its own.
   static const categoryImage = '$_images/category_image.png';

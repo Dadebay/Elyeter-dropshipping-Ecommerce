@@ -47,9 +47,16 @@ class AppBackButton extends StatelessWidget {
   static const double leadingWidth =
       appBarWidth + AppSpacing.page + AppSpacing.sm;
 
-  /// Deliberately faint: heavier reads as a smudge rather than a lift.
+  /// Figma: two drop shadows, #000000 at 8% — a wide soft one below
+  /// (y 8, blur 30, spread -4) and a tight halo (blur 15, spread -6).
   static const List<BoxShadow> shadow = [
-    BoxShadow(color: Color(0x0D000000), blurRadius: 6, offset: Offset(0, 2)),
+    BoxShadow(
+      color: Color(0x14000000),
+      blurRadius: 30,
+      spreadRadius: -4,
+      offset: Offset(0, 8),
+    ),
+    BoxShadow(color: Color(0x14000000), blurRadius: 15, spreadRadius: -6),
   ];
 
   final VoidCallback? onPressed;

@@ -14,6 +14,14 @@ class ShopApi {
   Future<List<ShopBanner>> banners() async =>
       parseList(await _client.get(ApiEndpoints.banners), ShopBanner.fromJson);
 
+  /// `GET /home` — the background picture of the home header, or null when
+  /// none is set and the bundled one applies.
+  Future<String?> homeBackground() async {
+    final data = await _client.get(ApiEndpoints.home);
+    final url = data is Map<String, dynamic> ? data['background_image'] : null;
+    return url is String && url.isNotEmpty ? url : null;
+  }
+
   Future<Set<String>> favoriteIds() async {
     final data = await _client.get(ApiEndpoints.favoriteIds);
     if (data is! List) return {};

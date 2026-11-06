@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/app_asset_image.dart';
+import '../../../../core/constants/app_assets.dart';
 
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -49,10 +51,10 @@ class _DeleteAddressDialog extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: const Center(
-                child: HugeIcon(
-                  icon: AppIcons.delete,
-                  size: 26,
-                  color: AppColors.error,
+                child: AppAssetImage(
+                  AppAssets.iconTrash,
+                  width: 28,
+                  height: 28,
                 ),
               ),
             ),

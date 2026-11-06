@@ -25,24 +25,27 @@ class _RecordingClient extends ApiClient {
 }
 
 void main() {
-  test('product list sends supported numeric category and brand filters', () async {
-    final client = _RecordingClient();
-    await ProductRemoteDataSourceImpl(client).list(
-      query: const ProductQuery(categoryId: 18, brandId: 1531),
-      page: 1,
-      size: 10,
-    );
+  test(
+    'product list sends supported numeric category and brand filters',
+    () async {
+      final client = _RecordingClient();
+      await ProductRemoteDataSourceImpl(client).list(
+        query: const ProductQuery(categoryId: 18, brandId: 1531),
+        page: 1,
+        size: 10,
+      );
 
-    expect(client.requests, hasLength(1));
-    expect(client.requests.single.path, '/products');
-    expect(client.requests.single.query, {
-      'page': 1,
-      'size': 10,
-      'sort': 'new',
-      'category_id': 18,
-      'brand_id': 1531,
-    });
-  });
+      expect(client.requests, hasLength(1));
+      expect(client.requests.single.path, '/products');
+      expect(client.requests.single.query, {
+        'page': 1,
+        'size': 10,
+        'sort': 'new',
+        'category_id': 18,
+        'brand_id': 1531,
+      });
+    },
+  );
 
   test('multiple brands each use brand_id in separate requests', () async {
     final client = _RecordingClient();
@@ -59,7 +62,8 @@ void main() {
     );
     expect(
       client.requests.every(
-        (request) => request.query['category_id'] == 18 &&
+        (request) =>
+            request.query['category_id'] == 18 &&
             !request.query.containsKey('category_slug') &&
             !request.query.containsKey('brand_slug'),
       ),

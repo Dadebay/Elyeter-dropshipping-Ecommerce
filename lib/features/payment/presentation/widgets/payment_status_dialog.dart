@@ -117,7 +117,7 @@ class _PaymentStatusDialogState extends State<_PaymentStatusDialog> {
     };
 
     return AlertDialog(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.adapt(AppColors.white, AppColors.categoryDark),
       surfaceTintColor: Colors.transparent,
       contentPadding: const EdgeInsets.fromLTRB(
         AppSpacing.xl,
@@ -147,7 +147,7 @@ class _PaymentStatusDialogState extends State<_PaymentStatusDialog> {
             title,
             textAlign: TextAlign.center,
             style: theme.titleLarge?.copyWith(
-              color: AppColors.black,
+              color: context.inkColor,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -155,7 +155,9 @@ class _PaymentStatusDialogState extends State<_PaymentStatusDialog> {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: theme.bodyMedium?.copyWith(color: AppColors.grey700),
+            style: theme.bodyMedium?.copyWith(
+              color: context.adapt(AppColors.grey700, AppColors.iconSoft),
+            ),
           ),
         ],
       ),

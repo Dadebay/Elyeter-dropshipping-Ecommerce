@@ -129,6 +129,7 @@ class _ProfileViewState extends State<_ProfileView> {
 
     return Scaffold(
       appBar: AppBar(
+        clipBehavior: Clip.none,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -333,7 +334,7 @@ class _ProfileViewState extends State<_ProfileView> {
                     ),
                   if (_contacts?.telegramUrl case final url?)
                     SettingsTile(
-                      icon: AppAssets.iconNews,
+                      icon: AppAssets.iconTelegram,
                       label: 'Telegram',
                       trailing: const TileExternal(),
                       labelWeight: guestTileWeight,
@@ -341,8 +342,8 @@ class _ProfileViewState extends State<_ProfileView> {
                     ),
                   if (_contacts?.imoUrl case final url?)
                     SettingsTile(
-                      icon: AppAssets.iconPhone,
-                      label: 'IMO',
+                      icon: AppAssets.iconImo,
+                      label: 'Imo',
                       trailing: const TileExternal(),
                       labelWeight: guestTileWeight,
                       onTap: () => _open(context, url),

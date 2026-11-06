@@ -71,7 +71,7 @@ class CartLineTile extends StatelessWidget {
                         // above its specs — it gains presence without
                         // taking another line.
                         style: context.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -142,7 +142,9 @@ class _Photo extends StatelessWidget {
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: AppColors.grey100,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.categoryDark
+                    : AppColors.grey100,
                 borderRadius: BorderRadius.circular(AppRadius.lg),
                 // The faintest lift, so the photo does not sit flat on the page.
                 boxShadow: const [
@@ -214,7 +216,9 @@ class _Stepper extends StatelessWidget {
       height: _trackHeight,
       padding: const EdgeInsets.all(_inset),
       decoration: BoxDecoration(
-        color: AppColors.grey100,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.categoryDark
+            : AppColors.grey100,
         borderRadius: BorderRadius.circular(_StepButton._radius + _inset),
       ),
       child: Row(
@@ -232,7 +236,7 @@ class _Stepper extends StatelessWidget {
               '$quantity',
               textAlign: TextAlign.center,
               style: context.textTheme.titleSmall?.copyWith(
-                color: AppColors.black,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -262,9 +266,11 @@ class _StepButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: isDark ? const Color(0xFF3A3A3A) : AppColors.white,
         borderRadius: BorderRadius.circular(_radius),
         boxShadow: const [
           BoxShadow(
@@ -291,8 +297,8 @@ class _StepButton extends StatelessWidget {
                 // The minus fades at quantity 1; the plus keeps its own ink.
                 colorFilter: muted
                     ? null
-                    : const ColorFilter.mode(
-                        Color(0xFF171717),
+                    : ColorFilter.mode(
+                        isDark ? AppColors.white : const Color(0xFF171717),
                         BlendMode.srcIn,
                       ),
               ),
@@ -326,7 +332,7 @@ class _LinePrice extends StatelessWidget {
               '${CurrencyFormatter.amount(shown, locale: context.l10n.localeName)} ${AppConstants.currencySymbol}',
               maxLines: 1,
               style: context.textTheme.titleMedium?.copyWith(
-                color: AppColors.black,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.2,
                 // Equal-width digits, so the figure does not shimmy as it counts.
@@ -397,6 +403,8 @@ class _Tick extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -405,7 +413,9 @@ class _Tick extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: value ? const Color(0xFFEFEFEF) : AppColors.white,
+          color: value
+              ? (isDark ? AppColors.categoryDark : const Color(0xFFEFEFEF))
+              : (isDark ? AppColors.backgroundDark : AppColors.white),
           borderRadius: BorderRadius.circular(AppRadius.sm),
           border: value
               ? null
@@ -417,6 +427,9 @@ class _Tick extends StatelessWidget {
                   AppAssets.iconCartCheck,
                   width: 12,
                   height: 12,
+                  colorFilter: isDark
+                      ? const ColorFilter.mode(AppColors.white, BlendMode.srcIn)
+                      : null,
                 ),
               )
             : null,

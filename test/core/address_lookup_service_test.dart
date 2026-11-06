@@ -30,4 +30,17 @@ void main() {
       isNull,
     );
   });
+
+  test('drops plus codes and repeated pieces from an address', () {
+    expect(
+      DeviceAddressLookupService.formatPlacemark(
+        const Placemark(
+          street: 'X86F+FC7, Ashgabat, Turkmenistan',
+          locality: 'Ashgabat',
+          country: 'Turkmenistan',
+        ),
+      ),
+      'Ashgabat, Turkmenistan',
+    );
+  });
 }

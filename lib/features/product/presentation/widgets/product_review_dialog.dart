@@ -162,7 +162,9 @@ class _ProductReviewPageState extends State<_ProductReviewPage> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final dark = Theme.of(context).brightness == Brightness.dark;
-    final border = dark ? AppColors.grey700 : const Color(0xFFEDEDED);
+    final border = dark
+        ? context.adapt(AppColors.grey700, AppColors.iconSoft)
+        : const Color(0xFFEDEDED);
     return PopScope(
       canPop: !_saving,
       child: Scaffold(
@@ -447,7 +449,10 @@ class _PhotoStrip extends StatelessWidget {
                             width: 24,
                             height: 24,
                             decoration: BoxDecoration(
-                              color: AppColors.white,
+                              color: context.adapt(
+                                AppColors.white,
+                                AppColors.categoryDark,
+                              ),
                               shape: BoxShape.circle,
                               boxShadow: const [
                                 BoxShadow(
@@ -457,10 +462,10 @@ class _PhotoStrip extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.close_rounded,
                               size: 15,
-                              color: AppColors.ink,
+                              color: context.inkColor,
                             ),
                           ),
                         ),

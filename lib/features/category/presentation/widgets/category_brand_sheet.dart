@@ -218,7 +218,7 @@ class _SearchField extends StatelessWidget {
       onChanged: onChanged,
       textInputAction: TextInputAction.search,
       cursorColor: AppColors.primary,
-      style: context.textTheme.bodyMedium?.copyWith(color: AppColors.black),
+      style: context.textTheme.bodyMedium?.copyWith(color: context.inkColor),
       decoration: InputDecoration(
         hintText: hint,
         prefixIcon: const Padding(
@@ -232,7 +232,7 @@ class _SearchField extends StatelessWidget {
         ),
         prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: context.adapt(AppColors.background, AppColors.categoryDark),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
           vertical: AppSpacing.md + 2,
@@ -353,7 +353,7 @@ class _BrandCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: theme.textTheme.labelMedium?.copyWith(
-                color: selected ? AppColors.primary : AppColors.black,
+                color: selected ? AppColors.primary : context.inkColor,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               ),
             ),
@@ -377,10 +377,10 @@ class _NoMatches extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const HugeIcon(
+          HugeIcon(
             icon: AppIcons.searchEmpty,
             size: 36,
-            color: AppColors.grey300,
+            color: context.adapt(AppColors.grey300, const Color(0xFF404040)),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(

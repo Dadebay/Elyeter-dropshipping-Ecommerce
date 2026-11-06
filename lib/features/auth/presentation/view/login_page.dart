@@ -112,7 +112,12 @@ class _LoginViewState extends State<_LoginView> {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: background,
+          // The phone step stays put under the keyboard: the logo and the
+          // legal notice must not ride up with it. The code step still
+          // resizes, so its field stays in view.
+          resizeToAvoidBottomInset: state.step != LoginStep.phone,
           appBar: AppBar(
+            clipBehavior: Clip.none,
             toolbarHeight: kToolbarHeight,
             backgroundColor: background,
             surfaceTintColor: Colors.transparent,
@@ -270,13 +275,12 @@ class _LoginViewState extends State<_LoginView> {
                         vertical: 16,
                       ),
                     ),
-                    onChanged: (value) {
-                      setState(() {});
-                      if (_localPhoneDigits.length == _phoneDigits) {
-                        _sendCode(context);
-                      }
+                    // Typing the last digit only enables "Dowam etmek"; the
+                    // customer sends the code themselves.
+                    onChanged: (value) => setState(() {}),
+                    onSubmitted: (_) {
+                      if (canContinue) _sendCode(context);
                     },
-                    onSubmitted: (_) => _sendCode(context),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -285,10 +289,23 @@ class _LoginViewState extends State<_LoginView> {
                     gradient: canContinue || state.submitting
                         ? AppColors.primaryGradient
                         : null,
+                    // Disabled: pale peach on light; on dark a muted warm tone,
+                    // since peach would glare against the dark page.
                     color: canContinue || state.submitting
                         ? null
-                        : const Color(0xFFFFC39E),
+                        : (isDark
+                              ? const Color(0xFF3D2A20)
+                              : const Color(0xFFFFC39E)),
                     borderRadius: BorderRadius.circular(28),
+                    boxShadow: isDark && (canContinue || state.submitting)
+                        ? [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.30),
+                              blurRadius: 18,
+                              offset: const Offset(0, 6),
+                            ),
+                          ]
+                        : null,
                   ),
                   child: SizedBox(
                     width: double.infinity,
@@ -298,7 +315,9 @@ class _LoginViewState extends State<_LoginView> {
                         backgroundColor: Colors.transparent,
                         disabledBackgroundColor: Colors.transparent,
                         foregroundColor: AppColors.white,
-                        disabledForegroundColor: AppColors.white,
+                        disabledForegroundColor: isDark
+                            ? AppColors.white.withValues(alpha: 0.45)
+                            : AppColors.white,
                         shadowColor: Colors.transparent,
                         elevation: 0,
                         shape: const StadiumBorder(),
@@ -633,20 +652,14 @@ class _PhoneClearButton extends StatelessWidget {
           foregroundColor: isDark ? AppColors.white : AppColors.grey700,
           shape: const CircleBorder(),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          minimumSize: const Size(30, 30),
-          maximumSize: const Size(30, 30),
+          minimumSize: const Size(28, 28),
+          maximumSize: const Size(28, 28),
         ),
         onPressed: onPressed,
-        icon: DecoratedBox(
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.grey700 : const Color(0xFFE5E5E8),
-            shape: BoxShape.circle,
-          ),
-          child: const SizedBox(
-            width: 24,
-            height: 24,
-            child: Center(child: Icon(Icons.close, size: 12)),
-          ),
+        icon: SvgPicture.asset(
+          isDark ? AppAssets.iconClearCircleDark : AppAssets.iconClearCircle,
+          width: 28,
+          height: 28,
         ),
       ),
     ),

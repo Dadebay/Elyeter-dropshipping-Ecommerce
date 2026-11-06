@@ -198,7 +198,10 @@ class _SubcategoryTile extends StatelessWidget {
                 ? AppNetworkImage(url: imageUrl, fit: BoxFit.contain)
                 : DecoratedBox(
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: context.adapt(
+                        AppColors.background,
+                        AppColors.categoryDark,
+                      ),
                       borderRadius: BorderRadius.circular(AppRadius.lg),
                     ),
                     child: const Center(
@@ -220,7 +223,7 @@ class _SubcategoryTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: context.textTheme.labelSmall?.copyWith(
-                  color: AppColors.black,
+                  color: context.inkColor,
                 ),
               ),
             ),
@@ -253,7 +256,9 @@ class _PageDots extends StatelessWidget {
             // The current page reads as a bar, the rest as dots.
             width: i == index ? 20 : 8,
             decoration: BoxDecoration(
-              color: i == index ? AppColors.black : AppColors.grey300,
+              color: i == index
+                  ? context.inkColor
+                  : context.adapt(AppColors.grey300, const Color(0xFF404040)),
               borderRadius: BorderRadius.circular(AppRadius.pill),
             ),
           ),

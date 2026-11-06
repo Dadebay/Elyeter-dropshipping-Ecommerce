@@ -57,7 +57,9 @@ class LocationPickerDialog extends StatefulWidget {
   }) {
     return showDialog<DeliveryLocation>(
       context: context,
-      barrierColor: AppColors.black.withValues(alpha: 0.45),
+      barrierColor: AppColors.black.withValues(
+        alpha: context.isDark ? 0.7 : 0.45,
+      ),
       builder: (_) =>
           LocationPickerDialog(locations: locations, selectedId: selectedId),
     );
@@ -101,7 +103,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog> {
     final rows = _rows;
 
     return Dialog(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.adapt(AppColors.white, AppColors.categoryDark),
       surfaceTintColor: AppColors.white,
       elevation: 12,
       shadowColor: AppColors.black.withValues(alpha: 0.2),
@@ -170,7 +172,7 @@ class _Header extends StatelessWidget {
           Text(
             context.l10n.locationTitle,
             style: AppTypography.textTheme.titleLarge?.copyWith(
-              color: AppColors.black,
+              color: context.inkColor,
             ),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -181,7 +183,7 @@ class _Header extends StatelessWidget {
             textInputAction: TextInputAction.search,
             cursorColor: AppColors.primary,
             style: AppTypography.textTheme.bodyMedium?.copyWith(
-              color: AppColors.black,
+              color: context.inkColor,
             ),
             decoration: InputDecoration(
               hintText: context.l10n.locationSearchHint,
@@ -189,7 +191,10 @@ class _Header extends StatelessWidget {
                 color: AppColors.grey500,
               ),
               filled: true,
-              fillColor: AppColors.grey100,
+              fillColor: context.adapt(
+                AppColors.grey100,
+                AppColors.categoryDark,
+              ),
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(
                 vertical: AppSpacing.md,
@@ -276,7 +281,9 @@ class _LocationRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = selected ? AppColors.primary : AppColors.grey700;
+    final accent = selected
+        ? AppColors.primary
+        : context.adapt(AppColors.grey700, AppColors.iconSoft);
 
     return InkWell(
       onTap: onTap,
@@ -294,7 +301,9 @@ class _LocationRow extends StatelessWidget {
               height: 40,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: selected ? AppColors.primarySoft : AppColors.grey100,
+                color: selected
+                    ? AppColors.primarySoft
+                    : context.adapt(AppColors.grey100, AppColors.categoryDark),
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
               child: SvgPicture.asset(
@@ -314,7 +323,7 @@ class _LocationRow extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.textTheme.titleSmall?.copyWith(
-                      color: selected ? AppColors.primary : AppColors.black,
+                      color: selected ? AppColors.primary : context.inkColor,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xxs),
@@ -360,8 +369,8 @@ class _EmptyResult extends StatelessWidget {
             AppAssets.iconMapPin,
             width: 32,
             height: 32,
-            colorFilter: const ColorFilter.mode(
-              AppColors.grey300,
+            colorFilter: ColorFilter.mode(
+              context.adapt(AppColors.grey300, const Color(0xFF404040)),
               BlendMode.srcIn,
             ),
           ),
@@ -386,14 +395,22 @@ class _CancelBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: AppColors.grey300, width: 0.5)),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: context.adapt(AppColors.grey300, const Color(0xFF404040)),
+            width: 0.5,
+          ),
+        ),
       ),
       child: Center(
         child: TextButton(
           onPressed: () => Navigator.of(context).pop(),
           style: TextButton.styleFrom(
-            foregroundColor: AppColors.grey700,
+            foregroundColor: context.adapt(
+              AppColors.grey700,
+              AppColors.iconSoft,
+            ),
             minimumSize: const Size.fromHeight(52),
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
             textStyle: AppTypography.textTheme.labelLarge,

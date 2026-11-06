@@ -47,7 +47,7 @@ class ProductReviewsSection extends StatelessWidget {
           Text(
             context.l10n.productReviews,
             style: context.textTheme.titleMedium?.copyWith(
-              color: AppColors.black,
+              color: context.inkColor,
             ),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -140,7 +140,7 @@ class _ReadAllButton extends StatelessWidget {
         ],
       ),
       child: Material(
-        color: AppColors.white,
+        color: context.adapt(AppColors.white, AppColors.categoryDark),
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: radius),
         child: InkWell(
@@ -152,7 +152,7 @@ class _ReadAllButton extends StatelessWidget {
               child: Text(
                 label,
                 style: context.textTheme.titleSmall?.copyWith(
-                  color: AppColors.black,
+                  color: context.inkColor,
                 ),
               ),
             ),
@@ -205,7 +205,7 @@ class ProductReviewScore extends StatelessWidget {
         Text(
           rating.toStringAsFixed(1),
           style: context.textTheme.displayLarge?.copyWith(
-            color: AppColors.black,
+            color: context.inkColor,
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
@@ -246,7 +246,10 @@ class ProductReviewDistribution extends StatelessWidget {
                   child: Text(
                     '${shares.length - i}',
                     style: context.textTheme.labelMedium?.copyWith(
-                      color: AppColors.grey700,
+                      color: context.adapt(
+                        AppColors.grey700,
+                        AppColors.iconSoft,
+                      ),
                     ),
                   ),
                 ),
@@ -259,7 +262,10 @@ class ProductReviewDistribution extends StatelessWidget {
                       minHeight: _barHeight,
                       // White track, not grey: the card underneath is already
                       // grey, so a grey track would disappear into it.
-                      backgroundColor: AppColors.white,
+                      backgroundColor: context.adapt(
+                        AppColors.white,
+                        AppColors.backgroundDark,
+                      ),
                       valueColor: const AlwaysStoppedAnimation(
                         AppColors.primary,
                       ),
@@ -313,7 +319,7 @@ class ProductReviewCard extends StatelessWidget {
             maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
             style: context.textTheme.bodySmall?.copyWith(
-              color: AppColors.grey700,
+              color: context.adapt(AppColors.grey700, AppColors.iconSoft),
               height: 1.4,
             ),
           );
@@ -545,7 +551,9 @@ class ProductStars extends StatelessWidget {
         Icon(
           Icons.star_rounded,
           size: size,
-          color: i <= rating.round() ? AppColors.primary : AppColors.grey300,
+          color: i <= rating.round()
+              ? AppColors.primary
+              : context.adapt(AppColors.grey300, const Color(0xFF404040)),
         ),
     ],
   );

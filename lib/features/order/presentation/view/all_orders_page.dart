@@ -34,7 +34,10 @@ class _AllOrdersPageState extends State<AllOrdersPage> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.adapt(
+        AppColors.background,
+        AppColors.backgroundDark,
+      ),
       appBar: _SheetAppBar(title: l10n.profileOrderHistory),
       body: Column(
         children: [
@@ -152,7 +155,7 @@ class _TabsState extends State<_Tabs> with SingleTickerProviderStateMixin {
       height: 60,
       padding: const EdgeInsets.all(inset),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.adapt(AppColors.white, AppColors.categoryDark),
         borderRadius: BorderRadius.circular(AppRadius.xl - 4),
       ),
       child: LayoutBuilder(
@@ -178,7 +181,7 @@ class _TabsState extends State<_Tabs> with SingleTickerProviderStateMixin {
                     width: segment,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: AppColors.black,
+                        color: context.inkFill,
                         borderRadius: BorderRadius.circular(AppRadius.lg),
                       ),
                     ),
@@ -199,7 +202,7 @@ class _TabsState extends State<_Tabs> with SingleTickerProviderStateMixin {
                                   // under the label, grey as it leaves.
                                   color: Color.lerp(
                                     AppColors.grey500,
-                                    AppColors.white,
+                                    context.onInkFill,
                                     (1 - (_position.value - i).abs()).clamp(
                                       0.0,
                                       1.0,
@@ -234,9 +237,13 @@ class _SheetAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
-    decoration: const BoxDecoration(
-      color: AppColors.white,
-      borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+    // Dark mode: flush with the page, no lighter sheet with rounded corners
+    // showing a different colour in the gap beneath the bar.
+    decoration: BoxDecoration(
+      color: context.adapt(AppColors.white, AppColors.backgroundDark),
+      borderRadius: context.isDark
+          ? BorderRadius.zero
+          : const BorderRadius.vertical(bottom: Radius.circular(24)),
     ),
     child: Padding(
       padding: const EdgeInsets.only(bottom: 8),

@@ -224,7 +224,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.l10n.commonCheckout)),
+    appBar: AppBar(
+      clipBehavior: Clip.none,
+      title: Text(context.l10n.commonCheckout),
+    ),
     body: !_ready
         ? const Center(child: AppLoader())
         : ListView(

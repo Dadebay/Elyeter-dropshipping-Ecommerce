@@ -1696,10 +1696,28 @@ abstract class AppLocalizations {
   /// **'Could not get your location. Choose it on the map.'**
   String get addressLocationFailed;
 
+  /// No description provided for @addressLocationServiceOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is turned off. Turn it on in settings, or choose the spot on the map.'**
+  String get addressLocationServiceOff;
+
+  /// No description provided for @addressLocationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access is not allowed. Allow it in settings, or choose the spot on the map.'**
+  String get addressLocationPermissionDenied;
+
+  /// No description provided for @addressOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get addressOpenSettings;
+
   /// No description provided for @addressLookupFailed.
   ///
   /// In en, this message translates to:
-  /// **'Street address unavailable. Coordinates added; enter the address manually.'**
+  /// **'Street address unavailable. Type the address manually.'**
   String get addressLookupFailed;
 
   /// No description provided for @addressEmptyTitle.
@@ -1795,7 +1813,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileCallAction.
   ///
   /// In en, this message translates to:
-  /// **'Call operator'**
+  /// **'Call'**
   String get profileCallAction;
 
   /// No description provided for @profileCallHours.
@@ -2763,6 +2781,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search limit reached. Try again in {minutes} min.'**
   String imageSearchRateLimited(int minutes);
+
+  /// No description provided for @imageSearchInReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Your photo has been processed. {count} more products are being checked by a moderator — we will send a notification.'**
+  String imageSearchInReview(int count);
+
+  /// No description provided for @imageSearchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load products from AliExpress.'**
+  String get imageSearchFailed;
 }
 
 class _AppLocalizationsDelegate

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import 'product_image_view.dart';
@@ -30,6 +29,9 @@ class ProductColorPicker extends StatelessWidget {
       height: _size,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
+        // The page margin lives inside the list, so the strip itself can run
+        // to both screen edges.
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.page),
         itemCount: images.length,
         separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
         itemBuilder: (context, index) {
@@ -54,7 +56,12 @@ class ProductColorPicker extends StatelessWidget {
                   // Black, not the brand orange: the swatch's own colour is
                   // what the customer is choosing, so the marker stays neutral.
                   border: Border.all(
-                    color: active ? AppColors.black : const Color(0xFFE5E5E5),
+                    color: active
+                        ? context.inkColor
+                        : context.adapt(
+                            const Color(0xFFE5E5E5),
+                            const Color(0xFF404040),
+                          ),
                     width: active ? 1.5 : 0.75,
                   ),
                 ),
@@ -119,8 +126,11 @@ class ProductSizePicker extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppRadius.md),
                   border: Border.all(
                     color: size == selected
-                        ? AppColors.black
-                        : const Color(0xFFE5E5E5),
+                        ? context.inkColor
+                        : context.adapt(
+                            const Color(0xFFE5E5E5),
+                            const Color(0xFF404040),
+                          ),
                     width: size == selected ? 1.5 : 0.75,
                   ),
                 ),
@@ -128,7 +138,7 @@ class ProductSizePicker extends StatelessWidget {
                   size,
                   textAlign: TextAlign.center,
                   style: context.textTheme.titleSmall?.copyWith(
-                    color: AppColors.black,
+                    color: context.inkColor,
                     decoration: unavailable.contains(size)
                         ? TextDecoration.lineThrough
                         : null,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../utils/extensions/context_extensions.dart';
+
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import 'app_asset_image.dart';
@@ -54,7 +56,12 @@ class CatalogEmptyView extends StatelessWidget {
                   message,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isDark ? AppColors.grey300 : AppColors.grey700,
+                    color: isDark
+                        ? context.adapt(
+                            AppColors.grey300,
+                            const Color(0xFF404040),
+                          )
+                        : context.adapt(AppColors.grey700, AppColors.iconSoft),
                     height: 1.45,
                   ),
                 ),

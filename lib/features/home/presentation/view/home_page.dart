@@ -50,6 +50,7 @@ class _HomePageState extends State<HomePage> {
   List<Marketplace> _marketplaces = [];
   // The store whose products the page shows; null until one is picked.
   int? _marketplaceId;
+  String? _backgroundUrl;
   List<ProductCardData> _products = [];
   Paginated<Product>? _productPage;
   List<PromoBanner> _banners = [];
@@ -81,6 +82,7 @@ class _HomePageState extends State<HomePage> {
     });
     _load();
     unawaited(_loadMarketplaces());
+    unawaited(_loadBackground());
   }
 
   /// Switches the store: the page reloads with that marketplace's products.
@@ -96,6 +98,17 @@ class _HomePageState extends State<HomePage> {
     });
     if (_scrollController.hasClients) _scrollController.jumpTo(0);
     unawaited(_load());
+  }
+
+  Future<void> _loadBackground() async {
+    try {
+      final url = await getIt<ShopApi>().homeBackground();
+      if (mounted && url != _backgroundUrl) {
+        setState(() => _backgroundUrl = url);
+      }
+    } on Object {
+      /* The bundled background stays. */
+    }
   }
 
   Future<void> _loadMarketplaces() async {
@@ -405,6 +418,7 @@ class _HomePageState extends State<HomePage> {
         extra: item.name,
       ),
       onLocationTap: _pickLocation,
+      backgroundUrl: _backgroundUrl,
       selectedMarketplaceId: _marketplaceId?.toString(),
       onMarketplaceTap: _selectMarketplace,
     );

@@ -96,8 +96,9 @@ class _PatternArtPainter extends CustomPainter {
     final paint = Paint()
       ..filterQuality = FilterQuality.medium
       ..isAntiAlias = true;
-    if (color != null)
+    if (color != null) {
       paint.colorFilter = ColorFilter.mode(color!, BlendMode.srcIn);
+    }
 
     canvas.save();
     canvas.clipRect(Offset.zero & size);
@@ -159,8 +160,9 @@ class _PatternArt {
     final view = _viewBox.firstMatch(source);
     final size = _imageSize.firstMatch(source);
     final matrix = _matrix(_useTransform.firstMatch(source)?.group(1));
-    if (data == null || view == null || size == null || matrix == null)
+    if (data == null || view == null || size == null || matrix == null) {
       return null;
+    }
 
     final numbers = view
         .group(1)!

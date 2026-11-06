@@ -34,7 +34,7 @@ class OrderListCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(AppSpacing.lg),
         decoration: BoxDecoration(
-          color: context.isDark ? AppColors.surfaceDark : AppColors.white,
+          color: context.isDark ? AppColors.categoryDark : AppColors.white,
           borderRadius: BorderRadius.circular(AppRadius.xl - 4),
         ),
         child: Column(
@@ -50,7 +50,7 @@ class OrderListCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.titleMedium?.copyWith(
-                      color: AppColors.black,
+                      color: context.inkColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -59,14 +59,17 @@ class OrderListCard extends StatelessWidget {
                 Container(
                   width: 22,
                   height: 22,
-                  decoration: const BoxDecoration(
-                    color: AppColors.grey100,
+                  decoration: BoxDecoration(
+                    color: context.adapt(
+                      AppColors.grey100,
+                      AppColors.backgroundDark,
+                    ),
                     shape: BoxShape.circle,
                   ),
-                  child: const HugeIcon(
+                  child: HugeIcon(
                     icon: AppIcons.chevronRight,
                     size: 12,
-                    color: AppColors.grey700,
+                    color: context.adapt(AppColors.grey700, AppColors.iconSoft),
                   ),
                 ),
                 const Spacer(),
@@ -124,9 +127,17 @@ class _StatusPill extends StatelessWidget {
         const Color(0xFFF6C9CB),
       ),
     };
+    final isDark = context.isDark;
+    // Dark mode: the pale chip becomes a tint of its own colour, and the text
+    // lightens so it still reads on it.
+    final fg = isDark
+        ? (status == PreOrderStatus.cancelled
+              ? const Color(0xFFFF8A8F)
+              : const Color(0xFF5BD68A))
+        : color;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: soft,
+        color: isDark ? fg.withValues(alpha: 0.16) : soft,
         borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Padding(
@@ -134,12 +145,12 @@ class _StatusPill extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.radio_button_checked_rounded, size: 12, color: color),
+            Icon(Icons.radio_button_checked_rounded, size: 12, color: fg),
             const SizedBox(width: 4),
             Text(
               label,
               style: context.textTheme.labelMedium?.copyWith(
-                color: color,
+                color: fg,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -204,7 +215,10 @@ class _Thumb extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.sm),
               child: ColoredBox(
-                color: const Color(0xFFF5F5F5),
+                color: context.adapt(
+                  const Color(0xFFF5F5F5),
+                  AppColors.backgroundDark,
+                ),
                 child: item.image == null
                     ? const Center(
                         child: HugeIcon(
@@ -227,10 +241,13 @@ class _Thumb extends StatelessWidget {
               bottom: 3,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: context.adapt(AppColors.white, AppColors.categoryDark),
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(
-                    color: const Color(0xFFE5E5E5),
+                    color: context.adapt(
+                      const Color(0xFFE5E5E5),
+                      const Color(0xFF4A4A4A),
+                    ),
                     width: 0.5,
                   ),
                 ),
@@ -242,7 +259,7 @@ class _Thumb extends StatelessWidget {
                   child: Text(
                     'x${item.quantity}',
                     style: context.textTheme.labelSmall?.copyWith(
-                      color: AppColors.black,
+                      color: context.inkColor,
                       fontWeight: FontWeight.w600,
                       fontSize: 10,
                     ),
@@ -267,12 +284,14 @@ class _MoreTile extends StatelessWidget {
     height: _ItemsStrip._height,
     alignment: Alignment.center,
     decoration: BoxDecoration(
-      color: AppColors.grey100,
+      color: context.adapt(AppColors.grey100, AppColors.backgroundDark),
       borderRadius: BorderRadius.circular(AppRadius.sm),
     ),
     child: Text(
       '+$count',
-      style: context.textTheme.titleSmall?.copyWith(color: AppColors.grey700),
+      style: context.textTheme.titleSmall?.copyWith(
+        color: context.adapt(AppColors.grey700, AppColors.iconSoft),
+      ),
     ),
   );
 }

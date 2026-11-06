@@ -74,7 +74,7 @@ class _Thumb extends StatelessWidget {
       child: SizedBox.square(
         dimension: OrderProductsStrip._thumbSize,
         child: ColoredBox(
-          color: AppColors.grey100,
+          color: context.adapt(AppColors.grey100, AppColors.backgroundDark),
           child: image == null
               ? const Center(
                   child: HugeIcon(
@@ -106,12 +106,14 @@ class _More extends StatelessWidget {
     height: OrderProductsStrip._thumbSize,
     alignment: Alignment.center,
     decoration: BoxDecoration(
-      color: AppColors.grey100,
+      color: context.adapt(AppColors.grey100, AppColors.backgroundDark),
       borderRadius: BorderRadius.circular(AppRadius.md),
     ),
     child: Text(
       '+$count',
-      style: context.textTheme.titleSmall?.copyWith(color: AppColors.grey700),
+      style: context.textTheme.titleSmall?.copyWith(
+        color: context.adapt(AppColors.grey700, AppColors.iconSoft),
+      ),
     ),
   );
 }

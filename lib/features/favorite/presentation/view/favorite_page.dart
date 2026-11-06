@@ -34,16 +34,32 @@ class _FavoritePageState extends State<FavoritePage> {
   Object? _error;
   bool _loading = false;
 
+  /// A heart was tapped elsewhere while a load was in flight; fetch again
+  /// once it lands, or the list would miss it.
+  bool _reloadQueued = false;
+  StreamSubscription<void>? _favoriteSync;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+    // The shell keeps this tab alive, so a heart tapped on another tab has to
+    // refresh the list on its own, without a pull to refresh.
+    _favoriteSync = context.read<FavoriteCubit>().synced.listen(
+      (_) => unawaited(_load()),
+    );
+  }
+
+  @override
+  void dispose() {
+    _favoriteSync?.cancel();
+    super.dispose();
   }
 
   Future<void> _load({bool more = false}) async {
-    if (!mounted ||
-        !context.read<AuthCubit>().state.isAuthenticated ||
-        _loading) {
+    if (!mounted || !context.read<AuthCubit>().state.isAuthenticated) return;
+    if (_loading) {
+      if (!more) _reloadQueued = true;
       return;
     }
     setState(() {
@@ -63,6 +79,10 @@ class _FavoritePageState extends State<FavoritePage> {
       if (mounted) setState(() => _error = error);
     } finally {
       if (mounted) setState(() => _loading = false);
+      if (mounted && _reloadQueued) {
+        _reloadQueued = false;
+        unawaited(_load());
+      }
     }
   }
 
@@ -74,6 +94,7 @@ class _FavoritePageState extends State<FavoritePage> {
     },
     child: Scaffold(
       appBar: AppBar(
+        clipBehavior: Clip.none,
         titleSpacing: AppSpacing.page,
         toolbarHeight: 76,
         title: Text(
@@ -160,14 +181,10 @@ class _FavoritePageState extends State<FavoritePage> {
                             AppRoutes.productDetail.name,
                             pathParameters: {'id': data.id},
                           ),
-                          onFavoriteTap: () async {
-                            if (await context.read<FavoriteCubit>().toggle(
-                                  data.favoriteKey,
-                                ) &&
-                                mounted) {
-                              unawaited(_load());
-                            }
-                          },
+                          // The list reloads itself once the server confirms.
+                          onFavoriteTap: () => context
+                              .read<FavoriteCubit>()
+                              .toggle(data.favoriteKey),
                           onAddToCart: () => toggleCartFromCard(context, data),
                         ),
                       ),

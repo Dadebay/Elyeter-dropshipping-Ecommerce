@@ -117,7 +117,7 @@ class _SearchField extends StatelessWidget {
     return TextField(
       onChanged: onChanged,
       textInputAction: TextInputAction.search,
-      style: context.textTheme.bodyMedium?.copyWith(color: AppColors.black),
+      style: context.textTheme.bodyMedium?.copyWith(color: context.inkColor),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: context.textTheme.bodyMedium?.copyWith(
@@ -129,7 +129,7 @@ class _SearchField extends StatelessWidget {
           color: AppColors.grey500,
         ),
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: context.adapt(AppColors.background, AppColors.categoryDark),
         contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
@@ -179,7 +179,7 @@ class _Rows extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: context.textTheme.bodyLarge?.copyWith(
-                      color: AppColors.black,
+                      color: context.inkColor,
                     ),
                   ),
                 ),
@@ -271,10 +271,20 @@ class _Swatch extends StatelessWidget {
               ),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: color ?? AppColors.background,
+                  color:
+                      color ??
+                      context.adapt(
+                        AppColors.background,
+                        AppColors.categoryDark,
+                      ),
                   shape: BoxShape.circle,
                   border: color != null && CategoryFacets.needsOutline(color)
-                      ? Border.all(color: AppColors.grey300)
+                      ? Border.all(
+                          color: context.adapt(
+                            AppColors.grey300,
+                            const Color(0xFF404040),
+                          ),
+                        )
                       : null,
                 ),
                 child: color == null
@@ -293,7 +303,9 @@ class _Swatch extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: context.textTheme.labelSmall?.copyWith(
-                color: selected ? AppColors.black : AppColors.grey700,
+                color: selected
+                    ? context.inkColor
+                    : context.adapt(AppColors.grey700, AppColors.iconSoft),
                 fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
@@ -320,7 +332,9 @@ class _Tick extends StatelessWidget {
       color: value ? AppColors.primary : AppColors.white,
       borderRadius: BorderRadius.circular(AppRadius.xs),
       border: Border.all(
-        color: value ? AppColors.primary : AppColors.grey300,
+        color: value
+            ? AppColors.primary
+            : context.adapt(AppColors.grey300, const Color(0xFF404040)),
         width: 1.5,
       ),
     ),

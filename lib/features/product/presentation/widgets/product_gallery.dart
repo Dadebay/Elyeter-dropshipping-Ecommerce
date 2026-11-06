@@ -141,21 +141,30 @@ class _Photo extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        child: ColoredBox(
-          color: AppColors.grey100,
-          // Edge to edge: the photo covers the whole card, cropped to fit,
-          // rather than floating on the grey inside a margin.
-          child: Hero(
-            tag: heroTag,
-            child: SizedBox.expand(
-              child: ProductImageView(
-                source: image,
-                fit: BoxFit.cover,
-                // Portrait shots lose their lower part, never the head.
-                alignment: Alignment.topCenter,
-                wordmarkPlaceholder: true,
+      // The hairline frame is painted over the photo, so a white backdrop
+      // doesn't dissolve into the page.
+      child: DecoratedBox(
+        position: DecorationPosition.foreground,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(color: const Color(0xFFEBEBEB), width: 0.65),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          child: ColoredBox(
+            color: AppColors.grey100,
+            // Edge to edge: the photo covers the whole card, cropped to fit,
+            // rather than floating on the grey inside a margin.
+            child: Hero(
+              tag: heroTag,
+              child: SizedBox.expand(
+                child: ProductImageView(
+                  source: image,
+                  fit: BoxFit.cover,
+                  // Portrait shots lose their lower part, never the head.
+                  alignment: Alignment.topCenter,
+                  wordmarkPlaceholder: true,
+                ),
               ),
             ),
           ),
@@ -174,9 +183,11 @@ class _Counter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: isDark ? AppColors.categoryDark : AppColors.white,
         borderRadius: BorderRadius.circular(AppRadius.pill),
         boxShadow: [
           BoxShadow(
@@ -194,7 +205,7 @@ class _Counter extends StatelessWidget {
         child: Text(
           '$index of $total',
           style: context.textTheme.labelMedium?.copyWith(
-            color: AppColors.black,
+            color: isDark ? AppColors.white : AppColors.black,
             fontWeight: FontWeight.w700,
           ),
         ),

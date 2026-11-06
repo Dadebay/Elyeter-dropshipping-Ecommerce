@@ -143,7 +143,7 @@ class _CategoryPriceFilterSheetState extends State<CategoryPriceFilterSheet> {
               Text(
                 l10n.categoryPriceRange,
                 style: theme.textTheme.titleSmall?.copyWith(
-                  color: AppColors.black,
+                  color: context.inkColor,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -161,14 +161,17 @@ class _CategoryPriceFilterSheetState extends State<CategoryPriceFilterSheet> {
                       onChanged: () => setState(() {}),
                     ),
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
                     child: SizedBox(
                       width: 10,
                       child: Divider(
                         height: 1,
                         thickness: 2,
-                        color: AppColors.grey300,
+                        color: context.adapt(
+                          AppColors.grey300,
+                          const Color(0xFF404040),
+                        ),
                       ),
                     ),
                   ),
@@ -223,6 +226,9 @@ class _PriceField extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // Dark mode: a thin grey edge, or the field melts into the sheet.
+    final idleBorder = context.isDark ? const Color(0xFF4A4A4A) : null;
+
     OutlineInputBorder border([Color? color]) => OutlineInputBorder(
       borderRadius: BorderRadius.circular(15),
       borderSide: color == null
@@ -238,7 +244,7 @@ class _PriceField extends StatelessWidget {
       textInputAction: action,
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]'))],
       style: theme.textTheme.titleSmall?.copyWith(
-        color: AppColors.black,
+        color: context.inkColor,
         fontWeight: FontWeight.w600,
       ),
       decoration: InputDecoration(
@@ -252,15 +258,19 @@ class _PriceField extends StatelessWidget {
           color: AppColors.grey500,
         ),
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: context.adapt(AppColors.background, AppColors.categoryDark),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
           vertical: AppSpacing.lg,
         ),
         // No coloured edge on focus; only a wrong value gets one.
-        border: border(invalid ? AppColors.error : null),
-        enabledBorder: border(invalid ? AppColors.error : null),
-        focusedBorder: border(invalid ? AppColors.error : null),
+        border: border(invalid ? AppColors.error : idleBorder),
+        enabledBorder: border(invalid ? AppColors.error : idleBorder),
+        focusedBorder: border(
+          invalid
+              ? AppColors.error
+              : (context.isDark ? AppColors.grey500 : null),
+        ),
       ),
     );
   }
@@ -311,8 +321,13 @@ class _FeaturedTile extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Material(
-      color: AppColors.background,
-      borderRadius: BorderRadius.circular(15),
+      color: context.adapt(AppColors.background, AppColors.categoryDark),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+        side: context.isDark
+            ? const BorderSide(color: Color(0xFF4A4A4A))
+            : BorderSide.none,
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => onChanged(!value),
@@ -329,7 +344,7 @@ class _FeaturedTile extends StatelessWidget {
                 child: Text(
                   label,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    color: AppColors.black,
+                    color: context.inkColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

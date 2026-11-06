@@ -117,14 +117,17 @@ class _ProductRequestListPageState extends State<ProductRequestListPage> {
     final items = _page?.items ?? const <ProductRequest>[];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.adapt(
+        AppColors.background,
+        AppColors.categoryDark,
+      ),
       appBar: AppPageAppBar(
         title: l10n.productRequestMine,
         actions: [
           IconButton(
             tooltip: l10n.productRequestTitle,
             onPressed: _add,
-            icon: HugeIcon(icon: AppIcons.add, color: AppColors.black),
+            icon: HugeIcon(icon: AppIcons.add, color: context.inkColor),
           ),
           const SizedBox(width: AppSpacing.xs),
         ],
@@ -261,7 +264,10 @@ class _RequestTile extends StatelessWidget {
                     )
                   : DecoratedBox(
                       decoration: BoxDecoration(
-                        color: AppColors.grey100,
+                        color: context.adapt(
+                          AppColors.grey100,
+                          AppColors.categoryDark,
+                        ),
                         borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       child: Center(
@@ -283,7 +289,7 @@ class _RequestTile extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.titleSmall?.copyWith(
-                      color: AppColors.black,
+                      color: context.inkColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -296,7 +302,7 @@ class _RequestTile extends StatelessWidget {
                         decimals: 0,
                       ),
                       style: theme.bodyMedium?.copyWith(
-                        color: AppColors.black,
+                        color: context.inkColor,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

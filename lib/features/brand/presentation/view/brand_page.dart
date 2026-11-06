@@ -80,6 +80,7 @@ class _BrandPageState extends State<BrandPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
+      clipBehavior: Clip.none,
       leadingWidth: AppBackButton.leadingWidth,
       leading: const AppBackButton.appBarLeading(),
       titleSpacing: 0,

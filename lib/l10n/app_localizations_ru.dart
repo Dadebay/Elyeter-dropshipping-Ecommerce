@@ -893,8 +893,19 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось определить местоположение. Выберите точку на карте.';
 
   @override
+  String get addressLocationServiceOff =>
+      'Геолокация отключена. Включите её в настройках или выберите точку на карте.';
+
+  @override
+  String get addressLocationPermissionDenied =>
+      'Доступ к геолокации не разрешён. Разрешите его в настройках или выберите точку на карте.';
+
+  @override
+  String get addressOpenSettings => 'Открыть настройки';
+
+  @override
   String get addressLookupFailed =>
-      'Адрес улицы не найден. Координаты добавлены; введите адрес вручную.';
+      'Адрес улицы не найден. Введите адрес вручную.';
 
   @override
   String get addressEmptyTitle => 'Пока нет сохранённых адресов';
@@ -1491,4 +1502,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String imageSearchRateLimited(int minutes) {
     return 'Лимит поисков исчерпан. Повторите через $minutes мин.';
   }
+
+  @override
+  String imageSearchInReview(int count) {
+    return 'Ваша фотография обработана. Ещё $count товаров проверяет модератор — пришлём уведомление.';
+  }
+
+  @override
+  String get imageSearchFailed => 'Не удалось загрузить товары с AliExpress.';
 }

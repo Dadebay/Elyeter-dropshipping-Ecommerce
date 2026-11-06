@@ -320,9 +320,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.adapt(
+        AppColors.background,
+        AppColors.backgroundDark,
+      ),
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        clipBehavior: Clip.none,
+        backgroundColor: context.adapt(
+          AppColors.background,
+          AppColors.backgroundDark,
+        ),
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -465,7 +472,7 @@ class _Header extends StatelessWidget {
                         ? context.textTheme.headlineLarge
                         : context.textTheme.headlineSmall)
                     ?.copyWith(
-                      color: AppColors.black,
+                      color: context.inkColor,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.3,
                     ),
@@ -579,7 +586,7 @@ class _Action extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.grey100,
+      color: context.adapt(AppColors.grey100, AppColors.backgroundDark),
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -607,7 +614,7 @@ class _Action extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: context.textTheme.labelMedium?.copyWith(
-                  color: AppColors.grey700,
+                  color: context.adapt(AppColors.grey700, AppColors.iconSoft),
                 ),
               ),
             ],
@@ -644,7 +651,7 @@ class _Payment extends StatelessWidget {
             Text(
               l10n.paymentPayOnlineTitle,
               style: theme.titleMedium?.copyWith(
-                color: AppColors.black,
+                color: context.inkColor,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -692,7 +699,7 @@ class _Payment extends StatelessWidget {
                 Text(
                   l10n.paymentPaid,
                   style: theme.titleSmall?.copyWith(
-                    color: AppColors.black,
+                    color: context.inkColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -731,7 +738,7 @@ class _Progress extends StatelessWidget {
             Text(
               context.l10n.orderProgress,
               style: context.textTheme.titleMedium?.copyWith(
-                color: AppColors.black,
+                color: context.inkColor,
                 fontWeight: FontWeight.w600,
               ),
             )
@@ -829,9 +836,15 @@ class _Details extends StatelessWidget {
         children: [
           for (var i = 0; i < rows.length; i++) ...[
             if (i > 0)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
-                child: Divider(height: 1, color: AppColors.grey100),
+                child: Divider(
+                  height: 1,
+                  color: context.adapt(
+                    AppColors.grey100,
+                    AppColors.backgroundDark,
+                  ),
+                ),
               ),
             rows[i],
           ],

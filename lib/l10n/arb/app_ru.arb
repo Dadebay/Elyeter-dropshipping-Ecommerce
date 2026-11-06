@@ -377,7 +377,10 @@
   "addressNameRequired": "Введите название адреса.",
   "addressLocationApproximate": "Местоположение приблизительное. Переместите метку в нужную точку.",
   "addressLocationFailed": "Не удалось определить местоположение. Выберите точку на карте.",
-  "addressLookupFailed": "Адрес улицы не найден. Координаты добавлены; введите адрес вручную.",
+  "addressLocationServiceOff": "Геолокация отключена. Включите её в настройках или выберите точку на карте.",
+  "addressLocationPermissionDenied": "Доступ к геолокации не разрешён. Разрешите его в настройках или выберите точку на карте.",
+  "addressOpenSettings": "Открыть настройки",
+  "addressLookupFailed": "Адрес улицы не найден. Введите адрес вручную.",
   "addressEmptyTitle": "Пока нет сохранённых адресов",
   "addressEmptyMessage": "Нажмите +, чтобы сохранить первый адрес доставки.",
   "addressDeleteDone": "Адрес удалён.",
@@ -589,5 +592,7 @@
   "imageSearchTitle": "Поиск по фото",
   "imageSearchSearching": "Ищем ещё…",
   "imageSearchEmpty": "Ничего похожего пока нет",
-  "imageSearchRateLimited": "Лимит поисков исчерпан. Повторите через {minutes} мин."
+  "imageSearchRateLimited": "Лимит поисков исчерпан. Повторите через {minutes} мин.",
+  "imageSearchInReview": "Ваша фотография обработана. Ещё {count} товаров проверяет модератор — пришлём уведомление.",
+  "imageSearchFailed": "Не удалось загрузить товары с AliExpress."
 }

@@ -37,6 +37,8 @@ class BrandStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       height: height + 10,
       margin: const EdgeInsets.only(top: AppSpacing.md),
@@ -53,34 +55,45 @@ class BrandStrip extends StatelessWidget {
             child: Container(
               width: cardWidth + 15,
               alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.xs,
-              ),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: isDark ? AppColors.categoryDark : AppColors.white,
                 borderRadius: BorderRadius.circular(AppRadius.lg),
-                border: Border.all(color: AppColors.grey100),
+                border: Border.all(
+                  color: isDark ? AppColors.categoryDark : AppColors.grey100,
+                ),
               ),
-              child: switch (item) {
-                BrandItem(:final logoAsset?) => AppAssetImage(
-                  logoAsset,
-                  fit: BoxFit.contain,
-                ),
-                BrandItem(:final logoUrl?) => AppNetworkImage(
-                  url: logoUrl,
-                  fit: BoxFit.contain,
-                  radius: 0,
-                  wordmarkPlaceholder: true,
-                  wordmarkSize: 14,
-                ),
-                _ => Text(
-                  item.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              },
+              // The logo fills the card and is clipped to the radius just
+              // inside the 1px border (outer radius minus the border), so
+              // its corners follow the border's curve exactly.
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.lg - 1),
+                child: switch (item) {
+                  BrandItem(:final logoAsset?) => AppAssetImage(
+                    logoAsset,
+                    fit: BoxFit.contain,
+                  ),
+                  BrandItem(:final logoUrl?) => AppNetworkImage(
+                    url: logoUrl,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                    radius: 0,
+                    wordmarkPlaceholder: true,
+                    wordmarkSize: 14,
+                  ),
+                  _ => Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                    ),
+                    child: Text(
+                      item.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                  ),
+                },
+              ),
             ),
           );
         },

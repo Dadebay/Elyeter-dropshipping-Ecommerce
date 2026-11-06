@@ -42,9 +42,9 @@ Future<void> _loadFonts() async {
     final loader = FontLoader(e.key)..addFont(rootBundle.load(e.value));
     await loader.load();
 
-  final wordmark = FontLoader('Qurova')
-    ..addFont(rootBundle.load('assets/fonts/QurovaDEMO-Medium.otf'));
-  await wordmark.load();
+    final wordmark = FontLoader('Qurova')
+      ..addFont(rootBundle.load('assets/fonts/QurovaDEMO-Medium.otf'));
+    await wordmark.load();
   }
 }
 

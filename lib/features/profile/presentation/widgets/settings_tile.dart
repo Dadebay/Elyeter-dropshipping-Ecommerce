@@ -115,13 +115,16 @@ class SettingsTile extends StatelessWidget {
                 ),
               ),
               switch (trailing) {
-                TileChevron() => HugeIcon(
-                  icon: AppIcons.chevronRight,
+                TileChevron() => AppAssetImage(
+                  AppAssets.iconChevronRight,
+                  width: 20,
+                  height: 20,
                   color: chevronColor,
                 ),
-                TileExternal() => HugeIcon(
-                  icon: AppIcons.external,
-                  size: 18,
+                TileExternal() => AppAssetImage(
+                  AppAssets.iconExternalLink,
+                  width: 20,
+                  height: 20,
                   color: chevronColor,
                 ),
                 TileValue(:final value) => Row(

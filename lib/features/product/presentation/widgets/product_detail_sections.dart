@@ -60,7 +60,7 @@ class ProductRatingRow extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.bodyMedium?.copyWith(
-                color: AppColors.black,
+                color: context.inkColor,
               ),
             ),
           ),
@@ -78,7 +78,9 @@ class ProductOptionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     text,
-    style: context.textTheme.bodyMedium?.copyWith(color: AppColors.grey700),
+    style: context.textTheme.bodyMedium?.copyWith(
+      color: context.adapt(AppColors.grey700, AppColors.iconSoft),
+    ),
   );
 }
 
@@ -169,13 +171,13 @@ class ProductPriceCard extends StatelessWidget {
             ),
             Tooltip(
               message: context.l10n.productPriceDetails,
-              child: const SizedBox.square(
+              child: SizedBox.square(
                 dimension: 40,
                 child: Center(
                   child: HugeIcon(
                     icon: HugeIcons.strokeRoundedArrowRight01,
                     size: 20,
-                    color: AppColors.grey700,
+                    color: context.adapt(AppColors.grey700, AppColors.iconSoft),
                   ),
                 ),
               ),
@@ -211,7 +213,7 @@ class ProductArticleCard extends StatelessWidget {
                 Text(
                   context.l10n.productArticle,
                   style: context.textTheme.titleSmall?.copyWith(
-                    color: AppColors.black,
+                    color: context.inkColor,
                     fontSize: 13,
                   ),
                 ),
@@ -221,7 +223,7 @@ class ProductArticleCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: context.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.grey700,
+                    color: context.adapt(AppColors.grey700, AppColors.iconSoft),
                     fontSize: 13,
                   ),
                 ),
@@ -247,17 +249,27 @@ class _CopyButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         // Figma: two drop shadows, #0E121B at 3.14% and 5.88%.
-        boxShadow: const [
-          BoxShadow(color: Color(0x080E121B), blurRadius: 4),
-          BoxShadow(
-            color: Color(0x0F0E121B),
-            blurRadius: 10,
-            offset: Offset(0, 6),
-          ),
-        ],
+        // Dark mode: a faint white glow instead, so the edge still reads.
+        boxShadow: context.isDark
+            ? const [
+                BoxShadow(color: Color(0x14FFFFFF), blurRadius: 4),
+                BoxShadow(
+                  color: Color(0x1FFFFFFF),
+                  blurRadius: 10,
+                  offset: Offset(0, 3),
+                ),
+              ]
+            : const [
+                BoxShadow(color: Color(0x080E121B), blurRadius: 4),
+                BoxShadow(
+                  color: Color(0x0F0E121B),
+                  blurRadius: 10,
+                  offset: Offset(0, 6),
+                ),
+              ],
       ),
       child: Material(
-        color: AppColors.white,
+        color: context.adapt(AppColors.white, AppColors.categoryDark),
         borderRadius: BorderRadius.circular(AppRadius.md),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -273,11 +285,19 @@ class _CopyButton extends StatelessWidget {
                 Text(
                   context.l10n.productCopy,
                   style: context.textTheme.labelLarge?.copyWith(
-                    color: AppColors.black,
+                    color: context.inkColor,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
-                SvgPicture.asset(AppAssets.iconCopy, width: 18, height: 18),
+                SvgPicture.asset(
+                  AppAssets.iconCopy,
+                  width: 18,
+                  height: 18,
+                  colorFilter: ColorFilter.mode(
+                    context.inkColor,
+                    BlendMode.srcIn,
+                  ),
+                ),
               ],
             ),
           ),
@@ -343,7 +363,7 @@ class _ProductDescriptionCardState extends State<ProductDescriptionCard> {
     if (text.isEmpty) return const SizedBox.shrink();
 
     final body = context.textTheme.bodyMedium!.copyWith(
-      color: AppColors.grey700,
+      color: context.adapt(AppColors.grey700, AppColors.iconSoft),
     );
     final link = body.copyWith(color: AppColors.info);
 
@@ -358,7 +378,7 @@ class _ProductDescriptionCardState extends State<ProductDescriptionCard> {
           Text(
             context.l10n.productDescription,
             style: context.textTheme.titleMedium?.copyWith(
-              color: AppColors.black,
+              color: context.inkColor,
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -473,19 +493,30 @@ class _ProductCharacteristicsCardState
             Text(
               context.l10n.productCharacteristics,
               style: context.textTheme.titleMedium?.copyWith(
-                color: AppColors.black,
+                color: context.inkColor,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             for (final row in rows)
               ProductCharacteristicRow(label: row.name, value: row.value),
             if (hasMore) ...[
-              const SizedBox(height: AppSpacing.sm),
-              ProductOutlineButton(
-                label: _expanded
-                    ? context.l10n.commonClose
-                    : context.l10n.productAllCharacteristics,
-                onTap: () => setState(() => _expanded = !_expanded),
+              const SizedBox(height: 10),
+              // Figma: the button is 345 wide in a 361 card, so it reaches
+              // 8px into the card's padding on each side.
+              LayoutBuilder(
+                builder: (context, constraints) => SizedBox(
+                  height: 40,
+                  child: OverflowBox(
+                    minWidth: constraints.maxWidth + 16,
+                    maxWidth: constraints.maxWidth + 16,
+                    child: ProductOutlineButton(
+                      label: _expanded
+                          ? context.l10n.commonClose
+                          : context.l10n.productAllCharacteristics,
+                      onTap: () => setState(() => _expanded = !_expanded),
+                    ),
+                  ),
+                ),
               ),
             ],
           ],
@@ -551,7 +582,7 @@ class ProductCharacteristicRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.end,
                 style: context.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.black,
+                  color: context.inkColor,
                 ),
               ),
             ),
@@ -563,8 +594,9 @@ class ProductCharacteristicRow extends StatelessWidget {
 }
 
 /// Stays over the page: the one action the page exists for. Adding is a
-/// gradient pill; once the product is in the cart it steps back to a soft
-/// brand tint, still tappable since tapping takes it out again.
+/// gradient pill; once the product is in the cart solid brand orange grows in
+/// from both sides and the label turns to "Added" with a tick. The main pill stays tappable: pressing it
+/// again takes the product out.
 class ProductStickyAddToCart extends StatelessWidget {
   const ProductStickyAddToCart({
     super.key,
@@ -584,73 +616,106 @@ class ProductStickyAddToCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foreground = !enabled
-        ? AppColors.grey500
-        : added
-        ? AppColors.primary
-        : AppColors.white;
+    final showAdded = added && enabled;
+    final radius = BorderRadius.circular(AppRadius.pill);
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOut,
-      height: _height,
-      decoration: BoxDecoration(
-        gradient: added || !enabled ? null : AppColors.primaryGradient,
-        color: !enabled
-            ? AppColors.grey100
-            : added
-            ? AppColors.primarySoft
-            : null,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        border: Border.all(
-          color: added && enabled ? AppColors.primary : Colors.transparent,
-          width: 1.5,
-        ),
-        boxShadow: added || !enabled
-            ? null
-            : [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.28),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(end: showAdded ? 1 : 0),
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.easeInOutCubic,
+      builder: (context, progress, _) {
+        final foreground = !enabled
+            ? AppColors.grey500
+            : Color.lerp(AppColors.white, AppColors.white, progress)!;
+
+        return Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: _height,
+                decoration: BoxDecoration(
+                  gradient: !enabled ? null : AppColors.primaryGradient,
+                  color: !enabled
+                      ? context.adapt(AppColors.grey100, AppColors.categoryDark)
+                      : null,
+                  borderRadius: radius,
+                  boxShadow: !enabled
+                      ? null
+                      : [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(
+                              alpha: 0.28 * (1 - progress) + 0.18 * progress,
+                            ),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                 ),
-              ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: enabled ? onTap : null,
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (added && enabled) ...[
-                  SizedBox(
-                    width: _iconSlot,
-                    height: _iconSlot,
-                    child: HugeIcon(
-                      icon: AppIcons.check,
-                      size: 20,
-                      color: foreground,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                ],
-                Text(
-                  added
-                      ? context.l10n.commonAdded
-                      : context.l10n.commonAddToCart,
-                  style: context.textTheme.titleSmall?.copyWith(
-                    color: foreground,
+                child: ClipRRect(
+                  borderRadius: radius,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      // The deeper orange meets in the middle.
+                      if (progress > 0) ...[
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: FractionallySizedBox(
+                            widthFactor: progress / 2,
+                            heightFactor: 1,
+                            child: const ColoredBox(color: AppColors.primary),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: FractionallySizedBox(
+                            widthFactor: progress / 2,
+                            heightFactor: 1,
+                            child: const ColoredBox(color: AppColors.primary),
+                          ),
+                        ),
+                      ],
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: enabled ? onTap : null,
+                          child: Center(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (progress >= 0.5 && enabled) ...[
+                                  SizedBox(
+                                    width: _iconSlot,
+                                    height: _iconSlot,
+                                    child: HugeIcon(
+                                      icon: AppIcons.check,
+                                      size: 20,
+                                      color: foreground,
+                                    ),
+                                  ),
+                                  const SizedBox(width: AppSpacing.sm),
+                                ],
+                                Text(
+                                  added
+                                      ? context.l10n.commonAdded
+                                      : context.l10n.commonAddToCart,
+                                  style: context.textTheme.titleSmall?.copyWith(
+                                    color: foreground,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
+          ],
+        );
+      },
     );
   }
 }

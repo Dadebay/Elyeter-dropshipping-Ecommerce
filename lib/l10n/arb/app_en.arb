@@ -384,7 +384,10 @@
   "addressNameRequired": "Enter an address name.",
   "addressLocationApproximate": "Location is approximate. Move the pin to the exact spot.",
   "addressLocationFailed": "Could not get your location. Choose it on the map.",
-  "addressLookupFailed": "Street address unavailable. Coordinates added; enter the address manually.",
+  "addressLocationServiceOff": "Location is turned off. Turn it on in settings, or choose the spot on the map.",
+  "addressLocationPermissionDenied": "Location access is not allowed. Allow it in settings, or choose the spot on the map.",
+  "addressOpenSettings": "Open settings",
+  "addressLookupFailed": "Street address unavailable. Type the address manually.",
   "addressEmptyTitle": "No saved addresses yet",
   "addressEmptyMessage": "Tap + to save your first delivery address.",
   "addressDeleteDone": "Address deleted.",
@@ -400,7 +403,7 @@
   "profileInstagram": "Instagram",
   "profileTiktok": "TikTok",
   "profileCallTitle": "Call us with any question:",
-  "profileCallAction": "Call operator",
+  "profileCallAction": "Call",
   "profileCallHours": "Calls are answered every day of the week, 09:00 - 19:00",
   "profileVersion": "Version {version}",
   "@profileVersion": {
@@ -614,6 +617,15 @@
   "@imageSearchRateLimited": {
     "placeholders": {
       "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "imageSearchInReview": "Your photo has been processed. {count} more products are being checked by a moderator — we will send a notification.",
+  "imageSearchFailed": "Could not load products from AliExpress.",
+  "@imageSearchInReview": {
+    "placeholders": {
+      "count": {
         "type": "int"
       }
     }

@@ -2,6 +2,8 @@ import 'dart:math' as math;
 import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
+
+import '../../../../core/widgets/app_close_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_icons.dart';
@@ -170,32 +172,7 @@ class _LanguageSheet extends StatelessWidget {
                         right: 0,
                         child: Transform.translate(
                           offset: const Offset(0, -4),
-                          child: IconButton(
-                            tooltip: MaterialLocalizations.of(
-                              context,
-                            ).closeButtonTooltip,
-                            onPressed: () => Navigator.of(context).pop(),
-                            style: IconButton.styleFrom(
-                              fixedSize: const Size(44, 44),
-                              padding: EdgeInsets.zero,
-                            ),
-                            icon: Container(
-                              width: 36,
-                              height: 36,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: groupColor,
-                                shape: BoxShape.circle,
-                              ),
-                              child: HugeIcon(
-                                icon: AppIcons.close,
-                                size: 18,
-                                color: isDark
-                                    ? AppColors.white
-                                    : AppColors.grey700,
-                              ),
-                            ),
-                          ),
+                          child: const AppCloseButton(),
                         ),
                       ),
                     ],

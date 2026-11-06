@@ -120,7 +120,7 @@ class _ProblemRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
+        color: context.adapt(AppColors.surfaceMuted, AppColors.backgroundDark),
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Row(
@@ -151,7 +151,7 @@ class _ProblemRow extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    color: AppColors.black,
+                    color: context.inkColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

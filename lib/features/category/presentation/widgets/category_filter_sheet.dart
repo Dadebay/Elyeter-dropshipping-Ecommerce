@@ -112,7 +112,7 @@ class _Section extends StatelessWidget {
                 child: Text(
                   facet.label,
                   style: context.textTheme.titleSmall?.copyWith(
-                    color: AppColors.black,
+                    color: context.inkColor,
                   ),
                 ),
               ),
@@ -160,7 +160,9 @@ class _ValueChip extends StatelessWidget {
     final swatch = value.swatch;
 
     return Material(
-      color: selected ? AppColors.black : AppColors.background,
+      color: selected
+          ? context.inkColor
+          : context.adapt(AppColors.background, AppColors.categoryDark),
       clipBehavior: Clip.antiAlias,
       shape: const StadiumBorder(),
       child: InkWell(
@@ -181,7 +183,12 @@ class _ValueChip extends StatelessWidget {
                     color: swatch,
                     shape: BoxShape.circle,
                     border: CategoryFacets.needsOutline(swatch)
-                        ? Border.all(color: AppColors.grey300)
+                        ? Border.all(
+                            color: context.adapt(
+                              AppColors.grey300,
+                              const Color(0xFF404040),
+                            ),
+                          )
                         : null,
                   ),
                 ),
@@ -190,7 +197,9 @@ class _ValueChip extends StatelessWidget {
               Text(
                 value.value,
                 style: context.textTheme.bodyMedium?.copyWith(
-                  color: selected ? AppColors.white : AppColors.black,
+                  color: selected
+                      ? context.adapt(AppColors.white, AppColors.black)
+                      : context.inkColor,
                 ),
               ),
             ],

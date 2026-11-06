@@ -74,11 +74,19 @@ class _SortOption extends StatelessWidget {
     button: true,
     selected: selected,
     child: Material(
-      color: selected ? AppColors.primarySoft : AppColors.background,
+      color: selected
+          // Dark mode: a warm tint of the brand colour, not the pale peach.
+          ? context.adapt(
+              AppColors.primarySoft,
+              AppColors.primary.withValues(alpha: 0.16),
+            )
+          : context.adapt(AppColors.background, AppColors.categoryDark),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
         side: BorderSide(
-          color: selected ? AppColors.primary : Colors.transparent,
+          color: selected
+              ? AppColors.primary
+              : context.adapt(Colors.transparent, const Color(0xFF3A3A3A)),
         ),
       ),
       clipBehavior: Clip.antiAlias,
@@ -95,7 +103,9 @@ class _SortOption extends StatelessWidget {
                     label,
                     style: context.textTheme.bodyMedium?.copyWith(
                       fontFamily: AppTypography.fontFamily,
-                      color: AppColors.black,
+                      color: selected && context.isDark
+                          ? AppColors.white
+                          : context.inkColor,
                       fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),
@@ -108,7 +118,12 @@ class _SortOption extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: selected ? AppColors.primary : AppColors.grey300,
+                      color: selected
+                          ? AppColors.primary
+                          : context.adapt(
+                              AppColors.grey300,
+                              const Color(0xFF6B6B6B),
+                            ),
                       width: selected ? 2 : 1.5,
                     ),
                   ),

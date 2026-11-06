@@ -21,12 +21,18 @@ class FavoriteCubit extends Cubit<Set<String>> {
   int? _accountId;
   bool _authenticated = false;
   final Set<String> _pending = {};
+  final StreamController<void> _synced = StreamController<void>.broadcast();
+
+  /// Fires once the server has accepted a heart tap, so a list built from the
+  /// favourites endpoint knows it is worth fetching again.
+  Stream<void> get synced => _synced.stream;
 
   bool contains(String id) => state.contains(id);
 
   void _onAuthChanged(AuthState auth) {
-    if (_authenticated == auth.isAuthenticated && _accountId == auth.user?.id)
+    if (_authenticated == auth.isAuthenticated && _accountId == auth.user?.id) {
       return;
+    }
     _authenticated = auth.isAuthenticated;
     _accountId = auth.user?.id;
     ++_generation;
@@ -86,6 +92,7 @@ class FavoriteCubit extends Cubit<Set<String>> {
           reconciled.remove(id);
         }
         emit(reconciled);
+        if (!_synced.isClosed) _synced.add(null);
       }
       return true;
     } on Object {
@@ -109,6 +116,7 @@ class FavoriteCubit extends Cubit<Set<String>> {
   @override
   Future<void> close() async {
     await _subscription?.cancel();
+    await _synced.close();
     await super.close();
   }
 }

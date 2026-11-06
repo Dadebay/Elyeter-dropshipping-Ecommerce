@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/extensions/context_extensions.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/constants/app_icons.dart';
@@ -60,7 +62,9 @@ class EditProfileField extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: 52),
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
-            color: isDark ? AppColors.surfaceDark : AppColors.surfaceMuted,
+            color: isDark
+                ? AppColors.surfaceDark
+                : context.adapt(AppColors.surfaceMuted, AppColors.categoryDark),
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           child: child,

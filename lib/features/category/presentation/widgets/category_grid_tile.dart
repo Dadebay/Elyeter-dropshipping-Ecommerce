@@ -48,16 +48,8 @@ class _CategoryGridTileState extends State<CategoryGridTile> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final item = widget.item;
-    final hasImage =
-        (item.imageAsset?.isNotEmpty ?? false) ||
-        (item.imageUrl?.isNotEmpty ?? false);
-
     return Material(
-      color: isDark
-          ? AppColors.surfaceDark
-          : !hasImage || _imageFailed
-          ? AppColors.background
-          : AppColors.white,
+      color: isDark ? AppColors.categoryDark : AppColors.categoryLight,
       borderRadius: BorderRadius.circular(_radius),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -76,8 +68,8 @@ class _CategoryGridTileState extends State<CategoryGridTile> {
                     url: imageUrl,
                     radius: 0,
                     fallbackColor: isDark
-                        ? AppColors.surfaceDark
-                        : AppColors.background,
+                        ? AppColors.categoryDark
+                        : AppColors.categoryLight,
                     onLoadFailed: () {
                       if (mounted &&
                           widget.item.imageUrl == imageUrl &&
@@ -102,7 +94,7 @@ class _CategoryGridTileState extends State<CategoryGridTile> {
                   fontWeight: FontWeight.w500,
                   height: 1,
                   letterSpacing: -0.28,
-                  color: AppColors.ink,
+                  color: isDark ? AppColors.white : AppColors.ink,
                 ),
               ),
             ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../../core/utils/extensions/context_extensions.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,7 +29,9 @@ class StaticPageContent extends StatelessWidget {
     final theme = Theme.of(context);
     final dark = theme.brightness == Brightness.dark;
     final ink = theme.textTheme.bodyLarge!.color!;
-    final surface = dark ? AppColors.surfaceDark : AppColors.surfaceMuted;
+    final surface = dark
+        ? AppColors.surfaceDark
+        : context.adapt(AppColors.surfaceMuted, AppColors.categoryDark);
     final accent = dark ? AppColors.primaryFade : AppColors.primaryDark;
     final icon = switch (slug) {
       'about' => AppAssets.iconPhone,

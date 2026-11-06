@@ -28,6 +28,7 @@ abstract final class ApiEndpoints {
   static String imageSearchById(int id) => '/image-search/$id';
 
   static const marketplaces = '/marketplaces';
+  static const home = '/home';
 
   // ----------------------------------------------------------- brands --
   static const brands = '/brands';

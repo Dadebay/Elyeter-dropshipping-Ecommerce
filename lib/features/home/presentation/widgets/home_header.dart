@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_assets.dart';
@@ -23,6 +24,7 @@ class HomeHeader extends StatelessWidget {
     this.onLocationTap,
     this.onMarketplaceTap,
     this.showCamera = true,
+    this.backgroundUrl,
     this.selectedMarketplaceId,
   });
 
@@ -56,6 +58,9 @@ class HomeHeader extends StatelessWidget {
   /// Id of the marketplace whose products are showing, if one was picked.
   final String? selectedMarketplaceId;
 
+  /// Background picture set from the admin; null keeps the bundled one.
+  final String? backgroundUrl;
+
   /// The photo-search button in the search field.
   final bool showCamera;
 
@@ -74,10 +79,26 @@ class HomeHeader extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset(
-              AppAssets.homeBackground,
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // The bundled artwork stays underneath: it shows while the
+                // picture from the server loads, and if it never does.
+                Image.asset(
+                  AppAssets.homeBackground,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                ),
+                if (backgroundUrl != null)
+                  CachedNetworkImage(
+                    imageUrl: backgroundUrl!,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                    fadeInDuration: const Duration(milliseconds: 250),
+                    placeholder: (_, _) => const SizedBox.shrink(),
+                    errorWidget: (_, _, _) => const SizedBox.shrink(),
+                  ),
+              ],
             ),
           ),
 

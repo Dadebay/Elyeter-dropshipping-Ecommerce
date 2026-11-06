@@ -119,7 +119,9 @@ class _IconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: active ? AppColors.black : CategoryFilterBar.fill,
+      color: active
+          ? context.inkFill
+          : context.adapt(CategoryFilterBar.fill, AppColors.categoryDark),
       clipBehavior: Clip.antiAlias,
       shape: const StadiumBorder(),
       child: InkWell(
@@ -132,7 +134,7 @@ class _IconButton extends StatelessWidget {
               icon: icon,
               size: 20,
               strokeWidth: CategoryFilterBar.iconStroke,
-              color: active ? AppColors.white : AppColors.black,
+              color: active ? context.onInkFill : context.inkColor,
             ),
           ),
         ),
@@ -150,10 +152,12 @@ class _FacetChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final active = facet.isActive;
-    final foreground = active ? AppColors.white : AppColors.black;
+    final foreground = active ? context.onInkFill : context.inkColor;
 
     return Material(
-      color: active ? AppColors.black : CategoryFilterBar.fill,
+      color: active
+          ? context.inkFill
+          : context.adapt(CategoryFilterBar.fill, AppColors.categoryDark),
       clipBehavior: Clip.antiAlias,
       shape: const StadiumBorder(),
       child: InkWell(
@@ -205,14 +209,11 @@ class _CountBadge extends StatelessWidget {
     width: _size,
     height: _size,
     alignment: Alignment.center,
-    decoration: const BoxDecoration(
-      color: AppColors.white,
-      shape: BoxShape.circle,
-    ),
+    decoration: BoxDecoration(color: context.onInkFill, shape: BoxShape.circle),
     child: Text(
       '$count',
       style: context.textTheme.labelSmall?.copyWith(
-        color: AppColors.black,
+        color: context.inkFill,
         fontWeight: FontWeight.w700,
       ),
     ),

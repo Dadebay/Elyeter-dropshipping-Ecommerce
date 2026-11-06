@@ -19,6 +19,7 @@ class MarketplacePage extends StatelessWidget {
     final marketplaceId = int.tryParse(id);
     return Scaffold(
       appBar: AppBar(
+        clipBehavior: Clip.none,
         centerTitle: true,
         leadingWidth: AppBackButton.leadingWidth,
         leading: const AppBackButton.appBarLeading(),

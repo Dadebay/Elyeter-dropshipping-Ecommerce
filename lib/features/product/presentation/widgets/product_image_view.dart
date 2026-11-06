@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/extensions/context_extensions.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_network_image.dart';
 
@@ -13,7 +15,7 @@ class ProductImageView extends StatelessWidget {
     this.wordmarkPlaceholder = false,
     this.wordmarkSize = 24,
     this.fallbackIconSize,
-    this.fallbackColor = AppColors.grey100,
+    this.fallbackColor,
   });
 
   final String source;
@@ -31,7 +33,9 @@ class ProductImageView extends StatelessWidget {
   /// Size of the glyph drawn when the photo is missing or fails to load.
   /// Null keeps the glyph filling its box.
   final double? fallbackIconSize;
-  final Color fallbackColor;
+
+  /// Defaults to the theme's muted fill when left null.
+  final Color? fallbackColor;
 
   @override
   Widget build(BuildContext context) => source.startsWith('assets/')
@@ -44,6 +48,8 @@ class ProductImageView extends StatelessWidget {
           wordmarkPlaceholder: wordmarkPlaceholder,
           wordmarkSize: wordmarkSize,
           fallbackIconSize: fallbackIconSize,
-          fallbackColor: fallbackColor,
+          fallbackColor:
+              fallbackColor ??
+              context.adapt(AppColors.grey100, AppColors.categoryDark),
         );
 }

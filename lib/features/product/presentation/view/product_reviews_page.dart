@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../../core/widgets/app_close_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/widgets/app_loader.dart';
@@ -180,7 +182,7 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
     return showModalBottomSheet<(T,)>(
       context: context,
       showDragHandle: true,
-      backgroundColor: AppColors.white,
+      backgroundColor: context.adapt(AppColors.white, AppColors.backgroundDark),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -206,14 +208,7 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(sheetContext),
-                    tooltip: sheetContext.l10n.commonClose,
-                    style: IconButton.styleFrom(
-                      backgroundColor: AppColors.surfaceMuted,
-                    ),
-                    icon: const Icon(Icons.close_rounded, size: 20),
-                  ),
+                  AppCloseButton(onPressed: () => Navigator.pop(sheetContext)),
                 ],
               ),
               const SizedBox(height: AppSpacing.md),
@@ -311,7 +306,7 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
   Widget build(BuildContext context) {
     final reviews = _reviews;
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.adapt(AppColors.white, AppColors.backgroundDark),
       appBar: AppPageAppBar(title: context.l10n.productReviews),
       body: _loading && reviews == null
           ? const Center(child: AppLoader())
@@ -419,7 +414,10 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
                         review: displayReview(context, review),
                         width: null,
                         maxLines: 100,
-                        color: AppColors.background,
+                        color: context.adapt(
+                          AppColors.background,
+                          AppColors.categoryDark,
+                        ),
                         onHelpful: () => _toggleHelpful(review),
                       ),
                       const SizedBox(height: AppSpacing.md),
@@ -453,7 +451,9 @@ class _FilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: active ? AppColors.primarySoft : AppColors.background,
+      color: active
+          ? AppColors.primarySoft
+          : context.adapt(AppColors.background, AppColors.categoryDark),
       borderRadius: BorderRadius.circular(AppRadius.pill),
       child: InkWell(
         onTap: onTap,
@@ -469,14 +469,14 @@ class _FilterChip extends StatelessWidget {
               Text(
                 label,
                 style: context.textTheme.labelLarge?.copyWith(
-                  color: active ? AppColors.primary : AppColors.black,
+                  color: active ? AppColors.primary : context.inkColor,
                 ),
               ),
               const SizedBox(width: AppSpacing.xs),
               Icon(
                 Icons.keyboard_arrow_down_rounded,
                 size: 18,
-                color: active ? AppColors.primary : AppColors.black,
+                color: active ? AppColors.primary : context.inkColor,
               ),
             ],
           ),
@@ -503,9 +503,11 @@ class _SheetOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? AppColors.primaryVibrant : AppColors.black;
+    final color = selected ? AppColors.primaryVibrant : context.inkColor;
     return Material(
-      color: selected ? AppColors.primarySoft : AppColors.surfaceMuted,
+      color: selected
+          ? AppColors.primarySoft
+          : context.adapt(AppColors.surfaceMuted, AppColors.categoryDark),
       borderRadius: BorderRadius.circular(AppRadius.lg),
       child: InkWell(
         onTap: onTap,

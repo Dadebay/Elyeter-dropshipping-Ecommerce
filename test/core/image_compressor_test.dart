@@ -36,12 +36,15 @@ void main() {
     expect(ImageCompressor.compressBytes(invalid), isNull);
   });
 
-  test('an oversized unreadable selection is never kept as the avatar', () async {
-    final directory = await Directory.systemTemp.createTemp('avatar_test_');
-    addTearDown(() => directory.delete(recursive: true));
-    final selected = File('${directory.path}/broken.jpg');
-    await selected.writeAsBytes(Uint8List(ImageCompressor.maxBytes + 1));
+  test(
+    'an oversized unreadable selection is never kept as the avatar',
+    () async {
+      final directory = await Directory.systemTemp.createTemp('avatar_test_');
+      addTearDown(() => directory.delete(recursive: true));
+      final selected = File('${directory.path}/broken.jpg');
+      await selected.writeAsBytes(Uint8List(ImageCompressor.maxBytes + 1));
 
-    expect(await ImageCompressor.shrink(selected.path), isNull);
-  });
+      expect(await ImageCompressor.shrink(selected.path), isNull);
+    },
+  );
 }

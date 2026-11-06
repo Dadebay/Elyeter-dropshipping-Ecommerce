@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/extensions/context_extensions.dart';
+
 import '../theme/app_colors.dart';
 import '../constants/app_icons.dart';
 
@@ -80,7 +82,7 @@ class _FlyingThumb extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.white,
+        color: context.adapt(AppColors.white, AppColors.categoryDark),
         border: Border.all(color: AppColors.primary, width: 2),
         boxShadow: [
           BoxShadow(

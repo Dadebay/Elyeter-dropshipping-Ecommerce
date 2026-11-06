@@ -134,7 +134,10 @@ class _Row extends StatelessWidget {
                               ? cancelledOrder
                                     ? OrderProgressTimeline._cancelledColor
                                     : AppColors.primary
-                              : AppColors.grey300,
+                              : context.adapt(
+                                  AppColors.grey300,
+                                  const Color(0xFF404040),
+                                ),
                           borderRadius: BorderRadius.circular(
                             OrderProgressTimeline._connectorWidth,
                           ),
@@ -187,7 +190,7 @@ class _Row extends StatelessWidget {
                     _label(context, entry.stage),
                     style: context.textTheme.bodyMedium?.copyWith(
                       color: cancelledOrder || done
-                          ? AppColors.black
+                          ? context.inkColor
                           : AppColors.grey500,
                       fontWeight: cancelledOrder || done
                           ? FontWeight.w600
@@ -249,7 +252,7 @@ class _Ring extends StatelessWidget {
         ? OrderProgressTimeline._cancelledColor
         : done
         ? AppColors.primary
-        : AppColors.grey300;
+        : context.adapt(AppColors.grey300, const Color(0xFF404040));
 
     final ring = Container(
       width: OrderProgressTimeline._ringSize,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 
 import '../../../../core/constants/app_constants.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/utils/formatters/currency_formatter.dart';
@@ -61,7 +60,11 @@ class CartSummaryBar extends StatelessWidget {
       // A narrow warm reflection gives the glass depth over an empty cart
       // backdrop, while the centre keeps its translucent peach tint.
       linearGradient: opaque
-          ? const LinearGradient(colors: [Color(0xFFFFD8BF), Color(0xFFFFD8BF)])
+          ? LinearGradient(
+              colors: context.isDark
+                  ? const [Color(0xFF4A2A18), Color(0xFF4A2A18)]
+                  : const [Color(0xFFFFD8BF), Color(0xFFFFD8BF)],
+            )
           : const LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -135,7 +138,7 @@ class _Row extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: context.textTheme.titleSmall?.copyWith(
-              color: AppColors.black,
+              color: context.inkColor,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -160,10 +163,10 @@ class _Row extends StatelessWidget {
                       '${AppConstants.currencySymbol}',
                       style: context.textTheme.bodySmall?.copyWith(
                         // Red would sink into the orange; a muted ink reads on it.
-                        color: AppColors.black.withValues(alpha: 0.55),
+                        color: context.inkColor.withValues(alpha: 0.55),
                         fontWeight: FontWeight.w700,
                         decoration: TextDecoration.lineThrough,
-                        decorationColor: AppColors.black.withValues(
+                        decorationColor: context.inkColor.withValues(
                           alpha: 0.55,
                         ),
                         fontFeatures: const [FontFeature.tabularFigures()],
@@ -187,14 +190,14 @@ class _Row extends StatelessWidget {
                         TextSpan(
                           text: AppConstants.currencySymbol,
                           style: context.textTheme.labelMedium?.copyWith(
-                            color: AppColors.black,
+                            color: context.inkColor,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
                       ],
                     ),
                     style: context.textTheme.titleMedium?.copyWith(
-                      color: AppColors.black,
+                      color: context.inkColor,
                       fontWeight: FontWeight.w800,
                       // Large, heavy figures read too loose at their default
                       // tracking; tighten as the size goes up.

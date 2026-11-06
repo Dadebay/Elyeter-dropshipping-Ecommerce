@@ -16,6 +16,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
+import '../../../../core/utils/settings_opener.dart';
 import '../../../../core/widgets/elyeter_map.dart';
 
 class AddressMapPickerPage extends StatefulWidget {
@@ -26,12 +27,17 @@ class AddressMapPickerPage extends StatefulWidget {
     this.initialName,
     this.locationService,
     this.addressLookupService,
+    this.autoLocate = true,
   });
   final SavedLocation? current;
   final String initialType;
   final String? initialName;
   final DeviceLocationService? locationService;
   final AddressLookupService? addressLookupService;
+
+  /// Ask for permission and find the device as soon as the page opens, for a
+  /// new address. An address being edited keeps its saved point.
+  final bool autoLocate;
 
   @override
   State<AddressMapPickerPage> createState() => _AddressMapPickerPageState();
@@ -59,8 +65,19 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
   bool _dragging = false;
   bool _resolvingAddress = false;
   String? _message;
+  LocationProblem? _locationProblem;
   int _lookupRequest = 0;
   Timer? _mapLookupTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.autoLocate && widget.current == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_locate());
+      });
+    }
+  }
 
   String _initialApartment() {
     final details = widget.current?.details ?? '';
@@ -106,6 +123,7 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
       _dragging = false;
       _resolvingAddress = false;
       _message = null;
+      _locationProblem = null;
     });
     try {
       final point = await _location.locate();
@@ -122,7 +140,18 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
       });
       await _resolveAddress(point, request, _address.text);
     } on LocationLookupException catch (error) {
-      if (mounted) setState(() => _message = error.message);
+      if (mounted) {
+        final l10n = context.l10n;
+        setState(() {
+          _locationProblem = error.problem;
+          _message = switch (error.problem) {
+            LocationProblem.serviceOff => l10n.addressLocationServiceOff,
+            LocationProblem.denied || LocationProblem.deniedForever =>
+              l10n.addressLocationPermissionDenied,
+            _ => l10n.addressLocationFailed,
+          };
+        });
+      }
     } on Object {
       if (mounted) {
         setState(() => _message = context.l10n.addressLocationFailed);
@@ -164,19 +193,31 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
     int request,
     String addressBeforeLookup,
   ) async {
-    String? resolved;
+    ResolvedAddress? resolved;
     try {
       resolved = await _addressLookup
-          .reverse(point, Localizations.localeOf(context))
-          .timeout(const Duration(seconds: 8));
-    } on Object {
+          .resolve(point, Localizations.localeOf(context))
+          .timeout(const Duration(seconds: 9));
+    } on Object catch (error) {
       // The selected point is still usable when the device has no geocoder.
+      debugPrint('[address] lookup failed: $error');
     }
     if (!mounted || request != _lookupRequest) return;
     setState(() => _resolvingAddress = false);
     if (_address.text != addressBeforeLookup) return;
-    _fillAddress(resolved ?? _coordinateText(point));
-    if (resolved == null) {
+    if (resolved != null) {
+      _fillAddress(resolved.address);
+      // Flat and floor, when the lookup knew them: never over what was typed.
+      if (_apartment.text.trim().isEmpty && resolved.apartment != null) {
+        _apartment.text = resolved.apartment!;
+      }
+      if (_floor.text.trim().isEmpty && resolved.floor != null) {
+        _floor.text = resolved.floor!;
+      }
+    } else {
+      // Never put raw coordinates in front of the customer: leave the field
+      // empty for them to type the address, which they can always do.
+      _fillAddress('');
       setState(() => _message = context.l10n.addressLookupFailed);
     }
   }
@@ -204,7 +245,9 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
     Navigator.of(context).pop(<String, dynamic>{
       'name': _name.text.trim(),
       'type': _type,
-      'address': _address.text.trim(),
+      'address': _address.text.trim().isEmpty
+          ? _coordinateText(_point)
+          : _address.text.trim(),
       'details': _combinedDetails(),
       'latitude': _point.latitude,
       'longitude': _point.longitude,
@@ -216,14 +259,36 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final panel = isDark ? AppColors.surfaceDark : AppColors.white;
 
+    // The keyboard never resizes the page, only lifts the sheet over it. With
+    // the page resizing as well, the sheet's height was recomputed on every
+    // frame of the keyboard animation, so it jumped up and back.
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+    final keyboardOpen = keyboard > 0;
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final sheetHeight = math.min(
+          final fullSheetHeight = math.min(
             constraints.maxHeight,
             math.max(500.0, constraints.maxHeight * 0.62),
           );
-          final showMapControls = constraints.maxHeight - sheetHeight >= 80;
+          // Decided from the full layout, so the sheet's header does not swap
+          // between handle and buttons as the keyboard opens.
+          final roomForMapControls =
+              constraints.maxHeight - fullSheetHeight >= 80;
+          final showMapControls = roomForMapControls && !keyboardOpen;
+          // Under the keyboard the sheet gives up height instead of moving
+          // the map, and keeps clear of the status bar.
+          final sheetHeight = keyboardOpen
+              ? math.min(
+                  fullSheetHeight,
+                  constraints.maxHeight -
+                      keyboard -
+                      MediaQuery.paddingOf(context).top -
+                      AppSpacing.sm,
+                )
+              : fullSheetHeight;
           const overlap = 24.0;
           return Stack(
             children: [
@@ -231,7 +296,7 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
                 top: 0,
                 left: 0,
                 right: 0,
-                bottom: sheetHeight - overlap,
+                bottom: fullSheetHeight - overlap,
                 child: Stack(
                   children: [
                     ElyeterMap(
@@ -264,8 +329,9 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
               ),
               if (showMapControls)
                 Positioned(
+                  key: const ValueKey('map-back'),
                   left: AppSpacing.page,
-                  bottom: sheetHeight + AppSpacing.md,
+                  bottom: fullSheetHeight + AppSpacing.md,
                   child: _MapButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child: HugeIcon(
@@ -277,8 +343,9 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
                 ),
               if (showMapControls)
                 Positioned(
+                  key: const ValueKey('map-locate'),
                   right: AppSpacing.page,
-                  bottom: sheetHeight + AppSpacing.md,
+                  bottom: fullSheetHeight + AppSpacing.md,
                   child: _MapButton(
                     onPressed: _locating ? null : _locate,
                     child: _locating
@@ -298,10 +365,15 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
                           ),
                   ),
                 ),
+              // Keyed: the map buttons above come and go with the keyboard, and
+              // without a key the sheet was matched against the wrong child,
+              // rebuilt from scratch and its focused field lost, which closed
+              // the keyboard the moment it opened.
               Positioned(
+                key: const ValueKey('address-sheet'),
                 left: 0,
                 right: 0,
-                bottom: 0,
+                bottom: keyboard,
                 height: sheetHeight,
                 child: Container(
                   decoration: BoxDecoration(
@@ -319,6 +391,7 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
                   ),
                   child: SafeArea(
                     top: false,
+                    bottom: !keyboardOpen,
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.fromLTRB(
                         AppSpacing.page,
@@ -329,7 +402,7 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (showMapControls)
+                          if (roomForMapControls)
                             const Center(child: _SheetHandle())
                           else
                             Row(
@@ -450,6 +523,22 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
                           if (_message != null) ...[
                             const SizedBox(height: AppSpacing.md),
                             _Notice(_message!),
+                            if (_locationProblem ==
+                                    LocationProblem.serviceOff ||
+                                _locationProblem == LocationProblem.denied ||
+                                _locationProblem ==
+                                    LocationProblem.deniedForever)
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: TextButton(
+                                  onPressed:
+                                      _locationProblem ==
+                                          LocationProblem.serviceOff
+                                      ? SettingsOpener.openLocationSettings
+                                      : SettingsOpener.openAppSettings,
+                                  child: Text(context.l10n.addressOpenSettings),
+                                ),
+                              ),
                           ],
                           const SizedBox(height: AppSpacing.xl),
                           _SaveAddressButton(

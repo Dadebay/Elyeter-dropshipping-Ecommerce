@@ -45,36 +45,33 @@ class HomeSearchField extends StatelessWidget {
       textInputAction: TextInputAction.search,
       style: context.textTheme.bodyMedium?.copyWith(
         fontFamily: AppTypography.fontFamily,
-        color: AppColors.ink,
+        color: context.inkColor,
         fontSize: 16,
       ),
       decoration: InputDecoration(
         hintText: context.l10n.homeSearchHint,
         hintStyle: context.textTheme.bodyMedium?.copyWith(
           fontFamily: AppTypography.fontFamily,
-          color: AppColors.black,
+          color: context.inkColor,
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
         filled: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 14),
-        fillColor: AppColors.white,
+        fillColor: context.adapt(AppColors.white, AppColors.backgroundDark),
         prefixIcon: Padding(
           padding: const EdgeInsets.all(12.0).copyWith(right: 8.0),
-          child: const _SearchIcon(
-            AppAssets.iconSearch,
-            color: AppColors.black,
-          ),
+          child: _SearchIcon(AppAssets.iconSearch, color: context.inkColor),
         ),
         suffixIcon: showCamera
             ? IconButton(
                 tooltip: context.l10n.visualSearchTitle,
                 onPressed: () => startPhotoSearch(context),
                 padding: const EdgeInsets.only(right: 8),
-                icon: const HugeIcon(
+                icon: HugeIcon(
                   icon: AppIcons.camera,
                   size: 24,
-                  color: AppColors.black,
+                  color: context.inkColor,
                 ),
               )
             : null,

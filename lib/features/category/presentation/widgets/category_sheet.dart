@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/widgets/app_close_button.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
-import '../../../../core/constants/app_icons.dart';
 
 /// The chrome every filter sheet shares: a grab handle, a titled header with
 /// a way out, a scrolling body and a footer that stays put.
@@ -28,8 +29,10 @@ class CategorySheet extends StatelessWidget {
   }) {
     return showModalBottomSheet<T>(
       context: context,
-      backgroundColor: AppColors.white,
-      barrierColor: AppColors.black.withValues(alpha: 0.45),
+      backgroundColor: context.adapt(AppColors.white, AppColors.backgroundDark),
+      barrierColor: AppColors.black.withValues(
+        alpha: context.isDark ? 0.7 : 0.45,
+      ),
       // A tall facet list scrolls inside the sheet rather than growing past
       // the top of the screen.
       isScrollControlled: true,
@@ -63,10 +66,16 @@ class CategorySheet extends StatelessWidget {
         children: [
           const _Handle(),
           _Header(title: title, onReset: onReset, resetLabel: resetLabel),
-          const Divider(height: 1, color: AppColors.grey100),
+          Divider(
+            height: 1,
+            color: context.adapt(AppColors.grey100, AppColors.categoryDark),
+          ),
           Flexible(child: child),
           if (footer != null) ...[
-            const Divider(height: 1, color: AppColors.grey100),
+            Divider(
+              height: 1,
+              color: context.adapt(AppColors.grey100, AppColors.categoryDark),
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.xl,
@@ -92,7 +101,7 @@ class _Handle extends StatelessWidget {
     height: 4,
     margin: const EdgeInsets.symmetric(vertical: AppSpacing.md),
     decoration: BoxDecoration(
-      color: AppColors.grey300,
+      color: context.adapt(AppColors.grey300, const Color(0xFF404040)),
       borderRadius: BorderRadius.circular(AppRadius.pill),
     ),
   );
@@ -143,7 +152,7 @@ class _Header extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.titleLarge?.copyWith(
-                color: AppColors.black,
+                color: context.inkColor,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -152,43 +161,13 @@ class _Header extends StatelessWidget {
             width: 72,
             child: Align(
               alignment: Alignment.centerRight,
-              child: _CloseButton(
-                onTap: () => Navigator.of(context).maybePop(),
-              ),
+              child: const AppCloseButton(),
             ),
           ),
         ],
       ),
     );
   }
-}
-
-class _CloseButton extends StatelessWidget {
-  const _CloseButton({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Material(
-    color: AppColors.background,
-    shape: const CircleBorder(),
-    clipBehavior: Clip.antiAlias,
-    child: InkWell(
-      onTap: onTap,
-      child: const SizedBox(
-        width: 32,
-        height: 32,
-        child: Center(
-          child: HugeIcon(
-            icon: AppIcons.close,
-            size: 14,
-            strokeWidth: 2.2,
-            color: AppColors.grey700,
-          ),
-        ),
-      ),
-    ),
-  );
 }
 
 /// The wide confirming button at the foot of a sheet.
@@ -205,7 +184,9 @@ class CategorySheetAction extends StatelessWidget {
     final enabled = onTap != null;
 
     return Material(
-      color: enabled ? AppColors.primary : AppColors.grey100,
+      color: enabled
+          ? AppColors.primary
+          : context.adapt(AppColors.grey100, AppColors.categoryDark),
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),

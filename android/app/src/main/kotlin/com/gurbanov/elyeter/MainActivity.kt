@@ -1,7 +1,10 @@
 package com.gurbanov.elyeter
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
@@ -22,11 +25,25 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         systemUiChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.gurbanov.elyeter/system_ui")
         systemUiChannel?.setMethodCallHandler { call, result ->
-            if (call.method == "hideNavigationBar") {
-                hideNavigationBar()
-                result.success(null)
-            } else {
-                result.notImplemented()
+            when (call.method) {
+                "hideNavigationBar" -> {
+                    hideNavigationBar()
+                    result.success(null)
+                }
+                "openAppSettings" -> {
+                    startActivity(
+                        Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", packageName, null),
+                        ),
+                    )
+                    result.success(null)
+                }
+                "openLocationSettings" -> {
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                    result.success(null)
+                }
+                else -> result.notImplemented()
             }
         }
     }

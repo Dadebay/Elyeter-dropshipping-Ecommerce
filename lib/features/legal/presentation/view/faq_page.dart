@@ -71,7 +71,9 @@ class _FaqTile extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Material(
-      color: isDark ? AppColors.surfaceDark : AppColors.surfaceMuted,
+      color: isDark
+          ? AppColors.surfaceDark
+          : context.adapt(AppColors.surfaceMuted, AppColors.categoryDark),
       borderRadius: BorderRadius.circular(AppRadius.md),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -114,7 +116,10 @@ class _FaqTile extends StatelessWidget {
                   Text(
                     answer,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.grey700,
+                      color: context.adapt(
+                        AppColors.grey700,
+                        AppColors.iconSoft,
+                      ),
                       height: 1.55,
                     ),
                   ),

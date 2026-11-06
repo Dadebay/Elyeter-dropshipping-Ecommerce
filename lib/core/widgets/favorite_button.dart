@@ -26,6 +26,13 @@ class FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final asset = isDark
+        ? (active
+              ? AppAssets.iconFavoriteFullDark
+              : AppAssets.iconFavoriteEmptyDark)
+        : (active ? AppAssets.iconFavoriteFull : AppAssets.iconFavoriteEmpty);
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -33,11 +40,7 @@ class FavoriteButton extends StatelessWidget {
         width: _target,
         height: _target,
         child: Center(
-          child: SvgPicture.asset(
-            active ? AppAssets.iconFavoriteFull : AppAssets.iconFavoriteEmpty,
-            width: _size,
-            height: _size,
-          ),
+          child: SvgPicture.asset(asset, width: _size, height: _size),
         ),
       ),
     );

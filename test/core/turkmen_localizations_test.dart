@@ -39,7 +39,10 @@ void main() {
         ),
       );
       expect(
-        Localizations.of<MaterialLocalizations>(captured, MaterialLocalizations),
+        Localizations.of<MaterialLocalizations>(
+          captured,
+          MaterialLocalizations,
+        ),
         isNotNull,
         reason: '$code has no MaterialLocalizations',
       );

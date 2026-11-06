@@ -193,7 +193,7 @@
     }
   },
   "productArticle": "Haryt kody:",
-  "productPriceDetails": "Bahanyň jikme-jigi",
+  "productPriceDetails": "Baha barada",
   "productPricePerItem": "Bir harydyň bahasy",
   "productRegularPrice": "Adaty baha",
   "productDiscountPercent": "{percent}% arzanladyş",
@@ -377,7 +377,10 @@
   "addressNameRequired": "Salgynyň adyny ýazyň.",
   "addressLocationApproximate": "Ýerleşiş takmynan. Belligi dogry ýere süýşüriň.",
   "addressLocationFailed": "Ýerleşişi alyp bolmady. Kartadan saýlaň.",
-  "addressLookupFailed": "Köçe salgysy tapylmady. Koordinatlar goşuldy; salgyny özüňiz ýazyň.",
+  "addressLocationServiceOff": "Ýerleşiş hyzmaty öçük. Sazlamalardan açyň ýa-da kartadan saýlaň.",
+  "addressLocationPermissionDenied": "Ýerleşişe rugsat berilmedi. Sazlamalardan rugsat beriň ýa-da kartadan saýlaň.",
+  "addressOpenSettings": "Sazlamalary aç",
+  "addressLookupFailed": "Köçe salgysy tapylmady. Salgyny özüňiz ýazyň.",
   "addressEmptyTitle": "Heniz salgy saklanmady",
   "addressEmptyMessage": "Ilkinji eltip beriş salgyňyzy saklamak üçin + basyň.",
   "addressDeleteDone": "Salgy pozuldy.",
@@ -393,7 +396,7 @@
   "profileInstagram": "Instagram",
   "profileTiktok": "TikTok",
   "profileCallTitle": "Ähli soraglar üçin jaň ediň:",
-  "profileCallAction": "Operatora jaň et",
+  "profileCallAction": "Jaň et",
   "profileCallHours": "Jaňlara jogap beriljek wagtlary: Hepde içi her gün sagat 09:00 - 19:00 aralygy",
   "profileVersion": "Wersiýa {version}",
   "@profileVersion": {
@@ -589,5 +592,7 @@
   "imageSearchTitle": "Surat boýunça gözleg",
   "imageSearchSearching": "Ýene gözleýäris…",
   "imageSearchEmpty": "Entek meňzeş zat ýok",
-  "imageSearchRateLimited": "Gözleg çägi doldy. {minutes} min soň synanşyň."
+  "imageSearchRateLimited": "Gözleg çägi doldy. {minutes} min soň synanşyň.",
+  "imageSearchInReview": "Suratyňyz işlenildi. Ýene {count} haryt moderator tarapyndan barlanýar — habarnama ugradarys.",
+  "imageSearchFailed": "AliExpress-den harytlary ýükläp bolmady."
 }

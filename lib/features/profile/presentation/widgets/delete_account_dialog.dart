@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/app_asset_image.dart';
+import '../../../../core/constants/app_assets.dart';
 
 import '../../../../core/widgets/app_loader.dart';
 import '../../../../core/error/failure.dart';
@@ -7,7 +9,6 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
-import '../../../../core/constants/app_icons.dart';
 
 /// Asks before `DELETE /auth/me`, and runs it.
 ///
@@ -195,10 +196,8 @@ class _WarningGlyph extends StatelessWidget {
           color: AppColors.errorSoft,
           shape: BoxShape.circle,
         ),
-        child: const HugeIcon(
-          icon: AppIcons.delete,
-          size: 20,
-          color: AppColors.error,
+        child: const Center(
+          child: AppAssetImage(AppAssets.iconTrash, width: 24, height: 24),
         ),
       ),
     );

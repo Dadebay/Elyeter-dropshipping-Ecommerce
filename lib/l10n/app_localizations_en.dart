@@ -888,8 +888,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not get your location. Choose it on the map.';
 
   @override
+  String get addressLocationServiceOff =>
+      'Location is turned off. Turn it on in settings, or choose the spot on the map.';
+
+  @override
+  String get addressLocationPermissionDenied =>
+      'Location access is not allowed. Allow it in settings, or choose the spot on the map.';
+
+  @override
+  String get addressOpenSettings => 'Open settings';
+
+  @override
   String get addressLookupFailed =>
-      'Street address unavailable. Coordinates added; enter the address manually.';
+      'Street address unavailable. Type the address manually.';
 
   @override
   String get addressEmptyTitle => 'No saved addresses yet';
@@ -939,7 +950,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileCallTitle => 'Call us with any question:';
 
   @override
-  String get profileCallAction => 'Call operator';
+  String get profileCallAction => 'Call';
 
   @override
   String get profileCallHours =>
@@ -1484,4 +1495,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String imageSearchRateLimited(int minutes) {
     return 'Search limit reached. Try again in $minutes min.';
   }
+
+  @override
+  String imageSearchInReview(int count) {
+    return 'Your photo has been processed. $count more products are being checked by a moderator — we will send a notification.';
+  }
+
+  @override
+  String get imageSearchFailed => 'Could not load products from AliExpress.';
 }

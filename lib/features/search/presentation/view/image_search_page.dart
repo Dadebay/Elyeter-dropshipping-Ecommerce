@@ -12,8 +12,8 @@ import '../../../../core/localization/failure_localizer.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
+import '../../../../core/utils/result.dart';
 import '../../../../core/utils/photo_upload_compressor.dart';
-import '../../../../core/widgets/app_empty_view.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../../../core/widgets/app_page_app_bar.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
@@ -23,6 +23,7 @@ import '../../../cart/presentation/cubit/cart_state.dart';
 import '../../../favorite/presentation/cubit/favorite_cubit.dart';
 import '../../../product/presentation/widgets/product_card.dart';
 import '../../../product/presentation/widgets/product_card_actions.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/image_search.dart';
 import '../../domain/repositories/image_search_repository.dart';
 
@@ -32,9 +33,14 @@ import '../../domain/repositories/image_search_repository.dart';
 /// seconds while the server is still adding look-alikes, showing whatever has
 /// arrived so far.
 class ImageSearchPage extends StatefulWidget {
-  const ImageSearchPage({super.key, required this.imagePath});
+  const ImageSearchPage({super.key, this.imagePath, this.searchId})
+    : assert(imagePath != null || searchId != null);
 
-  final String imagePath;
+  /// A photo to search with: it is uploaded first.
+  final String? imagePath;
+
+  /// An existing search to open, e.g. from a notification.
+  final int? searchId;
 
   @override
   State<ImageSearchPage> createState() => _ImageSearchPageState();
@@ -77,12 +83,18 @@ class _ImageSearchPageState extends State<ImageSearchPage> {
       _failure = null;
       _search = null;
     });
-    final path = await compressImageToLimit(
-      widget.imagePath,
-      maxBytes: _maxBytes,
-      maxSide: _maxSide,
-    );
-    final result = await getIt<ImageSearchRepository>().create(path);
+    final photo = widget.imagePath;
+    final Result<ImageSearch> result;
+    if (photo != null) {
+      final path = await compressImageToLimit(
+        photo,
+        maxBytes: _maxBytes,
+        maxSide: _maxSide,
+      );
+      result = await getIt<ImageSearchRepository>().create(path);
+    } else {
+      result = await getIt<ImageSearchRepository>().byId(widget.searchId!);
+    }
     if (!mounted) return;
     setState(() {
       _uploading = false;
@@ -128,10 +140,25 @@ class _ImageSearchPageState extends State<ImageSearchPage> {
     );
   }
 
+  /// What to say about the search's state, if anything.
+  String? _noteFor(AppLocalizations l10n, ImageSearch search, bool searching) =>
+      switch (search.status) {
+        ImageSearchStatus.processing =>
+          searching ? l10n.imageSearchSearching : null,
+        ImageSearchStatus.inReview => l10n.imageSearchInReview(
+          search.waitingCount,
+        ),
+        ImageSearchStatus.failed => l10n.imageSearchFailed,
+        ImageSearchStatus.done => null,
+      };
+
   Widget _body(BuildContext context) {
     final l10n = context.l10n;
     if (_uploading) {
-      return _Waiting(path: widget.imagePath, label: l10n.imageSearchSearching);
+      return _Waiting(
+        path: widget.imagePath ?? _search?.image,
+        label: l10n.imageSearchSearching,
+      );
     }
     final failure = _failure;
     if (failure != null) {
@@ -139,22 +166,20 @@ class _ImageSearchPageState extends State<ImageSearchPage> {
     }
     final search = _search!;
     final products = search.products;
+    final photo = widget.imagePath ?? search.image;
     final searching = search.status == ImageSearchStatus.processing && _polling;
+    final note = _noteFor(l10n, search, searching);
 
     if (products.isEmpty) {
       return searching
-          ? _Waiting(path: widget.imagePath, label: l10n.imageSearchSearching)
-          : AppEmptyView(message: l10n.imageSearchEmpty);
+          ? _Waiting(path: photo, label: l10n.imageSearchSearching)
+          : _Empty(photo: photo, note: note, fallback: l10n.imageSearchEmpty);
     }
 
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
-          child: _Header(
-            path: widget.imagePath,
-            searching: searching,
-            label: l10n.imageSearchSearching,
-          ),
+          child: _Header(photo: photo, note: note, searching: searching),
         ),
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(
@@ -212,17 +237,18 @@ class _ImageSearchPageState extends State<ImageSearchPage> {
   }
 }
 
-/// The photo being searched with, small, and the "still looking" note.
+/// The photo being searched with, small, and a note on where the search
+/// stands (still looking, with a moderator, failed).
 class _Header extends StatelessWidget {
   const _Header({
-    required this.path,
+    required this.photo,
+    required this.note,
     required this.searching,
-    required this.label,
   });
 
-  final String path;
+  final String? photo;
+  final String? note;
   final bool searching;
-  final String label;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -234,42 +260,97 @@ class _Header extends StatelessWidget {
     ),
     child: Row(
       children: [
-        _Thumb(path: path, size: 56),
+        _Thumb(path: photo, size: 56),
         const SizedBox(width: AppSpacing.md),
         if (searching) ...[
           const SizedBox.square(dimension: 18, child: AppLoader()),
           const SizedBox(width: AppSpacing.sm),
+        ],
+        if (note != null)
           Expanded(
             child: Text(
-              label,
+              note!,
               style: context.textTheme.bodyMedium?.copyWith(
-                color: AppColors.grey700,
+                color: context.adapt(AppColors.grey700, AppColors.iconSoft),
               ),
             ),
           ),
-        ],
       ],
     ),
   );
 }
 
+/// The customer's photo: a local file just taken, or the server's copy of an
+/// earlier search.
 class _Thumb extends StatelessWidget {
   const _Thumb({required this.path, required this.size});
 
-  final String path;
+  final String? path;
   final double size;
 
   @override
-  Widget build(BuildContext context) => ClipRRect(
-    borderRadius: BorderRadius.circular(AppRadius.md),
-    child: Image.file(
-      File(path),
-      width: size,
-      height: size,
-      fit: BoxFit.cover,
-      errorBuilder: (_, _, _) => SizedBox.square(
-        dimension: size,
-        child: const ColoredBox(color: AppColors.grey100),
+  Widget build(BuildContext context) {
+    final box = SizedBox.square(
+      dimension: size,
+      child: ColoredBox(
+        color: context.adapt(AppColors.grey100, AppColors.categoryDark),
+      ),
+    );
+    final source = path;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: source == null
+          ? box
+          : source.startsWith('http')
+          ? Image.network(
+              source,
+              width: size,
+              height: size,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => box,
+            )
+          : Image.file(
+              File(source),
+              width: size,
+              height: size,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => box,
+            ),
+    );
+  }
+}
+
+/// No products to show yet (or at all): the photo and what is happening.
+class _Empty extends StatelessWidget {
+  const _Empty({
+    required this.photo,
+    required this.note,
+    required this.fallback,
+  });
+
+  final String? photo;
+  final String? note;
+
+  /// Said when there is no state to report: simply nothing similar.
+  final String fallback;
+
+  @override
+  Widget build(BuildContext context) => Center(
+    child: Padding(
+      padding: const EdgeInsets.all(AppSpacing.xxl),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _Thumb(path: photo, size: 120),
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            note ?? fallback,
+            textAlign: TextAlign.center,
+            style: context.textTheme.bodyLarge?.copyWith(
+              color: context.adapt(AppColors.grey700, AppColors.iconSoft),
+            ),
+          ),
+        ],
       ),
     ),
   );
@@ -279,7 +360,7 @@ class _Thumb extends StatelessWidget {
 class _Waiting extends StatelessWidget {
   const _Waiting({required this.path, required this.label});
 
-  final String path;
+  final String? path;
   final String label;
 
   @override
@@ -294,7 +375,7 @@ class _Waiting extends StatelessWidget {
         Text(
           label,
           style: context.textTheme.bodyMedium?.copyWith(
-            color: AppColors.grey700,
+            color: context.adapt(AppColors.grey700, AppColors.iconSoft),
           ),
         ),
       ],
@@ -329,7 +410,7 @@ class _Problem extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: context.textTheme.bodyLarge?.copyWith(
-                color: AppColors.grey700,
+                color: context.adapt(AppColors.grey700, AppColors.iconSoft),
               ),
             ),
             if (!limited) ...[

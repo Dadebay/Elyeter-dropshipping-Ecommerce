@@ -188,12 +188,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       return Scaffold(
         // White page, tinted blocks — the inverse of the app's other
         // screens, which is what the design does here.
-        backgroundColor: AppColors.white,
+        backgroundColor: context.adapt(
+          AppColors.white,
+          AppColors.backgroundDark,
+        ),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           scrolledUnderElevation: 0,
+          // The buttons' soft shadow reaches below the bar; clipping it
+          // left a hard edge under them.
+          clipBehavior: Clip.none,
           leadingWidth: AppBackButton.leadingWidth,
           leading: const AppBackButton.appBarLeading(icon: AppIcons.back),
           actions: [
@@ -241,23 +247,35 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(color: AppColors.black),
+                            ?.copyWith(color: context.inkColor),
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       ProductRatingRow(
                         rating: product.rating,
                         orderCount: product.ordersCount,
                       ),
-                      for (final name in options.names)
-                        if (options.valuesOf(name).length > 1) ...[
-                          const SizedBox(height: AppSpacing.lg),
-                          _OptionRow(
-                            name: name,
-                            options: options,
-                            variant: variant,
-                            onPick: (value) => _pick(options, name, value),
-                          ),
-                        ],
+                    ],
+                  ),
+                ),
+                // Outside the padded block: the colour strip runs edge to
+                // edge like the gallery, and each row pads its own text.
+                for (final name in options.names)
+                  if (options.valuesOf(name).length > 1) ...[
+                    const SizedBox(height: AppSpacing.lg),
+                    _OptionRow(
+                      name: name,
+                      options: options,
+                      variant: variant,
+                      onPick: (value) => _pick(options, name, value),
+                    ),
+                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.page,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       const SizedBox(height: AppSpacing.xl),
                       // From here down the page is a stack of grey cards on
                       // the white background, so the gaps are card spacing.
@@ -370,10 +388,14 @@ class _OptionRow extends StatelessWidget {
         if (!options.isAvailable(name, values[i])) i,
     };
 
+    const pad = EdgeInsets.symmetric(horizontal: AppSpacing.page);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (options.isVisual(name))
+          // Edge to edge: the list pads its own ends, so the swatches scroll
+          // under the screen edge instead of being cut at the page margin.
           ProductColorPicker(
             images: [for (final v in values) options.imageOf(name, v)!],
             selected: values.indexOf(selected ?? ''),
@@ -381,15 +403,18 @@ class _OptionRow extends StatelessWidget {
             onSelected: (index) => onPick(values[index]),
           )
         else
-          ProductSizePicker(
-            sizes: values,
-            selected: selected ?? '',
-            unavailable: {for (final i in unavailable) values[i]},
-            onSelected: onPick,
+          Padding(
+            padding: pad,
+            child: ProductSizePicker(
+              sizes: values,
+              selected: selected ?? '',
+              unavailable: {for (final i in unavailable) values[i]},
+              onSelected: onPick,
+            ),
           ),
         if (selected != null) ...[
           const SizedBox(height: AppSpacing.sm),
-          ProductOptionLabel('$name: $selected'),
+          Padding(padding: pad, child: ProductOptionLabel('$name: $selected')),
         ],
       ],
     );
@@ -406,7 +431,7 @@ class _Placeholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: context.adapt(AppColors.white, AppColors.backgroundDark),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leadingWidth: AppBackButton.leadingWidth,

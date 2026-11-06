@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/app_routes.dart';
 import '../../../../core/di/injector.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/widgets/app_error_view.dart';
@@ -71,7 +70,7 @@ class _CategoryView extends StatelessWidget {
                 title: Text(
                   context.l10n.categoryTitle,
                   style: context.textTheme.headlineLarge?.copyWith(
-                    color: AppColors.black,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.5,
                   ),
@@ -121,6 +120,6 @@ class _CategoryView extends StatelessWidget {
     name: category.name,
     // The small image is the one sized for a grid cell; the large one is
     // the only fallback the API offers.
-    imageUrl: category.imageSmall ?? category.imageLarge,
+    imageUrl: category.imageLarge ?? category.imageSmall,
   );
 }

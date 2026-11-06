@@ -23,7 +23,7 @@ class OrderCard extends StatelessWidget {
       width: double.infinity,
       padding: padding,
       decoration: BoxDecoration(
-        color: context.isDark ? AppColors.surfaceDark : AppColors.white,
+        color: context.isDark ? AppColors.categoryDark : AppColors.white,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         // Flat white on a soft grey page reads as a lighter patch of the
         // same surface; the shadow is what makes it a card sitting on top.
@@ -56,7 +56,9 @@ class OrderCardHeader extends StatelessWidget {
       title,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: context.textTheme.titleSmall?.copyWith(color: AppColors.grey700),
+      style: context.textTheme.titleSmall?.copyWith(
+        color: context.adapt(AppColors.grey700, AppColors.iconSoft),
+      ),
     );
 
     if (onTap == null) return label;

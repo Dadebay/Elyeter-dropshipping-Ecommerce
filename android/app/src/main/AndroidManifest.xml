@@ -55,9 +55,17 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- The location plugin binds to this service when the activity
+             attaches; without it every call fails with NO_ACTIVITY. It is
+             declared again here WITHOUT the plugin's foregroundServiceType
+             (node="replace"): the app only reads the position in the
+             foreground, never runs a location foreground service, so Play
+             needs no declaration for it. -->
         <service
             android:name="com.lyokone.location.FlutterLocationService"
-            tools:node="remove" />
+            android:enabled="true"
+            android:exported="false"
+            tools:node="replace" />
         <!-- Pushes that arrive while the app is in the background are drawn
              by FCM itself: give them the same monochrome icon and channel
              LocalNotificationsService uses in the foreground. -->

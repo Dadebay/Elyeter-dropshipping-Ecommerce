@@ -37,8 +37,10 @@ Future<void> openProductRequestSheet(
     context: context,
     useRootNavigator: true,
     isScrollControlled: true,
-    backgroundColor: AppColors.white,
-    barrierColor: AppColors.black.withValues(alpha: 0.45),
+    backgroundColor: context.adapt(AppColors.white, AppColors.categoryDark),
+    barrierColor: AppColors.black.withValues(
+      alpha: context.isDark ? 0.7 : 0.45,
+    ),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
     ),
@@ -206,7 +208,10 @@ class _ProductRequestSheetState extends State<_ProductRequestSheet> {
                   height: 4,
                   margin: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: AppColors.grey300,
+                    color: context.adapt(
+                      AppColors.grey300,
+                      const Color(0xFF404040),
+                    ),
                     borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                 ),
@@ -235,7 +240,7 @@ class _ProductRequestSheetState extends State<_ProductRequestSheet> {
         Text(
           l10n.productRequestTitle,
           style: theme.titleLarge?.copyWith(
-            color: AppColors.black,
+            color: context.inkColor,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -261,7 +266,7 @@ class _ProductRequestSheetState extends State<_ProductRequestSheet> {
             errorText: _error,
             errorMaxLines: 3,
             filled: true,
-            fillColor: AppColors.grey100,
+            fillColor: context.adapt(AppColors.grey100, AppColors.categoryDark),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppRadius.md),
               borderSide: BorderSide.none,
@@ -272,7 +277,7 @@ class _ProductRequestSheetState extends State<_ProductRequestSheet> {
               icon: HugeIcon(
                 icon: AppIcons.copy,
                 size: 20,
-                color: AppColors.grey700,
+                color: context.adapt(AppColors.grey700, AppColors.iconSoft),
               ),
             ),
           ),
@@ -369,7 +374,7 @@ class _ProductRequestSheetState extends State<_ProductRequestSheet> {
           title,
           textAlign: TextAlign.center,
           style: theme.titleLarge?.copyWith(
-            color: AppColors.black,
+            color: context.inkColor,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -377,7 +382,9 @@ class _ProductRequestSheetState extends State<_ProductRequestSheet> {
         Text(
           message,
           textAlign: TextAlign.center,
-          style: theme.bodyMedium?.copyWith(color: AppColors.grey700),
+          style: theme.bodyMedium?.copyWith(
+            color: context.adapt(AppColors.grey700, AppColors.iconSoft),
+          ),
         ),
         const SizedBox(height: AppSpacing.xl),
         if (request.status == ProductRequestStatus.rejected ||

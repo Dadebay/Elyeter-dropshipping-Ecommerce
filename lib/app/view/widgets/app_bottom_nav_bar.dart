@@ -162,20 +162,37 @@ class _Highlight extends StatelessWidget {
       curve: Curves.easeOutBack,
       builder: (context, scale, child) =>
           Transform.scale(scale: scale, child: child),
-      child: Container(
-        // margin: const EdgeInsets.symmetric(horizontal: 2),
+      // Glass: a light-catching gradient of the accent (#FF6600 at ~16%),
+      // a hairline lit edge, and a faint highlight along the top.
+      child: DecoratedBox(
         decoration: ShapeDecoration(
-          color: accentColor.withValues(alpha: isDark ? 0.22 : 0.12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(27),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              accentColor.withValues(alpha: isDark ? 0.26 : 0.20),
+              accentColor.withValues(alpha: isDark ? 0.16 : 0.10),
+            ],
           ),
-          shadows: [
-            BoxShadow(
-              color: accentColor.withValues(alpha: 0.14),
-              blurRadius: 18,
-              offset: const Offset(0, 4),
+          shape: StadiumBorder(
+            side: BorderSide(
+              color: Colors.white.withValues(alpha: isDark ? 0.10 : 0.55),
+              width: 0.75,
             ),
-          ],
+          ),
+        ),
+        child: DecoratedBox(
+          decoration: ShapeDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.center,
+              colors: [
+                Colors.white.withValues(alpha: isDark ? 0.06 : 0.35),
+                Colors.white.withValues(alpha: 0),
+              ],
+            ),
+            shape: const StadiumBorder(),
+          ),
         ),
       ),
     );

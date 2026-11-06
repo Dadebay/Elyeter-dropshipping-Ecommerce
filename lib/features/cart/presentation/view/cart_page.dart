@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_loader.dart';
-import '../../../../core/widgets/app_refresh_indicator.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -155,7 +154,6 @@ class _CartPageState extends State<CartPage> {
             _failed.length < cart.quantities.length;
 
         return Scaffold(
-          backgroundColor: AppColors.white,
           // Stays put while the list scrolls under it, so the count and the
           // "Select All" tick are always in reach.
           appBar: _CartAppBar(
@@ -168,53 +166,54 @@ class _CartPageState extends State<CartPage> {
               ? const Center(child: AppLoader())
               : Stack(
                   children: [
-                    AppRefreshIndicator(
-                      onRefresh: _retry,
-                      child: ListView.separated(
-                        // The last line scrolls out from under the pill instead
-                        // of stopping behind it.
-                        padding: EdgeInsets.fromLTRB(
-                          AppSpacing.page,
-                          0,
-                          AppSpacing.page,
-                          summaryBottom +
-                              CartPage._summaryHeight +
-                              CartPage._gap,
-                        ),
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemCount: lines.length + unresolved.length,
-                        separatorBuilder: (_, _) =>
-                            const Divider(height: 1, color: AppColors.grey100),
-                        itemBuilder: (context, index) {
-                          if (index < lines.length) {
-                            return _Line(product: lines[index], cart: cart);
-                          }
-                          final key = unresolved[index - lines.length];
-                          return SwipeToDelete(
-                            onDelete: () =>
-                                context.read<CartCubit>().remove(key),
-                            child: ListTile(
-                              title: Text(CartCubit.legacySlug(key) ?? '#$key'),
-                              subtitle:
-                                  _migratingLegacy &&
-                                      CartCubit.legacySlug(key) != null
-                                  ? null
-                                  : Text(context.l10n.errorServer),
-                              trailing:
-                                  _migratingLegacy &&
-                                      CartCubit.legacySlug(key) != null
-                                  ? const SizedBox.square(
-                                      dimension: 24,
-                                      child: AppLoader(),
-                                    )
-                                  : TextButton(
-                                      onPressed: _retry,
-                                      child: Text(context.l10n.commonRetry),
-                                    ),
-                            ),
-                          );
-                        },
+                    ListView.separated(
+                      // The last line scrolls out from under the pill instead
+                      // of stopping behind it.
+                      padding: EdgeInsets.fromLTRB(
+                        AppSpacing.page,
+                        0,
+                        AppSpacing.page,
+                        summaryBottom + CartPage._summaryHeight + CartPage._gap,
                       ),
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: lines.length + unresolved.length,
+                      separatorBuilder: (_, _) => Divider(
+                        height: 1,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.categoryDark
+                            : context.adapt(
+                                AppColors.grey100,
+                                AppColors.categoryDark,
+                              ),
+                      ),
+                      itemBuilder: (context, index) {
+                        if (index < lines.length) {
+                          return _Line(product: lines[index], cart: cart);
+                        }
+                        final key = unresolved[index - lines.length];
+                        return SwipeToDelete(
+                          onDelete: () => context.read<CartCubit>().remove(key),
+                          child: ListTile(
+                            title: Text(CartCubit.legacySlug(key) ?? '#$key'),
+                            subtitle:
+                                _migratingLegacy &&
+                                    CartCubit.legacySlug(key) != null
+                                ? null
+                                : Text(context.l10n.errorServer),
+                            trailing:
+                                _migratingLegacy &&
+                                    CartCubit.legacySlug(key) != null
+                                ? const SizedBox.square(
+                                    dimension: 24,
+                                    child: AppLoader(),
+                                  )
+                                : TextButton(
+                                    onPressed: _retry,
+                                    child: Text(context.l10n.commonRetry),
+                                  ),
+                          ),
+                        );
+                      },
                     ),
                     Positioned(
                       left: AppSpacing.page,
@@ -250,7 +249,8 @@ class _CartAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.white,
+      clipBehavior: Clip.none,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       // The list slides under the bar without tinting it.
@@ -268,7 +268,7 @@ class _CartAppBar extends StatelessWidget implements PreferredSizeWidget {
         // Tracking is size-specific: at this size the default spacing reads
         // too loose, so it tightens as the type grows.
         style: context.textTheme.headlineLarge?.copyWith(
-          color: AppColors.black,
+          color: Theme.of(context).colorScheme.onSurface,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.5,
         ),
@@ -307,7 +307,7 @@ class _SelectAll extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: context.textTheme.bodyMedium?.copyWith(
-              color: AppColors.grey700,
+              color: context.adapt(AppColors.grey700, AppColors.iconSoft),
               fontWeight: FontWeight.w600,
             ),
           ),

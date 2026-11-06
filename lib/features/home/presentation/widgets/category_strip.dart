@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/extensions/context_extensions.dart';
+
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_asset_image.dart';
@@ -94,7 +96,7 @@ class _CategoryTile extends StatelessWidget {
         padding: EdgeInsets.only(top: size * 0.2),
         alignment: Alignment.bottomCenter,
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: context.adapt(AppColors.white, AppColors.categoryDark),
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         child: AppAssetImage(item.imageAsset!, width: size, height: size),

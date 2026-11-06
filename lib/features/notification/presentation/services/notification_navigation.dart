@@ -38,6 +38,13 @@ abstract final class NotificationNavigation {
             pathParameters: {'id': target},
           ),
         );
+      case 'image_search':
+        unawaited(
+          (router ?? AppRouter.router).pushNamed(
+            AppRoutes.imageSearch.name,
+            queryParameters: {'id': target},
+          ),
+        );
       case 'url':
         final uri = Uri.tryParse(target);
         if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http')) {

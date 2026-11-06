@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/app_asset_image.dart';
+import '../../../../core/constants/app_assets.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/constants/app_icons.dart';
 
 /// The destructive row at the bottom of a signed-in profile — deleting the
 /// account. Drawn apart from the settings groups so it never reads as one
@@ -34,11 +35,7 @@ class DeleteAccountCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const HugeIcon(
-                icon: AppIcons.delete,
-                size: 20,
-                color: AppColors.error,
-              ),
+              const AppAssetImage(AppAssets.iconTrash, width: 22, height: 22),
               const SizedBox(width: AppSpacing.sm),
               Text(
                 label,

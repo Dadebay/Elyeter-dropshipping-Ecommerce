@@ -24,7 +24,7 @@ class ElyeterShimmerBox extends StatelessWidget {
     return Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : AppColors.surfaceMuted,
+        color: isDark ? AppColors.categoryDark : AppColors.surfaceMuted,
         borderRadius: BorderRadius.circular(radius),
       ),
       child: ElyeterShimmerText(size: wordmarkSize),

@@ -48,7 +48,7 @@ void main() {
         locale: const Locale('en'),
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: const AddressMapPickerPage(),
+        home: const AddressMapPickerPage(autoLocate: false),
       ),
     );
 
@@ -137,7 +137,7 @@ void main() {
         locale: const Locale('en'),
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: const AddressMapPickerPage(),
+        home: const AddressMapPickerPage(autoLocate: false),
       ),
     );
     expect(tester.takeException(), isNull);
@@ -163,6 +163,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: AddressMapPickerPage(
+          autoLocate: false,
           locationService: _FixedLocation(),
           addressLookupService: _FixedAddressLookup(
             'Ahal street, Annau, Turkmenistan',
@@ -186,7 +187,7 @@ void main() {
     expect(tester.widget<TextField>(fields.at(2)).controller!.text, isEmpty);
   });
 
-  testWidgets('locate keeps coordinates when no street can be resolved', (
+  testWidgets('locate leaves the address empty to type when none resolves', (
     tester,
   ) async {
     tester.view
@@ -201,6 +202,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: AddressMapPickerPage(
+          autoLocate: false,
           locationService: _FixedLocation(),
           addressLookupService: _FixedAddressLookup(null),
         ),
@@ -213,9 +215,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    // Raw coordinates are never shown: the field stays empty for typing.
     expect(
       tester.widget<TextField>(find.byType(TextField).first).controller!.text,
-      '37.96000, 58.32000',
+      isEmpty,
+    );
+    expect(
+      find.text('Street address unavailable. Type the address manually.'),
+      findsOneWidget,
     );
   });
 
@@ -232,6 +239,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: AddressMapPickerPage(
+          autoLocate: false,
           addressLookupService: _FixedAddressLookup('Ahal street, Annau'),
         ),
       ),
@@ -263,6 +271,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: AddressMapPickerPage(
+          autoLocate: false,
           current: const SavedLocation(
             id: 1,
             name: 'Home',
@@ -316,6 +325,7 @@ void main() {
                 saved = await Navigator.of(context).push<Map<String, dynamic>>(
                   MaterialPageRoute(
                     builder: (_) => const AddressMapPickerPage(
+                      autoLocate: false,
                       current: SavedLocation(
                         id: 1,
                         name: 'Sister’s House',
@@ -356,5 +366,44 @@ void main() {
 
     expect(saved?['details'], '35/1 · Floor: 4');
     expect(saved?['type'], 'other');
+  });
+
+  testWidgets('opening the keyboard keeps the focused field', (tester) async {
+    tester.view
+      ..physicalSize = const Size(390, 844)
+      ..devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetViewInsets();
+      tester.view.reset();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        locale: const Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: const AddressMapPickerPage(autoLocate: false),
+      ),
+    );
+
+    final floor = find.byType(TextField).at(2);
+    await tester.tap(floor);
+    await tester.pump();
+    final focusBefore = tester.widget<TextField>(floor).focusNode;
+
+    // The keyboard rises in steps, as it does on a phone.
+    for (final inset in [80.0, 180.0, 300.0]) {
+      tester.view.viewInsets = FakeViewPadding(bottom: inset);
+      await tester.pump(const Duration(milliseconds: 40));
+    }
+    await tester.pumpAndSettle();
+
+    final editable = tester.state<EditableTextState>(
+      find.descendant(of: floor, matching: find.byType(EditableText)),
+    );
+    expect(editable.widget.focusNode.hasFocus, isTrue);
+    expect(focusBefore == null || focusBefore.hasFocus, isTrue);
+    expect(tester.takeException(), isNull);
   });
 }

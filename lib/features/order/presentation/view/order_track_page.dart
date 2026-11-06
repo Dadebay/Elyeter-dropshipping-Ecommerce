@@ -105,6 +105,7 @@ class _OrderTrackPageState extends State<OrderTrackPage>
     if (order == null) {
       return Scaffold(
         appBar: AppBar(
+          clipBehavior: Clip.none,
           leadingWidth: AppBackButton.leadingWidth,
           leading: const AppBackButton.appBarLeading(),
         ),
@@ -191,7 +192,10 @@ class _DeliveryMarker extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.primary,
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.white, width: 3),
+            border: Border.all(
+              color: context.adapt(AppColors.white, AppColors.categoryDark),
+              width: 3,
+            ),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x33000000),
@@ -228,7 +232,7 @@ class _NumberPill extends StatelessWidget {
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.adapt(AppColors.white, AppColors.categoryDark),
         borderRadius: BorderRadius.circular(AppRadius.pill),
         boxShadow: AppBackButton.shadow,
       ),
@@ -237,7 +241,7 @@ class _NumberPill extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: context.textTheme.titleSmall?.copyWith(
-          color: AppColors.ink,
+          color: context.inkColor,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -255,7 +259,7 @@ class _RefreshPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.adapt(AppColors.white, AppColors.categoryDark),
         borderRadius: BorderRadius.circular(AppRadius.pill),
         boxShadow: AppBackButton.shadow,
       ),
@@ -274,11 +278,11 @@ class _RefreshPill extends StatelessWidget {
                       dimension: 18,
                       child: AppLoader(color: AppColors.primary),
                     )
-                  : const HugeIcon(
+                  : HugeIcon(
                       icon: AppIcons.refresh,
                       size: 20,
                       strokeWidth: 2,
-                      color: AppColors.ink,
+                      color: context.inkColor,
                     ),
             ),
           ),
@@ -324,8 +328,8 @@ class _StatusSheet extends StatelessWidget {
         AppSpacing.xl,
         AppSpacing.lg,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.white,
+      decoration: BoxDecoration(
+        color: context.adapt(AppColors.white, AppColors.categoryDark),
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
         boxShadow: [
           BoxShadow(
@@ -346,7 +350,10 @@ class _StatusSheet extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.grey300,
+                  color: context.adapt(
+                    AppColors.grey300,
+                    const Color(0xFF404040),
+                  ),
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
               ),
@@ -358,7 +365,7 @@ class _StatusSheet extends StatelessWidget {
                   child: Text(
                     statusText,
                     style: theme.titleLarge?.copyWith(
-                      color: AppColors.black,
+                      color: context.inkColor,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -394,7 +401,10 @@ class _StatusSheet extends StatelessWidget {
             const SizedBox(height: AppSpacing.xl),
             DecoratedBox(
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: context.adapt(
+                  AppColors.background,
+                  AppColors.categoryDark,
+                ),
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
               child: Padding(
@@ -425,7 +435,7 @@ class _StatusSheet extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: theme.bodyMedium?.copyWith(
-                          color: AppColors.black,
+                          color: context.inkColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -530,7 +540,7 @@ class _Stepper extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: context.textTheme.labelSmall?.copyWith(
-                    color: i <= reached ? AppColors.black : AppColors.grey500,
+                    color: i <= reached ? context.inkColor : AppColors.grey500,
                     fontWeight: i <= reached
                         ? FontWeight.w700
                         : FontWeight.w500,
@@ -556,7 +566,9 @@ class _Line extends StatelessWidget {
     return Container(
       height: 3,
       decoration: BoxDecoration(
-        color: lit ? AppColors.primary : AppColors.grey300,
+        color: lit
+            ? AppColors.primary
+            : context.adapt(AppColors.grey300, const Color(0xFF404040)),
         borderRadius: BorderRadius.circular(3),
       ),
     );
@@ -576,7 +588,9 @@ class _Dot extends StatelessWidget {
       width: _Stepper._circle,
       height: _Stepper._circle,
       decoration: BoxDecoration(
-        color: done ? AppColors.primary : AppColors.grey100,
+        color: done
+            ? AppColors.primary
+            : context.adapt(AppColors.grey100, AppColors.backgroundDark),
         shape: BoxShape.circle,
         // The step the order is on now carries a soft halo.
         boxShadow: current

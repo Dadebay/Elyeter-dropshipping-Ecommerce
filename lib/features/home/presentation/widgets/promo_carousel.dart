@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/extensions/context_extensions.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import 'promo_banner_card.dart';
@@ -128,8 +130,8 @@ class _Dots extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 1),
           height: i == index ? 7 : 5,
           width: i == index ? 7 : 5,
-          decoration: const BoxDecoration(
-            color: AppColors.white,
+          decoration: BoxDecoration(
+            color: context.adapt(AppColors.white, AppColors.categoryDark),
             shape: BoxShape.circle,
           ),
         ),

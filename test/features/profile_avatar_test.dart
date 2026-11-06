@@ -46,21 +46,24 @@ void main() {
     await directory.delete(recursive: true);
   });
 
-  test('saved avatar survives deletion of the picker cache and reload', () async {
-    final source = File('${directory.path}/picked.jpg');
-    await source.writeAsBytes([1, 2, 3, 4]);
-    final profile = ProfileCubit();
-    addTearDown(profile.close);
-    await profile.save(name: 'Myradow Maksat', avatarPath: source.path);
-    final persisted = profile.toJson(profile.state)!;
-    await source.delete();
+  test(
+    'saved avatar survives deletion of the picker cache and reload',
+    () async {
+      final source = File('${directory.path}/picked.jpg');
+      await source.writeAsBytes([1, 2, 3, 4]);
+      final profile = ProfileCubit();
+      addTearDown(profile.close);
+      await profile.save(name: 'Myradow Maksat', avatarPath: source.path);
+      final persisted = profile.toJson(profile.state)!;
+      await source.delete();
 
-    final restored = profile.fromJson(persisted)!;
-    expect(restored.avatarPath, startsWith('${directory.path}/documents/'));
-    expect(await File(restored.avatarPath!).readAsBytes(), [1, 2, 3, 4]);
-    await profile.save(name: 'Updated', avatarPath: restored.avatarPath);
-    expect(profile.state.avatarPath, restored.avatarPath);
-  });
+      final restored = profile.fromJson(persisted)!;
+      expect(restored.avatarPath, startsWith('${directory.path}/documents/'));
+      expect(await File(restored.avatarPath!).readAsBytes(), [1, 2, 3, 4]);
+      await profile.save(name: 'Updated', avatarPath: restored.avatarPath);
+      expect(profile.state.avatarPath, restored.avatarPath);
+    },
+  );
 
   test('saving a name clears an already missing avatar path', () async {
     final profile = ProfileCubit();
@@ -105,9 +108,11 @@ void main() {
           ),
         );
         // File reads and the image decoder finish outside the fake test clock.
-        for (var attempt = 0;
-            attempt < 20 && find.text('MM').evaluate().length < 2;
-            attempt++) {
+        for (
+          var attempt = 0;
+          attempt < 20 && find.text('MM').evaluate().length < 2;
+          attempt++
+        ) {
           await tester.runAsync(
             () => Future<void>.delayed(const Duration(milliseconds: 25)),
           );

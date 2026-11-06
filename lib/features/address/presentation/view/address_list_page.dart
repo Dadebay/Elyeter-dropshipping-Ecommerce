@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/app_asset_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/widgets/app_loader.dart';
@@ -121,7 +122,11 @@ class _AddressListPageState extends State<AddressListPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const HugeIcon(icon: AppIcons.edit),
+              leading: const AppAssetImage(
+                AppAssets.iconEdit,
+                width: 24,
+                height: 24,
+              ),
               title: Text(context.l10n.addressEdit),
               onTap: () => Navigator.of(sheetContext).pop(_AddressAction.edit),
             ),
@@ -133,7 +138,11 @@ class _AddressListPageState extends State<AddressListPage> {
                     Navigator.of(sheetContext).pop(_AddressAction.makeDefault),
               ),
             ListTile(
-              leading: const HugeIcon(icon: AppIcons.delete),
+              leading: const AppAssetImage(
+                AppAssets.iconTrash,
+                width: 24,
+                height: 24,
+              ),
               title: Text(context.l10n.addressDelete),
               onTap: () =>
                   Navigator.of(sheetContext).pop(_AddressAction.delete),
@@ -382,9 +391,12 @@ class _AddressCard extends StatelessWidget {
         onTap: onTap,
         onLongPress: onMore,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.sm,
+          // Less on the right: the edit button brings its own tap padding.
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.sm,
+            AppSpacing.sm,
           ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 48),
@@ -430,10 +442,17 @@ class _AddressCard extends StatelessWidget {
                 IconButton(
                   tooltip: context.l10n.addressEdit,
                   onPressed: onEdit,
-                  icon: const HugeIcon(
-                    icon: AppIcons.edit,
-                    size: 24,
-                    color: AppColors.iconSoft,
+                  // Snug: 24 px glyph with 6 px around it instead of the
+                  // 48 px default box, so it sits closer to the card edge.
+                  padding: const EdgeInsets.all(6),
+                  constraints: const BoxConstraints(),
+                  style: IconButton.styleFrom(
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  icon: const AppAssetImage(
+                    AppAssets.iconEdit,
+                    width: 24,
+                    height: 24,
                   ),
                 ),
               ],

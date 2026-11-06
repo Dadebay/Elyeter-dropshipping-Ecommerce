@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../../core/utils/extensions/context_extensions.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -31,7 +33,7 @@ class ProductActionPill extends StatelessWidget {
     return Container(
       height: ProductDetailActions.buttonSize,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.adapt(AppColors.white, AppColors.categoryDark),
         borderRadius: BorderRadius.circular(AppRadius.pill),
         boxShadow: ProductDetailActions._shadow,
       ),

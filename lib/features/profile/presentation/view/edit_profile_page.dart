@@ -167,9 +167,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             if (_avatarPath != null)
               ListTile(
-                leading: const HugeIcon(
-                  icon: AppIcons.delete,
-                  color: AppColors.error,
+                leading: const AppAssetImage(
+                  AppAssets.iconTrash,
+                  width: 24,
+                  height: 24,
                 ),
                 title: Text(
                   l10n.editProfilePhotoRemove,

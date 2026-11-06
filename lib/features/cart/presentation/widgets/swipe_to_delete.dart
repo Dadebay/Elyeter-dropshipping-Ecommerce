@@ -4,7 +4,8 @@ import 'package:flutter/physics.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
-import '../../../../core/constants/app_icons.dart';
+import '../../../../core/constants/app_assets.dart';
+import '../../../../core/widgets/app_asset_image.dart';
 
 /// Drags [child] aside to uncover a Delete panel, the way the design draws a
 /// swiped cart line.
@@ -17,9 +18,6 @@ class SwipeToDelete extends StatefulWidget {
 
   /// Width of the uncovered panel, and so how far the row travels.
   static const _actionWidth = 96.0;
-
-  /// How far past open the drag may stretch before it stops giving.
-  static const _overshoot = 48.0;
 
   /// A flick shorter than this is read as a drag and lands on whichever side
   /// it is nearer.
@@ -63,19 +61,11 @@ class _SwipeToDeleteState extends State<SwipeToDelete>
     // straight on from where it is, rather than fighting the settle.
     _controller.stop();
 
-    final next = _offset - details.primaryDelta!;
-    _controller.value = next <= SwipeToDelete._actionWidth
-        ? next.clamp(0.0, SwipeToDelete._actionWidth)
-        // Past open the row keeps moving, but gives less the further it goes.
-        : SwipeToDelete._actionWidth +
-              _resist(next - SwipeToDelete._actionWidth);
-  }
-
-  /// Progressive resistance, so the edge reads as "nothing more here" rather
-  /// than as a frozen row.
-  static double _resist(double overshoot) {
-    const limit = SwipeToDelete._overshoot;
-    return overshoot * limit / (limit + overshoot);
+    // Hard stop at fully open: no stretching further left, only back right.
+    _controller.value = (_offset - details.primaryDelta!).clamp(
+      0.0,
+      SwipeToDelete._actionWidth,
+    );
   }
 
   void _onDragEnd(DragEndDetails details) {
@@ -130,7 +120,7 @@ class _SwipeToDeleteState extends State<SwipeToDelete>
                   child: _DeletePanel(
                     // Grows with the drag instead of sitting at full width
                     // from the first pixel.
-                    width: travel.clamp(0.0, SwipeToDelete._actionWidth),
+                    width: travel,
                     onTap: () {
                       close();
                       widget.onDelete();
@@ -140,13 +130,13 @@ class _SwipeToDeleteState extends State<SwipeToDelete>
               Transform.translate(
                 offset: Offset(-travel, 0),
                 // An open row taps shut rather than needing a swipe back.
-                child: travel > 0
-                    ? GestureDetector(
-                        onTap: close,
-                        behavior: HitTestBehavior.deferToChild,
-                        child: child,
-                      )
-                    : child,
+                // Same widget tree at every offset: swapping the wrapper in and
+                // out at 0 would remount the row mid-drag and make it jump.
+                child: GestureDetector(
+                  onTap: travel > 0 ? close : null,
+                  behavior: HitTestBehavior.deferToChild,
+                  child: child,
+                ),
               ),
             ],
           );
@@ -166,6 +156,9 @@ class _DeletePanel extends StatelessWidget {
 
   final VoidCallback onTap;
 
+  static const _contentWidth =
+      SwipeToDelete._actionWidth - SwipeToDelete._margin;
+
   @override
   Widget build(BuildContext context) {
     // The margin is taken out of the uncovered width rather than added to
@@ -180,31 +173,44 @@ class _DeletePanel extends StatelessWidget {
         bottom: SwipeToDelete._verticalMargin,
       ),
       child: Material(
-        color: AppColors.errorSoft,
+        // Dark mode: a red tint instead of the pale pink.
+        color: context.adapt(
+          AppColors.errorSoft,
+          AppColors.error.withValues(alpha: 0.16),
+        ),
         borderRadius: BorderRadius.circular(AppRadius.lg),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
           // The label fades in behind the icon as the panel widens, instead
           // of being clipped in half on the way out.
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+          // Content keeps its natural size and is centred inside the growing
+          // panel (clipped by the Material), so nothing rescales mid-drag.
+          child: OverflowBox(
+            minWidth: _contentWidth,
+            maxWidth: _contentWidth,
+            // Loose height, or the column is stretched to the full panel
+            // and its content sits at the top instead of the middle.
+            minHeight: 0,
+            alignment: Alignment.center,
+            child: Opacity(
+              opacity: (panelWidth / _contentWidth).clamp(0.0, 1.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const HugeIcon(
-                    icon: AppIcons.delete,
-                    color: AppColors.error,
-                    size: 26,
+                  const AppAssetImage(
+                    AppAssets.iconTrash,
+                    width: 26,
+                    height: 26,
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     context.l10n.cartDelete,
                     maxLines: 1,
                     style: context.textTheme.bodySmall?.copyWith(
-                      color: AppColors.error,
+                      fontSize: 12,
+                      color: context.inkColor,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

@@ -11,7 +11,10 @@ class ActiveOrdersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AppColors.background,
+    backgroundColor: context.adapt(
+      AppColors.background,
+      AppColors.backgroundDark,
+    ),
     appBar: AppPageAppBar(title: context.l10n.profileActiveOrders),
     body: const PagedOrdersList(activeOnly: true),
   );

@@ -75,6 +75,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBar(
+          clipBehavior: Clip.none,
           backgroundColor: AppColors.white,
           surfaceTintColor: Colors.transparent,
           centerTitle: true,

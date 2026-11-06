@@ -22,8 +22,10 @@ class VisualSearchSourceSheet extends StatelessWidget {
   static Future<VisualSearchSource?> show(BuildContext context) {
     return showModalBottomSheet<VisualSearchSource>(
       context: context,
-      backgroundColor: AppColors.white,
-      barrierColor: AppColors.black.withValues(alpha: 0.45),
+      backgroundColor: context.adapt(AppColors.white, AppColors.categoryDark),
+      barrierColor: AppColors.black.withValues(
+        alpha: context.isDark ? 0.7 : 0.45,
+      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
@@ -52,7 +54,7 @@ class VisualSearchSourceSheet extends StatelessWidget {
               context.l10n.visualSearchTitle,
               textAlign: TextAlign.center,
               style: AppTypography.textTheme.titleLarge?.copyWith(
-                color: AppColors.black,
+                color: context.inkColor,
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
@@ -98,7 +100,7 @@ class _Handle extends StatelessWidget {
         width: 40,
         height: 4,
         decoration: BoxDecoration(
-          color: AppColors.grey300,
+          color: context.adapt(AppColors.grey300, const Color(0xFF404040)),
           borderRadius: BorderRadius.circular(AppRadius.pill),
         ),
       ),
@@ -120,7 +122,7 @@ class _SourceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.grey100,
+      color: context.adapt(AppColors.grey100, AppColors.categoryDark),
       borderRadius: BorderRadius.circular(AppRadius.lg),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -151,7 +153,7 @@ class _SourceCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 style: AppTypography.textTheme.titleSmall?.copyWith(
-                  color: AppColors.black,
+                  color: context.inkColor,
                 ),
               ),
             ],
