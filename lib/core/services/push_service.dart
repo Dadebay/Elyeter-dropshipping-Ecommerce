@@ -54,12 +54,8 @@ class PushService {
 
       final messaging = FirebaseMessaging.instance;
 
-      // Android 13+ and iOS both raise the system prompt here.
-      final settings = await messaging.requestPermission();
-      AppLogger.i('Push permission: ${settings.authorizationStatus.name}');
-
-      // iOS suppresses banners while the app is open unless this is set —
-      // independent of the permission above.
+      // Configure foreground presentation without asking for permission at
+      // launch. The permission prompt belongs to the signed-in flow below.
       if (Platform.isIOS) {
         await messaging.setForegroundNotificationPresentationOptions(
           alert: true,
@@ -87,20 +83,10 @@ class PushService {
       final initial = await messaging.getInitialMessage();
       if (initial != null) _onOpened(initial);
 
-      // On iOS the FCM token is derived from the APNs one. Wait before the
-      // first fetch; OTP registration can retry if no token exists yet.
-      await _awaitApns();
-
-      _token = await messaging.getToken();
-      await _printTokens();
-
       // Keep the current token locally; only a successful OTP login sends it.
       messaging.onTokenRefresh.listen((token) {
         _token = token;
-        AppLogger.group(
-          AnsiColor.paint('FCM token refreshed', AnsiColor.magenta),
-          lines: [token],
-        );
+        AppLogger.i('FCM token refreshed');
         unawaited(_syncTopics());
       });
     } on Object catch (e, s) {
@@ -142,37 +128,14 @@ class PushService {
     await messaging.subscribeToTopic(selected);
   }
 
-  /// Prints both device tokens in full, on their own block, so a test push
-  /// can be addressed to this exact phone from the Firebase console.
-  ///
-  /// Whole tokens, not masked: they are worth nothing without the project's
-  /// server key, this only ever runs in a debug build ([AppLogger] is silent
-  /// in release), and a truncated token cannot be pasted anywhere.
-  Future<void> _printTokens() async {
-    AppLogger.group(
-      AnsiColor.paint('FCM token', AnsiColor.magenta),
-      lines: [_token ?? 'null — no token yet'],
-    );
-
-    // iOS only: null on Android, and null on iOS until the APNs handshake
-    // finishes, which can take a beat right after a fresh install.
-    if (!Platform.isIOS) return;
-    try {
-      final apns = await FirebaseMessaging.instance.getAPNSToken();
-      AppLogger.group(
-        AnsiColor.paint('APNs token', AnsiColor.magenta),
-        lines: [apns ?? 'null — APNs has not answered yet'],
-      );
-    } on Object catch (e) {
-      AppLogger.w('APNs token fetch failed: $e');
-    }
-  }
-
-  /// Called only after successful OTP verification. Wait for Firebase setup
-  /// so a quick login does not ask iOS for an FCM token before APNs is ready.
+  /// Called only after successful OTP verification. Permission is requested
+  /// here, after the customer chooses to sign in, rather than on app launch.
   Future<void> registerTokenAfterOtp() async {
     try {
       await init();
+      final settings = await FirebaseMessaging.instance.requestPermission();
+      AppLogger.i('Push permission: ${settings.authorizationStatus.name}');
+      if (Platform.isIOS) await _awaitApns();
       final token = _token ??= await FirebaseMessaging.instance.getToken();
       if (token == null || token.isEmpty) return;
       if (!await _auth.hasSession()) return;
@@ -203,7 +166,6 @@ class PushService {
   }
 
   void _onOpened(RemoteMessage message) {
-    AppLogger.i('Notification opened: ${message.data}');
     _route(message.data);
   }
 

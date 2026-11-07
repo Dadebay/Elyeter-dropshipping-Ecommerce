@@ -34,7 +34,7 @@ abstract final class AppEnvironment {
 
   static bool get isProd => flavor == Flavor.prod;
 
-  /// Never in a release build, whatever the flavor: request logs carry
-  /// tokens and phone numbers, and a store build is read with `adb logcat`.
+  /// Keep diagnostic request timing in development builds only. Even
+  /// redacted logs are unnecessary in store builds and can reach logcat.
   static bool get enableLogging => !isProd && !kReleaseMode;
 }

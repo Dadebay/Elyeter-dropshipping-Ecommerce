@@ -3,10 +3,10 @@ import '../../domain/entities/pre_order.dart';
 
 abstract final class PreOrderModel {
   static PreOrder fromJson(Map<String, dynamic> json) => PreOrder(
-    id: json.intVal('id'),
-    number: json.str('number'),
+    id: json.reqInt('id'),
+    number: json.reqStr('number'),
     status: PreOrderStatus.parse(json.strOrNull('status')),
-    totalPrice: json.numVal('total_price'),
+    totalPrice: json.reqNum('total_price'),
     currency: json.str('currency', 'TMT'),
     itemsCount: json.intVal('items_count'),
     customerName: json.strOrNull('customer_name'),

@@ -5,7 +5,7 @@ abstract final class PreOrderCheckModel {
   static PreOrderCheck fromJson(Map<String, dynamic> json) => PreOrderCheck(
     available: json.boolVal('available'),
     priceChanged: json.boolVal('price_changed'),
-    totalPrice: json.numVal('total_price'),
+    totalPrice: json.reqNum('total_price'),
     checkedAt: json.dateOrNull('checked_at'),
     items: json.listOf('items').map(itemFromJson).toList(),
   );

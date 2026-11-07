@@ -61,6 +61,24 @@ class Paginated<T> {
 
 /// Small guards so `fromJson` bodies stay readable.
 extension JsonMap on Map<String, dynamic> {
+  String reqStr(String key) {
+    final value = this[key];
+    if (value is String && value.trim().isNotEmpty) return value;
+    throw ParsingException('Missing or invalid $key');
+  }
+
+  int reqInt(String key) {
+    final value = this[key];
+    if (value is int) return value;
+    throw ParsingException('Missing or invalid $key');
+  }
+
+  num reqNum(String key) {
+    final value = this[key];
+    if (value is num) return value;
+    throw ParsingException('Missing or invalid $key');
+  }
+
   String str(String key, [String fallback = '']) =>
       this[key] is String ? this[key] as String : fallback;
 
