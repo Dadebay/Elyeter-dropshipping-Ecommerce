@@ -3,12 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 /// The flag for a supported app language, cropped to a circle.
 class LanguageFlag extends StatelessWidget {
-  const LanguageFlag({
-    super.key,
-    required this.languageCode,
-    required this.semanticsLabel,
-    this.size = 34,
-  });
+  const LanguageFlag({super.key, required this.languageCode, required this.semanticsLabel, this.size = 34});
 
   final String languageCode;
   final String semanticsLabel;

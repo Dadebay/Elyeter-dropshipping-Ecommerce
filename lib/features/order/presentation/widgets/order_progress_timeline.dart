@@ -18,7 +18,6 @@ class OrderProgressTimeline extends StatelessWidget {
   });
 
   static const _cancelledColor = Color(0xFFFF3655);
-  static const _cancelledHalo = Color(0xFFFFE8EC);
 
   /// Width of the rail column — the ring plus the room around it.
   static const _railWidth = 28.0;
@@ -47,24 +46,52 @@ class OrderProgressTimeline extends StatelessWidget {
   Widget build(BuildContext context) {
     final current = _currentIndex();
 
-    return Column(
+    final accent = cancelled ? _cancelledColor : AppColors.primary;
+
+    return Stack(
       children: [
-        for (var i = 0; i < stages.length; i++)
-          _Row(
-            entry: stages[i],
-            cancelledOrder: cancelled,
-            isCurrent: i == current,
-            showBadge: i == current || (badgeEveryDone && stages[i].done),
-            isLast: i == stages.length - 1,
-            // The connector belongs to the gap below a dot, so the last row
-            // ends the rail instead of trailing a line into nothing.
-            hasConnector: i < stages.length - 1,
-            // Light the connector through the reached stages, including the
-            // cancellation marker, and leave later connectors grey.
-            connectorDone:
-                i < stages.length - 1 &&
-                (stages[i + 1].done || (cancelled && stages[i + 1].cancelled)),
+        // One soft capsule behind the whole rail, from the first ring to the
+        // last: strongest at the top, fading out towards the bottom.
+        Positioned(
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: _railWidth,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(_railWidth),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  accent.withValues(alpha: context.isDark ? 0.34 : 0.26),
+                  accent.withValues(alpha: context.isDark ? 0.06 : 0.04),
+                ],
+              ),
+            ),
           ),
+        ),
+        Column(
+          children: [
+            for (var i = 0; i < stages.length; i++)
+              _Row(
+                entry: stages[i],
+                cancelledOrder: cancelled,
+                isCurrent: i == current,
+                showBadge: i == current || (badgeEveryDone && stages[i].done),
+                isLast: i == stages.length - 1,
+                // The connector belongs to the gap below a dot, so the last row
+                // ends the rail instead of trailing a line into nothing.
+                hasConnector: i < stages.length - 1,
+                // Light the connector through the reached stages, including the
+                // cancellation marker, and leave later connectors grey.
+                connectorDone:
+                    i < stages.length - 1 &&
+                    (stages[i + 1].done ||
+                        (cancelled && stages[i + 1].cancelled)),
+              ),
+          ],
+        ),
       ],
     );
   }
@@ -112,39 +139,43 @@ class _Row extends StatelessWidget {
         children: [
           SizedBox(
             width: OrderProgressTimeline._railWidth,
-            child: Column(
+            child: Stack(
               children: [
-                _Ring(
-                  done: done,
-                  isCurrent: isCurrent,
-                  isLast: isLast,
-                  cancelled: entry.cancelled,
-                  cancelledOrder: cancelledOrder,
-                ),
-                if (hasConnector)
-                  Expanded(
-                    child: Center(
-                      child: Container(
-                        width: OrderProgressTimeline._connectorWidth,
-                        // Stretches to whatever the row beside it needs, so
-                        // a two-line label does not break the rail.
-                        height: double.infinity,
-                        decoration: BoxDecoration(
-                          color: connectorDone
-                              ? cancelledOrder
-                                    ? OrderProgressTimeline._cancelledColor
-                                    : AppColors.primary
-                              : context.adapt(
-                                  AppColors.grey300,
-                                  const Color(0xFF404040),
-                                ),
-                          borderRadius: BorderRadius.circular(
-                            OrderProgressTimeline._connectorWidth,
+                Column(
+                  children: [
+                    _Ring(
+                      done: done,
+                      isCurrent: isCurrent,
+                      isLast: isLast,
+                      cancelled: entry.cancelled,
+                      cancelledOrder: cancelledOrder,
+                    ),
+                    if (hasConnector)
+                      Expanded(
+                        child: Center(
+                          child: Container(
+                            width: OrderProgressTimeline._connectorWidth,
+                            // Stretches to whatever the row beside it needs, so
+                            // a two-line label does not break the rail.
+                            height: double.infinity,
+                            decoration: BoxDecoration(
+                              color: connectorDone
+                                  ? cancelledOrder
+                                        ? OrderProgressTimeline._cancelledColor
+                                        : AppColors.primary
+                                  : context.adapt(
+                                      AppColors.grey300,
+                                      const Color(0xFF404040),
+                                    ),
+                              borderRadius: BorderRadius.circular(
+                                OrderProgressTimeline._connectorWidth,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -261,7 +292,7 @@ class _Ring extends StatelessWidget {
       decoration: BoxDecoration(
         color: cancelled
             ? OrderProgressTimeline._cancelledColor
-            : AppColors.white,
+            : context.adapt(AppColors.white, AppColors.categoryDark),
         shape: BoxShape.circle,
         border: Border.all(
           color: color,
@@ -277,19 +308,10 @@ class _Ring extends StatelessWidget {
     );
 
     return Container(
-      // The halo keeps the rail's spacing whether or not it is drawn, so the
-      // rings stay on one vertical line.
+      // Keeps the rail's spacing, so the rings stay on one vertical line.
       width: OrderProgressTimeline._haloSize,
       height: OrderProgressTimeline._haloSize,
       alignment: Alignment.center,
-      decoration: isCurrent
-          ? BoxDecoration(
-              color: cancelledOrder
-                  ? OrderProgressTimeline._cancelledHalo
-                  : AppColors.primarySoft,
-              shape: BoxShape.circle,
-            )
-          : null,
       child: ring,
     );
   }

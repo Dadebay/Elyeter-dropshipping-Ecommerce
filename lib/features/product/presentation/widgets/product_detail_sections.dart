@@ -10,6 +10,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/utils/formatters/currency_formatter.dart';
 import '../../../../core/widgets/app_snack_bar.dart';
@@ -345,7 +346,8 @@ class ProductDescriptionCard extends StatefulWidget {
 }
 
 class _ProductDescriptionCardState extends State<ProductDescriptionCard> {
-  static const _collapsedLines = 5;
+  /// Figma: six lines, then "Read More...".
+  static const _collapsedLines = 6;
 
   late final TapGestureRecognizer _tap = TapGestureRecognizer()
     ..onTap = () => setState(() => _expanded = !_expanded);
@@ -362,8 +364,15 @@ class _ProductDescriptionCardState extends State<ProductDescriptionCard> {
     final text = ProductDescriptionCard.plainText(widget.description);
     if (text.isEmpty) return const SizedBox.shrink();
 
+    // Figma: Inter Display Regular 14 / 20, letter spacing 0, #5C5C5C; the
+    // "Read More" span is the same, in blue.
     final body = context.textTheme.bodyMedium!.copyWith(
-      color: context.adapt(AppColors.grey700, AppColors.iconSoft),
+      fontFamily: AppTypography.fontFamily,
+      fontSize: 14,
+      height: 20 / 14,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0,
+      color: context.adapt(const Color(0xFF5C5C5C), AppColors.iconSoft),
     );
     final link = body.copyWith(color: AppColors.info);
 
@@ -639,17 +648,6 @@ class ProductStickyAddToCart extends StatelessWidget {
                       ? context.adapt(AppColors.grey100, AppColors.categoryDark)
                       : null,
                   borderRadius: radius,
-                  boxShadow: !enabled
-                      ? null
-                      : [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(
-                              alpha: 0.28 * (1 - progress) + 0.18 * progress,
-                            ),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
                 ),
                 child: ClipRRect(
                   borderRadius: radius,

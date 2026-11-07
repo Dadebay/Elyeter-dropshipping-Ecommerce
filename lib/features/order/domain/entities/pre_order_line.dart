@@ -7,6 +7,7 @@ class PreOrderLine extends Equatable {
     required this.productId,
     required this.quantity,
     this.variantId,
+    this.price,
   });
 
   final int productId;
@@ -18,12 +19,17 @@ class PreOrderLine extends Equatable {
   /// 1 to 99.
   final int quantity;
 
+  /// Unit price the customer sees in the cart. Sent so the server can show an
+  /// honest "was / now" when the supplier's price has moved. Optional.
+  final num? price;
+
   Map<String, dynamic> toJson() => {
     'product_id': productId,
     if (variantId != null) 'variant_id': variantId,
     'quantity': quantity,
+    'price': ?price,
   };
 
   @override
-  List<Object?> get props => [productId, variantId, quantity];
+  List<Object?> get props => [productId, variantId, quantity, price];
 }

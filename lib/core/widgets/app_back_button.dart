@@ -21,6 +21,8 @@ class AppBackButton extends StatelessWidget {
     this.buttonHeight = height,
     this.tint,
     this.icon,
+    this.asset,
+    this.semanticLabel,
   });
 
   /// Wrapped in the page inset, for `AppBar.leading`. Uses a wide pill by default.
@@ -67,13 +69,22 @@ class AppBackButton extends StatelessWidget {
   final Color? tint;
   final AppIconData? icon;
 
+  /// An SVG from `assets/icons/` to draw instead of the chevron, so a
+  /// counterpart at the other end of the bar (an "add" button) is the same
+  /// pill, shadow and size as the back button.
+  final String? asset;
+
+  /// Read out by screen readers; defaults to the back-button label.
+  final String? semanticLabel;
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Semantics(
       button: true,
-      label: MaterialLocalizations.of(context).backButtonTooltip,
+      label:
+          semanticLabel ?? MaterialLocalizations.of(context).backButtonTooltip,
       child: Container(
         decoration: BoxDecoration(
           color: isDark ? AppColors.grey900 : AppColors.white,
@@ -93,7 +104,7 @@ class AppBackButton extends StatelessWidget {
               child: Center(
                 child: icon == null
                     ? AppAssetImage(
-                        AppAssets.iconBack,
+                        asset ?? AppAssets.iconBack,
                         width: iconSize,
                         height: iconSize,
                         color:

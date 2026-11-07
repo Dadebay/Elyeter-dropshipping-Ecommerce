@@ -99,11 +99,9 @@ class _Circle extends StatelessWidget {
     final hasPhoto = path != null || url != null;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final fallback = initials.isEmpty
-        ? HugeIcon(
-            icon: AppIcons.user,
-            size: size * 0.5,
-            color: const Color(0xFF6E3A1E),
-          )
+        // No name yet: the design's orange avatar with the white figure,
+        // filling the whole disc. The + badge on its corner adds the photo.
+        ? AppAssetImage(AppAssets.avatarPlaceholder, width: size, height: size)
         : Text(
             initials,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(

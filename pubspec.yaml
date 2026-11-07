@@ -122,6 +122,13 @@ flutter:
         - asset: assets/fonts/QurovaDEMO-Medium.otf
           weight: 500
 
+    # Inter (text optical size, variable weight): the face Figma sets small
+    # labels in, beside InterDisplay for headings and values. OFL licence in
+    # assets/fonts/Inter-OFL.txt.
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Variable.ttf
+
     - family: InterDisplay
       fonts:
         - asset: assets/fonts/InterDisplay-Light.ttf

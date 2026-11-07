@@ -19,7 +19,7 @@ class _OrdersRepository implements PreOrderRepository {
   Future<Result<Paginated<PreOrder>>> list({
     int page = 1,
     int size = 20,
-    PreOrderStatus? status,
+    List<PreOrderStatus> statuses = const [],
   }) async {
     requests++;
     return Success(

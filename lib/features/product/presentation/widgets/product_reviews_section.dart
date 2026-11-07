@@ -5,7 +5,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
+import '../../../../core/widgets/app_asset_image.dart';
 import '../../../../core/utils/formatters/date_formatter.dart';
 import '../../domain/entities/product_reviews.dart' as api;
 import '../model/product_detail_data.dart';
@@ -205,15 +207,21 @@ class ProductReviewScore extends StatelessWidget {
         Text(
           rating.toStringAsFixed(1),
           style: context.textTheme.displayLarge?.copyWith(
+            fontSize: 36,
+            height: 44 / 36,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0,
             color: context.inkColor,
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
-        ProductStars(rating: rating, size: 18),
+        ProductStars(rating: rating, size: 16),
         const SizedBox(height: AppSpacing.xs),
         Text(
           context.l10n.productRatingCount(ratingCount),
-          style: context.textTheme.bodySmall?.copyWith(
+          style: context.textTheme.bodyMedium?.copyWith(
+            fontSize: 14,
+            height: 20 / 14,
             color: AppColors.grey500,
           ),
         ),
@@ -238,18 +246,18 @@ class ProductReviewDistribution extends StatelessWidget {
       children: [
         for (var i = 0; i < shares.length; i++)
           Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            // Tight rows: the figures and bars sit close, as in the design.
+            padding: const EdgeInsets.only(bottom: AppSpacing.xxs),
             child: Row(
               children: [
                 SizedBox(
-                  width: 16,
+                  width: 14,
                   child: Text(
                     '${shares.length - i}',
-                    style: context.textTheme.labelMedium?.copyWith(
-                      color: context.adapt(
-                        AppColors.grey700,
-                        AppColors.iconSoft,
-                      ),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      fontSize: 14,
+                      height: 20 / 14,
+                      color: context.inkColor,
                     ),
                   ),
                 ),
@@ -343,7 +351,7 @@ class ProductReviewCard extends StatelessWidget {
               AppSpacing.sm,
             ),
             child: Row(
-              children: [ProductStars(rating: review.rating, size: 16)],
+              children: [ProductStars(rating: review.rating, size: 12)],
             ),
           ),
           if (fillHeight)
@@ -494,67 +502,309 @@ class _ReviewPhotos extends StatelessWidget {
   }
 }
 
-/// A person silhouette on a light tinted disc — no photos to load.
+/// A person silhouette on a tinted disc, one of three designs picked from the
+/// reviewer's name — so a reviewer keeps the same avatar every time, and the
+/// list still looks varied. No photos to load.
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.name});
-
-  static const _size = 28.0;
-
-  /// Light pastels, picked from the name so a reviewer keeps the same colour.
-  static const _tints = [
-    Color(0xFFC9B8FF),
-    Color(0xFFFFC9AD),
-    Color(0xFFB5E6C8),
-    Color(0xFFFFBDD3),
-    Color(0xFFB8D9FF),
-    Color(0xFFFFE08A),
-    Color(0xFFA8E6E0),
-  ];
+  const _Avatar({required this.name, this.size = 28});
 
   final String name;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
-    final tint = _tints[name.hashCode.abs() % _tints.length];
+    final avatars = AppAssets.reviewerAvatars;
+    final asset = avatars[_stableHash(name) % avatars.length];
 
-    return Container(
-      width: _size,
-      height: _size,
-      alignment: Alignment.center,
-      clipBehavior: Clip.antiAlias,
-      padding: const EdgeInsets.all(0),
-      decoration: BoxDecoration(color: tint, shape: BoxShape.circle),
-      child: Transform(
-        transform: Matrix4.translationValues(0, 5, 0),
-        child: SvgPicture.asset(
-          AppAssets.iconReviewUser,
-          width: 24,
-          height: 24,
-        ),
-      ),
-    );
+    return SvgPicture.asset(asset, width: size, height: size);
+  }
+
+  /// `String.hashCode` is not guaranteed to match between runs; the avatar
+  /// must not change from one launch to the next.
+  static int _stableHash(String value) {
+    var hash = 0;
+    for (final unit in value.codeUnits) {
+      hash = (hash * 31 + unit) & 0x7fffffff;
+    }
+    return hash;
   }
 }
 
-/// Five stars, filled up to [rating].
+/// Five stars, filled up to [rating]: the design's own orange and pale grey
+/// star artwork.
 class ProductStars extends StatelessWidget {
-  const ProductStars({super.key, required this.rating, this.size = 16});
+  const ProductStars({
+    super.key,
+    required this.rating,
+    this.size = 16,
+    this.gap = 2,
+  });
 
   final double rating;
   final double size;
+
+  /// Space between two stars.
+  final double gap;
 
   @override
   Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
       for (var i = 1; i <= 5; i++)
-        Icon(
-          Icons.star_rounded,
-          size: size,
-          color: i <= rating.round()
-              ? AppColors.primary
-              : context.adapt(AppColors.grey300, const Color(0xFF404040)),
+        Padding(
+          padding: EdgeInsets.only(right: i == 5 ? 0 : gap),
+          child: AppAssetImage(
+            i <= rating.round()
+                ? AppAssets.iconStarFilled
+                : AppAssets.iconStarEmpty,
+            width: size,
+            height: size,
+            // The pale grey would glare on dark.
+            color: i <= rating.round() || !context.isDark
+                ? null
+                : const Color(0xFF404040),
+          ),
         ),
     ],
+  );
+}
+
+/// A review on the full reviews page, as the design draws it: the author and
+/// date on top with a menu for the customer's own review, then the stars, the
+/// text, the photos in a row of equal squares, and "Helpful" underneath.
+class ProductReviewListCard extends StatelessWidget {
+  const ProductReviewListCard({
+    super.key,
+    required this.review,
+    this.onHelpful,
+    this.onEdit,
+    this.onDelete,
+  });
+
+  final ProductReview review;
+  final VoidCallback? onHelpful;
+
+  /// Edit / delete, offered in the menu of the customer's own review only.
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+
+  static const _photoGap = AppSpacing.sm;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.textTheme;
+    final meta = [
+      review.author,
+      review.date,
+    ].where((part) => part.isNotEmpty).join(' • ');
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: context.adapt(AppColors.background, AppColors.categoryDark),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Figma: the avatar, then the name and date with the stars right
+          // under them, all centred against the avatar; the dots stand at the
+          // far end of the same row.
+          Row(
+            children: [
+              _Avatar(name: review.author, size: 40),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      meta,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      // Figma: Inter Display Regular 12 / 16, spacing 0,
+                      // #5C5C5C.
+                      style: theme.bodyMedium?.copyWith(
+                        fontFamily: AppTypography.fontFamily,
+                        fontSize: 12,
+                        height: 16 / 12,
+                        fontWeight: FontWeight.w400,
+                        letterSpacing: 0,
+                        color: context.adapt(
+                          const Color(0xFF5C5C5C),
+                          AppColors.grey300,
+                        ),
+                      ),
+                    ),
+                    // Figma: 12 px stars, 2 px apart.
+                    ProductStars(rating: review.rating, size: 12),
+                  ],
+                ),
+              ),
+              if (review.isMine && (onEdit != null || onDelete != null))
+                _OwnReviewMenu(onEdit: onEdit, onDelete: onDelete),
+            ],
+          ),
+          if (review.text.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              review.text,
+              // Figma: Inter Display Regular 12 / 16, spacing 0, #0D0D0D.
+              style: theme.bodyMedium?.copyWith(
+                fontFamily: AppTypography.fontFamily,
+                fontSize: 12,
+                height: 16 / 12,
+                fontWeight: FontWeight.w400,
+                letterSpacing: 0,
+                color: context.adapt(const Color(0xFF0D0D0D), AppColors.white),
+              ),
+            ),
+          ],
+          if (review.images.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.md),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // Three to a row, however wide the card is.
+                final side = (constraints.maxWidth - _photoGap * 2) / 3;
+                return Wrap(
+                  spacing: _photoGap,
+                  runSpacing: _photoGap,
+                  children: [
+                    for (var i = 0; i < review.images.length; i++)
+                      GestureDetector(
+                        onTap: () => ProductPhotoViewerPage.open(
+                          context,
+                          images: review.images,
+                          initialIndex: i,
+                          heroPrefix: 'review-${review.id}',
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          child: SizedBox(
+                            width: side,
+                            height: side,
+                            child: Hero(
+                              tag: 'review-${review.id}-$i',
+                              child: CachedNetworkImage(
+                                imageUrl: review.images[i],
+                                fit: BoxFit.cover,
+                                placeholder: (_, _) => ColoredBox(
+                                  color: context.adapt(
+                                    AppColors.white,
+                                    AppColors.backgroundDark,
+                                  ),
+                                ),
+                                errorWidget: (_, _, _) => ColoredBox(
+                                  color: context.adapt(
+                                    AppColors.white,
+                                    AppColors.backgroundDark,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ],
+          if (onHelpful != null && !review.isMine) ...[
+            const SizedBox(height: AppSpacing.md),
+            InkWell(
+              key: ValueKey('review-helpful-${review.id}'),
+              onTap: onHelpful,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      review.liked
+                          ? Icons.thumb_up_alt_rounded
+                          : Icons.thumb_up_off_alt_rounded,
+                      size: 20,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(
+                      review.likes > 0
+                          ? context.l10n.reviewHelpfulCount(review.likes)
+                          : context.l10n.reviewHelpful,
+                      style: theme.bodyMedium?.copyWith(
+                        fontSize: 14,
+                        height: 20 / 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+enum _OwnReviewAction { edit, delete }
+
+/// The "..." at the card's top right: edit or delete the customer's own
+/// review.
+class _OwnReviewMenu extends StatelessWidget {
+  const _OwnReviewMenu({this.onEdit, this.onDelete});
+
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+
+  @override
+  Widget build(BuildContext context) => PopupMenuButton<_OwnReviewAction>(
+    key: const Key('review-own-menu'),
+    padding: EdgeInsets.zero,
+    tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+    onSelected: (action) => switch (action) {
+      _OwnReviewAction.edit => onEdit?.call(),
+      _OwnReviewAction.delete => onDelete?.call(),
+    },
+    itemBuilder: (context) => [
+      if (onEdit != null)
+        PopupMenuItem(
+          value: _OwnReviewAction.edit,
+          child: Text(context.l10n.reviewEdit),
+        ),
+      if (onDelete != null)
+        PopupMenuItem(
+          value: _OwnReviewAction.delete,
+          child: Text(context.l10n.reviewDelete),
+        ),
+    ],
+    // Three solid dots, as the design draws them, not the hollow glyph.
+    child: Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.md,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < 3; i++) ...[
+            if (i > 0) const SizedBox(width: 3),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: context.inkColor,
+                shape: BoxShape.circle,
+              ),
+              child: const SizedBox.square(dimension: 5),
+            ),
+          ],
+        ],
+      ),
+    ),
   );
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/localization/failure_localizer.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -475,13 +476,17 @@ class _SummaryState extends State<_Summary> {
       // new total can be seen and accepted. Anything unavailable, or a
       // supplier that did not answer, is told here, on the cart.
       if (check != null && check.available) {
-        messenger.showSnackBar(SnackBar(content: Text(failure?.message ?? '')));
+        messenger.showSnackBar(
+          SnackBar(content: Text(failure?.localize(context.l10n) ?? '')),
+        );
         unawaited(router.pushNamed(AppRoutes.checkout.name));
         return;
       }
       await showOrderProblemDialog(
         context,
-        message: failure?.message,
+        // From the error code, in the app's language: the API's own text
+        // is Russian only.
+        message: failure?.localize(context.l10n),
         check: check,
       );
     } finally {

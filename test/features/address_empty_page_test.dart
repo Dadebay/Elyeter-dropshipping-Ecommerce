@@ -30,6 +30,9 @@ class _AddressApi extends ShopApi {
 }
 
 void main() {
+  setUpAll(() => AddressMapPickerPage.autoLocateByDefault = false);
+  tearDownAll(() => AddressMapPickerPage.autoLocateByDefault = true);
+
   tearDown(() async => getIt.reset());
 
   Future<void> pumpPage(WidgetTester tester, _AddressApi api) async {
@@ -73,6 +76,7 @@ void main() {
       SavedLocation(
         id: 3,
         name: 'Home',
+        type: 'home',
         latitude: 37.96,
         longitude: 58.32,
         isDefault: true,
@@ -81,7 +85,10 @@ void main() {
     await pumpPage(tester, api);
 
     expect(find.text('Home'), findsOneWidget);
-    expect(find.text('Add Work Address'), findsNothing);
+    // Home exists, so only the missing types are offered.
+    expect(find.text('Add Home Address'), findsNothing);
+    expect(find.text('Add Work Address'), findsOneWidget);
+    expect(find.text('Add New Address'), findsOneWidget);
     expect(find.byType(Image), findsNothing);
   });
 

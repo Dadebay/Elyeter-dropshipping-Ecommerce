@@ -46,6 +46,25 @@ void main() {
     await directory.delete(recursive: true);
   });
 
+  test('a name adopted from the account while the photo is copied does not '
+      'drop the photo', () async {
+    final source = File('${directory.path}/picked.jpg');
+    await source.writeAsBytes([1, 2, 3, 4]);
+    final profile = ProfileCubit();
+    addTearDown(profile.close);
+    profile.adoptAccount(phone: '+99362990344');
+
+    // Saving the name updates the account, which makes the profile adopt it
+    // while the photo is still being copied.
+    final saving = profile.save(name: 'Sssd', avatarPath: source.path);
+    profile.adoptAccount(phone: '+99362990344', name: 'Sssd');
+    await saving;
+
+    expect(profile.state.name, 'Sssd');
+    expect(profile.state.avatarPath, isNotNull);
+    expect(File(profile.state.avatarPath!).existsSync(), isTrue);
+  });
+
   test(
     'saved avatar survives deletion of the picker cache and reload',
     () async {

@@ -12,6 +12,10 @@ abstract final class AppAssets {
   static const iconTrash = '$_icons/trash.svg';
   static const iconShoppingBagOutline = '$_icons/shopping_bag_outline.svg';
   static const iconCartPlus = '$_icons/cart_plus.svg';
+  static const iconOrderArrow = '$_icons/order_arrow.svg';
+  static const iconOrderDone = '$_icons/order_done.svg';
+  static const iconFilterSlider = '$_icons/filter_slider.svg';
+  static const iconSearchMagnifier = '$_icons/search_magnifier.svg';
   static const iconChevronRight = '$_icons/chevron_right.svg';
   static const iconCrossSmall = '$_icons/cross_small.svg';
   static const iconCopy = '$_icons/copy.svg';
@@ -47,6 +51,24 @@ abstract final class AppAssets {
   // Rendered from order_cancelled.svg at 8x resolution. Its blend modes are
   // not reproduced correctly by flutter_svg on device.
   static const imageOrderCancelled = '$_images/order_cancelled.png';
+  static const iconAdd = '$_icons/add.svg';
+  static const iconOrderPin = '$_icons/order_pin.svg';
+  static const iconNoteInfo = '$_icons/note_info.svg';
+  static const iconChevronCircle = '$_icons/chevron_circle.svg';
+  static const iconChevronCircleDark = '$_icons/chevron_circle_dark.svg';
+  static const avatarPlaceholder = '$_icons/avatar_placeholder.svg';
+  static const iconStarFilled = '$_icons/star_filled.svg';
+  static const iconStarEmpty = '$_icons/star_empty.svg';
+
+  /// Reviewer avatars (tinted disc, white head and shoulders); one is picked
+  /// per reviewer.
+  static const reviewerAvatars = [
+    '$_icons/reviewer_purple.svg',
+    '$_icons/reviewer_mint.svg',
+    '$_icons/reviewer_cream.svg',
+  ];
+  static const iconReviewAvatar = '$_icons/review_avatar.svg';
+  static const iconFilterSliders = '$_icons/filter_sliders.svg';
   static const iconEdit = '$_icons/edit.svg';
   static const iconPencil = '$_icons/pencil.svg';
   static const iconUser = '$_icons/user.svg';

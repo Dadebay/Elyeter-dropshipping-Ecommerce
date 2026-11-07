@@ -27,7 +27,7 @@ class AddressMapPickerPage extends StatefulWidget {
     this.initialName,
     this.locationService,
     this.addressLookupService,
-    this.autoLocate = true,
+    this.autoLocate,
   });
   final SavedLocation? current;
   final String initialType;
@@ -37,13 +37,22 @@ class AddressMapPickerPage extends StatefulWidget {
 
   /// Ask for permission and find the device as soon as the page opens, for a
   /// new address. An address being edited keeps its saved point.
-  final bool autoLocate;
+  final bool? autoLocate;
+
+  /// What [autoLocate] falls back to. Tests that open this page through the
+  /// address list switch it off, since there is no device to locate.
+  @visibleForTesting
+  static bool autoLocateByDefault = true;
 
   @override
   State<AddressMapPickerPage> createState() => _AddressMapPickerPageState();
 }
 
 class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
+  /// Height of the form inside the sheet, from its top edge to just under
+  /// the Save button.
+  static const _sheetContentHeight = 436.0;
+
   static const _floorSeparator = ' · Floor: ';
 
   final _mapController = MapController();
@@ -59,7 +68,7 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
   late LatLng _point = widget.current == null
       ? ElyeterMap.defaultCenter
       : LatLng(widget.current!.latitude, widget.current!.longitude);
-  late String _type = widget.current?.type ?? widget.initialType;
+  late final String _type = widget.current?.type ?? widget.initialType;
   late bool _pointConfirmed = widget.current != null;
   bool _locating = false;
   bool _dragging = false;
@@ -72,7 +81,8 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.autoLocate && widget.current == null) {
+    if ((widget.autoLocate ?? AddressMapPickerPage.autoLocateByDefault) &&
+        widget.current == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) unawaited(_locate());
       });
@@ -269,9 +279,13 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
       resizeToAvoidBottomInset: false,
       body: LayoutBuilder(
         builder: (context, constraints) {
+          // Just tall enough for the form (handle, three fields, Save): the
+          // sheet used to claim over 60% of the screen and leave a wide empty
+          // band under the button. A notice or the settings button may push
+          // past it, and the sheet scrolls for that.
           final fullSheetHeight = math.min(
             constraints.maxHeight,
-            math.max(500.0, constraints.maxHeight * 0.62),
+            _sheetContentHeight + MediaQuery.paddingOf(context).bottom,
           );
           // Decided from the full layout, so the sheet's header does not swap
           // between handle and buttons as the keyboard opens.
@@ -484,42 +498,6 @@ class _AddressMapPickerPageState extends State<AddressMapPickerPage> {
                             maxLength: 60,
                             textInputAction: TextInputAction.done,
                           ),
-                          if (widget.current != null) ...[
-                            const SizedBox(height: AppSpacing.lg),
-                            Row(
-                              children: [
-                                for (final (value, label, icon) in [
-                                  (
-                                    'home',
-                                    context.l10n.addressTypeHome,
-                                    AppIcons.home,
-                                  ),
-                                  (
-                                    'work',
-                                    context.l10n.addressTypeWork,
-                                    AppIcons.work,
-                                  ),
-                                  (
-                                    'other',
-                                    context.l10n.addressTypeOther,
-                                    AppIcons.location,
-                                  ),
-                                ]) ...[
-                                  Expanded(
-                                    child: _TypeChip(
-                                      label: label,
-                                      icon: icon,
-                                      selected: _type == value,
-                                      onTap: () =>
-                                          setState(() => _type = value),
-                                    ),
-                                  ),
-                                  if (value != 'other')
-                                    const SizedBox(width: AppSpacing.sm),
-                                ],
-                              ],
-                            ),
-                          ],
                           if (_message != null) ...[
                             const SizedBox(height: AppSpacing.md),
                             _Notice(_message!),
@@ -700,13 +678,22 @@ class _AddressField extends StatelessWidget {
                 horizontal: AppSpacing.xl,
                 vertical: AppSpacing.lg,
               ),
-              border: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(AppRadius.pill)),
-                borderSide: BorderSide.none,
+              // Dark mode: a thin grey edge, so the field stands off the sheet.
+              border: OutlineInputBorder(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(AppRadius.pill),
+                ),
+                borderSide: isDark
+                    ? const BorderSide(color: Color(0xFF4A4A4A))
+                    : BorderSide.none,
               ),
-              enabledBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(AppRadius.pill)),
-                borderSide: BorderSide.none,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(AppRadius.pill),
+                ),
+                borderSide: isDark
+                    ? const BorderSide(color: Color(0xFF4A4A4A))
+                    : BorderSide.none,
               ),
               focusedBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(AppRadius.pill)),
@@ -757,62 +744,6 @@ class _SaveAddressButton extends StatelessWidget {
   );
 }
 
-/// One of the Home / Work / Other choices.
-class _TypeChip extends StatelessWidget {
-  const _TypeChip({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final AppIconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final idle = isDark ? AppColors.white : AppColors.ink;
-
-    return Material(
-      color: selected
-          ? AppColors.primary
-          : (isDark ? AppColors.backgroundDark : AppColors.grey100),
-      borderRadius: BorderRadius.circular(AppRadius.pill),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              HugeIcon(
-                icon: icon,
-                size: 18,
-                color: selected ? AppColors.white : idle,
-              ),
-              const SizedBox(width: AppSpacing.xs + 2),
-              Text(
-                label,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontFamily: AppTypography.fontFamily,
-                  color: selected ? AppColors.white : idle,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Inline validation / location message.
 class _Notice extends StatelessWidget {
   const _Notice(this.text);
 

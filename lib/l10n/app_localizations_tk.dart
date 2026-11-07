@@ -488,7 +488,7 @@ class AppLocalizationsTk extends AppLocalizations {
   String get reviewRating => 'Siziň bahaňyz';
 
   @override
-  String get reviewComment => 'Teswiriňiz (hökmany däl)';
+  String get reviewComment => 'Önüm barada pikirleriňizi ýazyň...';
 
   @override
   String get reviewIntro => 'Haryt baradaky pikiriňizi paýlaşyň.';
@@ -519,7 +519,7 @@ class AppLocalizationsTk extends AppLocalizations {
   String get reviewHowRate => 'Bu haryda nähili baha berýärsiňiz?';
 
   @override
-  String get reviewSubmit => 'Teswiri iber';
+  String get reviewSubmit => 'Iber';
 
   @override
   String get reviewAnonymous => 'Alyjy';
@@ -1271,6 +1271,14 @@ class AppLocalizationsTk extends AppLocalizations {
 
   @override
   String get errorTooManyRequests => 'Haýyş köp iberildi. Biraz haýallaň.';
+
+  @override
+  String get errorPreOrderInProgress =>
+      'Sargyt entäk resmileşdirilýär. Biraz garaşyň.';
+
+  @override
+  String get errorPaymentInProgress =>
+      'Töleg entäk barlanylýar. Birnäçe minutdan synanşyň.';
 
   @override
   String get errorValidation => 'Giren maglumatlaryňyzy barlaň.';

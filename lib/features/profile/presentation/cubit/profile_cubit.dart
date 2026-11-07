@@ -53,8 +53,11 @@ class ProfileCubit extends HydratedCubit<ProfileState> {
         savedPath = null;
       }
     }
-    // A sign-out while copying must not restore the previous account.
-    if (isClosed || state != previous) return;
+    // A sign-out (or a different account) while copying must not restore the
+    // previous one. Any other change is fine: saving the name tells the
+    // account to adopt it, which emits a new state while the photo is still
+    // being copied — comparing the whole state used to drop the photo then.
+    if (isClosed || state.phone != previous.phone) return;
     emit(ProfileState(name: name, phone: state.phone, avatarPath: savedPath));
   }
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/constants/app_assets.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -42,44 +44,54 @@ class OrderListCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Flexible(
-                  child: Text(
-                    created == null
-                        ? order.number
-                        : _dateFormat.format(created),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.titleMedium?.copyWith(
-                      color: context.inkColor,
-                      fontWeight: FontWeight.w600,
-                    ),
+                // The date never shrinks: when the row is tight it is the status
+                // chip that gives way.
+                Text(
+                  created == null ? order.number : _dateFormat.format(created),
+                  maxLines: 1,
+                  softWrap: false,
+                  style: theme.titleMedium?.copyWith(
+                    color: context.isDark
+                        ? AppColors.white
+                        : const Color(0xFF171717),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    height: 24 / 15,
+                    letterSpacing: 0,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
-                Container(
-                  width: 22,
-                  height: 22,
-                  decoration: BoxDecoration(
-                    color: context.adapt(
-                      AppColors.grey100,
-                      AppColors.backgroundDark,
+                // The arrow comes with its own round #F7F7F7 background.
+                SvgPicture.asset(
+                  AppAssets.iconOrderArrow,
+                  width: 16,
+                  height: 16,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerRight,
+                      child: _StatusPill(status: order.status),
                     ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: HugeIcon(
-                    icon: AppIcons.chevronRight,
-                    size: 12,
-                    color: context.adapt(AppColors.grey700, AppColors.iconSoft),
                   ),
                 ),
-                const Spacer(),
-                _StatusPill(status: order.status),
               ],
             ),
             const SizedBox(height: AppSpacing.xxs),
             Text(
               context.l10n.orderItemsFor(order.itemsCount, amount),
-              style: theme.labelMedium?.copyWith(color: AppColors.grey500),
+              // Figma: Inter Display Medium 12 / 16, letter spacing 0.1,
+              // text/soft-400 (#A3A3A3).
+              style: theme.labelMedium?.copyWith(
+                color: const Color(0xFFA3A3A3),
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                height: 16 / 11,
+                letterSpacing: 0.1,
+              ),
             ),
             if (order.items.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.md),
@@ -141,17 +153,20 @@ class _StatusPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.radio_button_checked_rounded, size: 12, color: fg),
+            Icon(Icons.radio_button_checked_rounded, size: 10, color: fg),
             const SizedBox(width: 4),
             Text(
               label,
               style: context.textTheme.labelMedium?.copyWith(
                 color: fg,
+                fontSize: 11,
                 fontWeight: FontWeight.w600,
+                height: 16 / 11,
+                letterSpacing: 0,
               ),
             ),
           ],
@@ -167,8 +182,8 @@ class _StatusPill extends StatelessWidget {
 class _ItemsStrip extends StatelessWidget {
   const _ItemsStrip({required this.items});
 
-  static const _width = 49.0;
-  static const _height = 64.0;
+  static const _width = 52.0;
+  static const _height = 70.0;
   static const _gap = AppSpacing.xs;
   static const _unit = _width + _gap;
 
@@ -291,6 +306,8 @@ class _MoreTile extends StatelessWidget {
       '+$count',
       style: context.textTheme.titleSmall?.copyWith(
         color: context.adapt(AppColors.grey700, AppColors.iconSoft),
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
       ),
     ),
   );

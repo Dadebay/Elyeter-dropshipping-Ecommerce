@@ -487,7 +487,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reviewRating => 'Ваша оценка';
 
   @override
-  String get reviewComment => 'Ваш отзыв (необязательно)';
+  String get reviewComment => 'Напишите, что вы думаете о товаре...';
 
   @override
   String get reviewIntro => 'Поделитесь впечатлениями о товаре.';
@@ -517,7 +517,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reviewHowRate => 'Как бы вы оценили этот товар?';
 
   @override
-  String get reviewSubmit => 'Отправить отзыв';
+  String get reviewSubmit => 'Отправить';
 
   @override
   String get reviewAnonymous => 'Покупатель';
@@ -1274,6 +1274,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get errorTooManyRequests => 'Слишком много запросов. Повторите позже.';
+
+  @override
+  String get errorPreOrderInProgress =>
+      'Заказ ещё оформляется. Подождите немного.';
+
+  @override
+  String get errorPaymentInProgress =>
+      'Оплата ещё проверяется — попробуйте через пару минут.';
 
   @override
   String get errorValidation => 'Проверьте введённые данные.';

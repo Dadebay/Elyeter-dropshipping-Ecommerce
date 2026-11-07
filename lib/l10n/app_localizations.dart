@@ -955,7 +955,7 @@ abstract class AppLocalizations {
   /// No description provided for @reviewComment.
   ///
   /// In en, this message translates to:
-  /// **'Your review (optional)'**
+  /// **'Write your thoughts about the product...'**
   String get reviewComment;
 
   /// No description provided for @reviewIntro.
@@ -1015,7 +1015,7 @@ abstract class AppLocalizations {
   /// No description provided for @reviewSubmit.
   ///
   /// In en, this message translates to:
-  /// **'Send review'**
+  /// **'Submit'**
   String get reviewSubmit;
 
   /// No description provided for @reviewAnonymous.
@@ -2373,6 +2373,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Too many requests. Please slow down.'**
   String get errorTooManyRequests;
+
+  /// No description provided for @errorPreOrderInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is still being placed. Please wait a moment.'**
+  String get errorPreOrderInProgress;
+
+  /// No description provided for @errorPaymentInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment is still being checked. Try again in a couple of minutes.'**
+  String get errorPaymentInProgress;
 
   /// No description provided for @errorValidation.
   ///

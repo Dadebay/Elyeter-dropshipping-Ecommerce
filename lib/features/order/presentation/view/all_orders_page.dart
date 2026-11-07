@@ -152,11 +152,12 @@ class _TabsState extends State<_Tabs> with SingleTickerProviderStateMixin {
     const inset = 4.0;
     final count = widget.labels.length;
     return Container(
-      height: 60,
+      // Figma: a 48 high pill, the thumb 40 inside it.
+      height: 48,
       padding: const EdgeInsets.all(inset),
       decoration: BoxDecoration(
         color: context.adapt(AppColors.white, AppColors.categoryDark),
-        borderRadius: BorderRadius.circular(AppRadius.xl - 4),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -182,7 +183,14 @@ class _TabsState extends State<_Tabs> with SingleTickerProviderStateMixin {
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: context.inkFill,
-                        borderRadius: BorderRadius.circular(AppRadius.lg),
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x14000000),
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -196,12 +204,16 @@ class _TabsState extends State<_Tabs> with SingleTickerProviderStateMixin {
                             child: Center(
                               child: Text(
                                 widget.labels[i],
+                                // Figma: Inter Display SemiBold 14 / 20.
                                 style: context.textTheme.titleSmall?.copyWith(
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w600,
+                                  height: 20 / 14,
+                                  letterSpacing: 0,
                                   // Fades with the thumb: white while it is
                                   // under the label, grey as it leaves.
                                   color: Color.lerp(
-                                    AppColors.grey500,
+                                    const Color(0xFFA3A3A3),
                                     context.onInkFill,
                                     (1 - (_position.value - i).abs()).clamp(
                                       0.0,

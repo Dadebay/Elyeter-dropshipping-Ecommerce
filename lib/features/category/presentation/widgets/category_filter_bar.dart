@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
+import '../../../../core/constants/app_assets.dart';
 import '../../../../core/constants/app_icons.dart';
 
 /// The strip under the subcategories: the two controls that act on the whole
@@ -60,7 +62,7 @@ class CategoryFilterBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.page),
         children: [
           _IconButton(
-            icon: AppIcons.filter,
+            asset: AppAssets.iconFilterSlider,
             active: filterActive,
             onTap: onFilter,
           ),
@@ -106,13 +108,17 @@ class CategoryFacet {
 
 class _IconButton extends StatelessWidget {
   const _IconButton({
-    required this.icon,
+    this.icon,
+    this.asset,
     required this.onTap,
     this.active = false,
-  });
+  }) : assert((icon == null) != (asset == null));
 
   /// A `HugeIcons.*` constant — the package supplies glyphs as data.
-  final List<List<dynamic>> icon;
+  final List<List<dynamic>>? icon;
+
+  /// Or an SVG from `assets/icons`, tinted like the glyph would be.
+  final String? asset;
   final VoidCallback? onTap;
   final bool active;
 
@@ -130,12 +136,22 @@ class _IconButton extends StatelessWidget {
           width: CategoryFilterBar.height,
           height: CategoryFilterBar.height,
           child: Center(
-            child: HugeIcon(
-              icon: icon,
-              size: 20,
-              strokeWidth: CategoryFilterBar.iconStroke,
-              color: active ? context.onInkFill : context.inkColor,
-            ),
+            child: asset != null
+                ? SvgPicture.asset(
+                    asset!,
+                    width: 20,
+                    height: 20,
+                    colorFilter: ColorFilter.mode(
+                      active ? context.onInkFill : context.inkColor,
+                      BlendMode.srcIn,
+                    ),
+                  )
+                : HugeIcon(
+                    icon: icon!,
+                    size: 20,
+                    strokeWidth: CategoryFilterBar.iconStroke,
+                    color: active ? context.onInkFill : context.inkColor,
+                  ),
           ),
         ),
       ),

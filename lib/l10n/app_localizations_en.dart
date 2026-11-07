@@ -485,7 +485,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewRating => 'Your rating';
 
   @override
-  String get reviewComment => 'Your review (optional)';
+  String get reviewComment => 'Write your thoughts about the product...';
 
   @override
   String get reviewIntro => 'Share your experience with this product.';
@@ -515,7 +515,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewHowRate => 'How would you rate this product?';
 
   @override
-  String get reviewSubmit => 'Send review';
+  String get reviewSubmit => 'Submit';
 
   @override
   String get reviewAnonymous => 'Customer';
@@ -1268,6 +1268,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorTooManyRequests => 'Too many requests. Please slow down.';
+
+  @override
+  String get errorPreOrderInProgress =>
+      'Your order is still being placed. Please wait a moment.';
+
+  @override
+  String get errorPaymentInProgress =>
+      'Payment is still being checked. Try again in a couple of minutes.';
 
   @override
   String get errorValidation => 'Please check the details you entered.';

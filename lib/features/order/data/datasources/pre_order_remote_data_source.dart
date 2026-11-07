@@ -16,11 +16,13 @@ abstract interface class PreOrderRemoteDataSource {
     String? address,
     String? comment,
     num? expectedTotal,
+    int? locationId,
+    String? idempotencyKey,
   });
   Future<Paginated<PreOrder>> list({
     required int page,
     required int size,
-    PreOrderStatus? status,
+    List<PreOrderStatus> statuses,
   });
   Future<PreOrder> byId(int id);
   Future<PreOrder> cancel(int id);
@@ -49,6 +51,8 @@ class PreOrderRemoteDataSourceImpl implements PreOrderRemoteDataSource {
     String? address,
     String? comment,
     num? expectedTotal,
+    int? locationId,
+    String? idempotencyKey,
   }) async {
     final data = await _client.post(
       ApiEndpoints.preOrders,
@@ -61,6 +65,9 @@ class PreOrderRemoteDataSourceImpl implements PreOrderRemoteDataSource {
         if (address != null && address.isNotEmpty) 'address': address,
         if (comment != null && comment.isNotEmpty) 'comment': comment,
         'expected_total': ?expectedTotal,
+        'location_id': ?locationId,
+        if (idempotencyKey != null && idempotencyKey.isNotEmpty)
+          'idempotency_key': idempotencyKey,
       },
       receiveTimeout: AppConstants.preOrderTimeout,
     );
@@ -71,14 +78,15 @@ class PreOrderRemoteDataSourceImpl implements PreOrderRemoteDataSource {
   Future<Paginated<PreOrder>> list({
     required int page,
     required int size,
-    PreOrderStatus? status,
+    List<PreOrderStatus> statuses = const [],
   }) async {
     final data = await _client.get(
       ApiEndpoints.preOrders,
       queryParameters: {
         'page': page,
         'size': size,
-        if (status != null) 'status': status.value,
+        if (statuses.isNotEmpty)
+          'status': statuses.map((s) => s.value).join(','),
       },
     );
     return Paginated.fromJson(data, PreOrderModel.fromJson);

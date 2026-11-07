@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/utils/formatters/currency_formatter.dart';
+import '../../../../core/widgets/app_asset_image.dart';
 import '../model/order_detail_data.dart';
 import 'order_card.dart';
 
@@ -75,23 +76,17 @@ class OrderTotalCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
+          // Figma: the note's orange (#FF8D28), the 17 px info glyph from
+          // the design file, and text of 14 / 20.
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 20,
-                height: 20,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryVibrant,
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  'i',
-                  style: context.textTheme.labelMedium?.copyWith(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
+              const Padding(
+                padding: EdgeInsets.only(top: 1.5),
+                child: AppAssetImage(
+                  AppAssets.iconNoteInfo,
+                  width: 17,
+                  height: 17,
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -99,7 +94,10 @@ class OrderTotalCard extends StatelessWidget {
                 child: Text(
                   l10n.orderCargoNote,
                   style: context.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.primaryVibrant,
+                    fontSize: 14,
+                    height: 20 / 14,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFFFF8D28),
                   ),
                 ),
               ),

@@ -21,6 +21,7 @@ abstract final class PreOrderModel {
     canPay: json.boolVal('can_pay'),
     isPaid: json.boolVal('is_paid'),
     paidAt: json.dateOrNull('paid_at'),
+    hasPendingPayment: json.boolVal('has_pending_payment'),
     items: json.listOf('items').map(itemFromJson).toList(),
     priceChanged: json.boolVal('price_changed'),
   );

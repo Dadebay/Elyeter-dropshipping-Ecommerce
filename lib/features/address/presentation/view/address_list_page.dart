@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/widgets/app_asset_image.dart';
+import '../../../../core/widgets/app_back_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/widgets/app_loader.dart';
@@ -24,6 +25,10 @@ class AddressListPage extends StatefulWidget {
 }
 
 class _AddressListPageState extends State<AddressListPage> {
+  /// The most addresses the app lets a customer keep: Home, Work and one
+  /// more. The backend itself would accept up to 10.
+  static const _maxAddresses = 3;
+
   List<SavedLocation> _items = [];
   bool _loading = true;
   String? _error;
@@ -168,7 +173,7 @@ class _AddressListPageState extends State<AddressListPage> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppPageAppBar(
       title: context.l10n.addressListTitle,
-      actions: !_loading && _error == null && _items.length < 10
+      actions: !_loading && _error == null && _items.length < _maxAddresses
           ? [
               Padding(
                 padding: const EdgeInsets.only(
@@ -200,7 +205,7 @@ class _AddressListPageState extends State<AddressListPage> {
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(
                             AppSpacing.page,
-                            40,
+                            AppSpacing.lg,
                             AppSpacing.page,
                             0,
                           ),
@@ -226,7 +231,7 @@ class _AddressListPageState extends State<AddressListPage> {
                 : ListView(
                     padding: const EdgeInsets.fromLTRB(
                       AppSpacing.page,
-                      40,
+                      AppSpacing.lg,
                       AppSpacing.page,
                       AppSpacing.lg,
                     ),
@@ -241,6 +246,41 @@ class _AddressListPageState extends State<AddressListPage> {
                             onMore: () => _showActions(item),
                           ),
                         ),
+                      // Home and Work are added on their own rows for as long
+                      // as the list lacks one, and "other" on a last row, until
+                      // the list holds [_maxAddresses].
+                      if (_items.length < _maxAddresses) ...[
+                        if (!_items.any((item) => item.type == 'work'))
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.sm,
+                            ),
+                            child: _AddAddressRow(
+                              label: context.l10n.addressAddWork,
+                              onTap: () => _edit(
+                                initialType: 'work',
+                                initialName: context.l10n.addressNameWork,
+                              ),
+                            ),
+                          ),
+                        if (!_items.any((item) => item.type == 'home'))
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.sm,
+                            ),
+                            child: _AddAddressRow(
+                              label: context.l10n.addressAddHome,
+                              onTap: () => _edit(
+                                initialType: 'home',
+                                initialName: context.l10n.addressNameHome,
+                              ),
+                            ),
+                          ),
+                        _AddAddressRow(
+                          label: context.l10n.addressAddNew,
+                          onTap: () => _edit(initialType: 'other'),
+                        ),
+                      ],
                     ],
                   ),
           ),
@@ -320,39 +360,23 @@ class _AddAddressRow extends StatelessWidget {
   }
 }
 
+/// The "add" counterpart of the back button: the same pill, shadow and size.
 class _AddAddressButton extends StatelessWidget {
   const _AddAddressButton({required this.onTap});
 
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final isDark = context.isDark;
-    return Tooltip(
-      message: context.l10n.addressAddNew,
-      child: Material(
-        color: isDark ? AppColors.surfaceDark : AppColors.white,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        elevation: isDark ? 0 : 2,
-        shadowColor: AppColors.black.withValues(alpha: 0.12),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: SizedBox(
-            width: 60,
-            height: 44,
-            child: Center(
-              child: HugeIcon(
-                icon: AppIcons.add,
-                size: 26,
-                color: isDark ? AppColors.white : AppColors.ink,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Tooltip(
+    message: context.l10n.addressAddNew,
+    child: AppBackButton(
+      asset: AppAssets.iconAdd,
+      semanticLabel: context.l10n.addressAddNew,
+      width: AppBackButton.appBarWidth,
+      buttonHeight: AppBackButton.appBarHeight,
+      onPressed: onTap,
+    ),
+  );
 }
 
 /// A compact saved address row. Secondary actions live in its long-press menu.

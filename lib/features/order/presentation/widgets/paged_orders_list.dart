@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/localization/failure_localizer.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/app_routes.dart';
@@ -16,8 +17,8 @@ import 'order_list_card.dart';
 /// A self-paging list of the customer's orders.
 ///
 /// [status] asks the API for one status. The "active" list spans three
-/// statuses, which the API cannot filter by in one call, so [activeOnly]
-/// fetches everything and keeps the unfinished ones.
+/// statuses (`NEW,CONFIRMED,ORDERED`), which the API filters in one call, so
+/// [activeOnly] asks for exactly those and only they are paged.
 class PagedOrdersList extends StatefulWidget {
   const PagedOrdersList({super.key, this.status, this.activeOnly = false});
 
@@ -57,14 +58,20 @@ class _PagedOrdersListState extends State<PagedOrdersList>
     final result = await getIt<PreOrderRepository>().list(
       page: more ? (_page?.page ?? 0) + 1 : 1,
       size: _pageSize,
-      status: widget.status,
+      statuses: widget.activeOnly
+          ? const [
+              PreOrderStatus.newOrder,
+              PreOrderStatus.confirmed,
+              PreOrderStatus.ordered,
+            ]
+          : [?widget.status],
     );
     if (!mounted) return;
     setState(() {
       if (result.dataOrNull case final page?) {
         _page = more && _page != null ? _page!.merge(page) : page;
       }
-      _error = result.failureOrNull?.message;
+      _error = result.failureOrNull?.localize(context.l10n);
       _loading = false;
     });
   }

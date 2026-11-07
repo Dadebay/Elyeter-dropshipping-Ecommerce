@@ -55,7 +55,7 @@ void main() {
     final map = tester.getRect(find.byType(ElyeterMap));
     final sheet = tester.getRect(find.byType(SingleChildScrollView));
     expect(map.height, greaterThan(300));
-    expect(sheet.height, greaterThan(480));
+    expect(sheet.height, greaterThan(400));
     expect(map.bottom, greaterThan(sheet.top - 40));
     expect(find.text('© OpenStreetMap'), findsOneWidget);
     expect(

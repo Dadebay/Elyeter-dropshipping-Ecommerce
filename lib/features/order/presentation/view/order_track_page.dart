@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../../../../core/localization/failure_localizer.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -73,7 +74,7 @@ class _OrderTrackPageState extends State<OrderTrackPage>
         _error = null;
         if (order.status.isTerminal) _refreshTimer?.cancel();
       } else {
-        _error = result.failureOrNull?.message ?? '';
+        _error = result.failureOrNull?.localize(context.l10n) ?? '';
       }
     });
   }

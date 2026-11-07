@@ -14,19 +14,27 @@ abstract interface class PreOrderRepository {
   ///
   /// Pass [expectedTotal]: without it a price move goes through silently,
   /// with it the API rejects the order as `pre-order-price-changed` instead.
+  ///
+  /// [idempotencyKey] is one UUID per press of "Place order", reused for every
+  /// retry of that press: a repeat after a timeout then returns the order
+  /// already made instead of making a second. [locationId] is the saved
+  /// address, so the courier gets the point on the map.
   Future<Result<PreOrder>> create({
     required List<PreOrderLine> lines,
     String? customerName,
     String? address,
     String? comment,
     num? expectedTotal,
+    int? locationId,
+    String? idempotencyKey,
   });
 
-  /// `GET /pre-orders` — newest first, `status` optional.
+  /// `GET /pre-orders` — newest first. [statuses] filters by one or several
+  /// statuses at once (sent comma-separated); empty means all.
   Future<Result<Paginated<PreOrder>>> list({
     int page,
     int size,
-    PreOrderStatus? status,
+    List<PreOrderStatus> statuses,
   });
 
   /// `GET /pre-orders/:id` — 404 when it belongs to someone else.

@@ -36,6 +36,8 @@ extension FailureL10n on Failure {
     ApiCodes.preOrderNotFound => l10n.errorNotFound,
     ApiCodes.invalidPreOrderTransition => l10n.errorCannotCancel,
     ApiCodes.tooManyRequests => l10n.errorTooManyRequests,
+    ApiCodes.preOrderInProgress => l10n.errorPreOrderInProgress,
+    ApiCodes.preOrderPaymentInProgress => l10n.errorPaymentInProgress,
     ApiCodes.preOrderAlreadyPaid => l10n.errorPreOrderAlreadyPaid,
     ApiCodes.preOrderNotPayable => l10n.errorPreOrderNotPayable,
     ApiCodes.bankNotFound => l10n.errorBankNotFound,

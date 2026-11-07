@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
-import '../../../../core/constants/app_icons.dart';
+import '../../../../core/constants/app_assets.dart';
+import '../../../../core/widgets/app_asset_image.dart';
 
 /// The white block the order page groups each section into. The page behind
 /// is soft grey, so the blocks are what the eye separates.
@@ -69,10 +70,13 @@ class OrderCardHeader extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: label),
-          const HugeIcon(
-            icon: AppIcons.chevronRight,
-            size: 20,
-            color: AppColors.grey500,
+          // A grey disc with the chevron in it, from the design file.
+          AppAssetImage(
+            context.isDark
+                ? AppAssets.iconChevronCircleDark
+                : AppAssets.iconChevronCircle,
+            width: 24,
+            height: 24,
           ),
         ],
       ),

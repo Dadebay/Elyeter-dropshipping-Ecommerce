@@ -102,6 +102,7 @@ class PreOrder extends Equatable {
     this.canPay = false,
     this.isPaid = false,
     this.paidAt,
+    this.hasPendingPayment = false,
     this.items = const [],
     this.priceChanged = false,
   });
@@ -140,6 +141,11 @@ class PreOrder extends Equatable {
   final bool isPaid;
   final DateTime? paidAt;
 
+  /// The customer started paying and the bank has not answered yet (the last
+  /// 30 minutes). Show "checking payment" instead of the Pay button, and read
+  /// the order again in a few seconds.
+  final bool hasPendingPayment;
+
   final List<PreOrderItem> items;
 
   /// Only set on the checkout response.
@@ -165,6 +171,7 @@ class PreOrder extends Equatable {
     canPay,
     isPaid,
     paidAt,
+    hasPendingPayment,
     items,
     priceChanged,
   ];

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -29,14 +30,25 @@ class CategoryProductsEmpty extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox.square(
-                dimension: 156,
-                child: Image.asset(
-                  AppAssets.emptyShoppingBag,
-                  fit: BoxFit.contain,
-                  semanticLabel: title,
+              // Filters that match nothing show a magnifier; a category with
+              // no products at all keeps the shopping bag.
+              if (filtered)
+                // The search page's own "not found" magnifier (with the minus).
+                SvgPicture.asset(
+                  AppAssets.iconSearchNotFound,
+                  width: 72,
+                  height: 72,
+                  semanticsLabel: title,
+                )
+              else
+                SizedBox.square(
+                  dimension: 156,
+                  child: Image.asset(
+                    AppAssets.emptyShoppingBag,
+                    fit: BoxFit.contain,
+                    semanticLabel: title,
+                  ),
                 ),
-              ),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 title,

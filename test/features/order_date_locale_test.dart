@@ -38,7 +38,7 @@ class _Orders extends Fake implements PreOrderRepository {
   Future<Result<Paginated<PreOrder>>> list({
     int page = 1,
     int size = 20,
-    PreOrderStatus? status,
+    List<PreOrderStatus> statuses = const [],
   }) async => Success(Paginated(items: [_order], totalCount: 1, page: 1));
 }
 

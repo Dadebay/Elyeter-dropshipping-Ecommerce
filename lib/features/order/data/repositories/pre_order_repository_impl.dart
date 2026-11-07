@@ -30,6 +30,8 @@ class PreOrderRepositoryImpl implements PreOrderRepository {
     String? address,
     String? comment,
     num? expectedTotal,
+    int? locationId,
+    String? idempotencyKey,
   }) => _guard(
     () => _remote.create(
       lines: _trim(lines),
@@ -37,6 +39,8 @@ class PreOrderRepositoryImpl implements PreOrderRepository {
       address: address,
       comment: comment,
       expectedTotal: expectedTotal,
+      locationId: locationId,
+      idempotencyKey: idempotencyKey,
     ),
   );
 
@@ -44,12 +48,12 @@ class PreOrderRepositoryImpl implements PreOrderRepository {
   Future<Result<Paginated<PreOrder>>> list({
     int page = 1,
     int size = AppConstants.pageSize,
-    PreOrderStatus? status,
+    List<PreOrderStatus> statuses = const [],
   }) => _guard(
     () => _remote.list(
       page: page < 1 ? 1 : page,
       size: size.clamp(1, AppConstants.maxPageSize),
-      status: status,
+      statuses: statuses,
     ),
   );
 
@@ -66,6 +70,7 @@ class PreOrderRepositoryImpl implements PreOrderRepository {
         productId: line.productId,
         variantId: line.variantId,
         quantity: line.quantity.clamp(1, AppConstants.maxLineQuantity),
+        price: line.price,
       ),
   ];
 

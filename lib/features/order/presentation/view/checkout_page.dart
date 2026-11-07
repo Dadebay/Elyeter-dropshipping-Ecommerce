@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../core/di/injector.dart';
+import '../../../../core/error/failure.dart';
+import '../../../../core/localization/failure_localizer.dart';
 import '../../../../core/network/shop_api.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
@@ -14,6 +17,8 @@ import '../../../auth/presentation/widgets/sign_in_required_dialog.dart';
 import '../../../cart/presentation/cubit/cart_cubit.dart';
 import '../../../product/domain/repositories/product_repository.dart';
 import '../../../product/domain/entities/product_id.dart';
+import '../../../../core/utils/result.dart';
+import '../../domain/entities/pre_order.dart';
 import '../../domain/entities/pre_order_check.dart';
 import '../../domain/entities/pre_order_line.dart';
 import '../../domain/repositories/pre_order_repository.dart';
@@ -36,6 +41,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String? _error;
   bool _working = false;
   bool _ready = false;
+
+  /// One per press of "Place order", kept through every retry of that press
+  /// (a timeout, a 409 or 503) and dropped only once the order exists. A
+  /// repeat then returns the order already made instead of making another.
+  String? _idempotencyKey;
+
+  static String _newKey() {
+    final random = Random.secure();
+    String hex(int n) =>
+        List.generate(n, (_) => random.nextInt(16).toRadixString(16)).join();
+    return '${hex(8)}-${hex(4)}-4${hex(3)}-'
+        '${'89ab'[random.nextInt(4)]}${hex(3)}-${hex(12)}';
+  }
 
   @override
   void initState() {
@@ -65,11 +83,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
         productId,
       )).dataOrNull;
       if (detail == null) continue;
+      final variantId = cart.variants[id];
+      final variant = variantId == null
+          ? null
+          : detail.variants.where((v) => v.id == variantId).firstOrNull;
       lines.add(
         PreOrderLine(
           productId: detail.product.id,
           quantity: cart.quantityOf(id),
-          variantId: cart.variants[id],
+          variantId: variantId,
+          // What the cart shows, so the server can say "was / now" honestly.
+          price: variant?.price ?? detail.product.price,
         ),
       );
     }
@@ -125,7 +149,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     if (mounted) {
       setState(() {
         _check = result.dataOrNull;
-        _error = result.failureOrNull?.message;
+        _error = result.failureOrNull?.localize(context.l10n);
         _working = false;
       });
     }
@@ -149,16 +173,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
       address = orderAddressText(location);
       _useLocation(location);
     }
-    final result = await getIt<PreOrderRepository>().create(
-      lines: _lines,
-      customerName: _name.text.trim().isEmpty ? null : _name.text.trim(),
-      address: address,
-      comment: _comment.text.trim().isEmpty ? null : _comment.text.trim(),
-      expectedTotal: check.totalPrice,
-    );
+    final key = _idempotencyKey ??= _newKey();
+    var result = await _create(check, address, key);
+    // "Still being placed" is not an error: the earlier press is finishing.
+    // Wait a couple of seconds and ask again with the same key.
+    for (
+      var attempt = 0;
+      attempt < 5 &&
+          mounted &&
+          result.failureOrNull?.code == ApiCodes.preOrderInProgress;
+      attempt++
+    ) {
+      await Future<void>.delayed(const Duration(milliseconds: 2500));
+      if (!mounted) return;
+      result = await _create(check, address, key);
+    }
     if (!mounted) return;
     final order = result.dataOrNull;
     if (order != null) {
+      _idempotencyKey = null;
       final cart = context.read<CartCubit>();
       for (final slug in cart.state.selectedIds.toList()) {
         cart.remove(slug);
@@ -175,11 +208,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
       return;
     }
     setState(() {
-      _check = result.failureOrNull?.details.asPreOrderCheck;
-      _error = result.failureOrNull?.message;
+      // A 409 carries the fresh check result (new prices, what ran out):
+      // show it, and the next press sends its total as `expected_total`.
+      _check = result.failureOrNull?.details.asPreOrderCheck ?? _check;
+      _error = result.failureOrNull?.localize(context.l10n);
       _working = false;
     });
   }
+
+  Future<Result<PreOrder>> _create(
+    PreOrderCheck check,
+    String address,
+    String key,
+  ) => getIt<PreOrderRepository>().create(
+    lines: _lines,
+    customerName: _name.text.trim().isEmpty ? null : _name.text.trim(),
+    address: address,
+    comment: _comment.text.trim().isEmpty ? null : _comment.text.trim(),
+    expectedTotal: check.totalPrice,
+    locationId: _selectedLocationId,
+    idempotencyKey: key,
+  );
 
   void _selectLocation(int? id) {
     final matches = _savedLocations.where((location) => location.id == id);

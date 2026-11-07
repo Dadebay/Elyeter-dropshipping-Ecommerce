@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_icons.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_back_button.dart';
@@ -50,10 +52,14 @@ class CategorySearchButton extends StatelessWidget {
                     width: AppBackButton.appBarWidth,
                     height: AppBackButton.appBarHeight,
                     child: Center(
-                      child: HugeIcon(
-                        icon: AppIcons.search,
-                        size: AppBackButton.iconSize,
-                        color: isDark ? AppColors.white : AppColors.ink,
+                      child: SvgPicture.asset(
+                        AppAssets.iconSearchMagnifier,
+                        width: 24,
+                        height: 24,
+                        colorFilter: ColorFilter.mode(
+                          isDark ? AppColors.white : AppColors.ink,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                   ),

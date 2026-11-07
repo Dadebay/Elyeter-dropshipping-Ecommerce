@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/app_asset_image.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -210,12 +213,20 @@ class _ProductReviewPageState extends State<_ProductReviewPage> {
                                       : () => setState(() => _rating = star),
                                   child: SizedBox(
                                     height: 58,
-                                    child: Icon(
-                                      Icons.star_rounded,
-                                      size: 32,
-                                      color: star <= _rating
-                                          ? AppColors.primaryVibrant
-                                          : const Color(0xFFE4E4E7),
+                                    // The design's own star artwork: orange when
+                                    // given, pale grey when not.
+                                    child: Center(
+                                      child: AppAssetImage(
+                                        star <= _rating
+                                            ? AppAssets.iconStarFilled
+                                            : AppAssets.iconStarEmpty,
+                                        width: 32,
+                                        height: 32,
+                                        // The pale grey would glare on dark.
+                                        color: star <= _rating || !dark
+                                            ? null
+                                            : const Color(0xFF404040),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -245,13 +256,24 @@ class _ProductReviewPageState extends State<_ProductReviewPage> {
                       minLines: 6,
                       maxLines: 8,
                       textCapitalization: TextCapitalization.sentences,
+                      // Figma: Inter Display Medium 16, line height 130%,
+                      // letter spacing 0.
                       style: context.textTheme.bodyMedium?.copyWith(
-                        height: 1.4,
+                        fontFamily: AppTypography.fontFamily,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        height: 1.3,
+                        letterSpacing: 0,
                       ),
                       decoration: InputDecoration(
                         hintText: l10n.reviewComment,
                         hintStyle: context.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.grey500,
+                          fontFamily: AppTypography.fontFamily,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          height: 1.3,
+                          letterSpacing: 0,
+                          color: const Color(0xFFA4A4A4),
                         ),
                         filled: true,
                         fillColor: dark

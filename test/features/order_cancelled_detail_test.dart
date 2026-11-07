@@ -8,7 +8,12 @@ import 'package:elyeter/features/order/domain/repositories/pre_order_repository.
 import 'package:elyeter/features/order/presentation/view/order_detail_page.dart';
 import 'package:elyeter/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:elyeter/features/auth/domain/repositories/auth_repository.dart';
+import 'package:elyeter/features/auth/presentation/cubit/auth_cubit.dart';
+
+class _FakeAuthRepository extends Fake implements AuthRepository {}
 
 class _CancelledOrderRepository extends Fake implements PreOrderRepository {
   @override
@@ -46,7 +51,10 @@ void main() {
           ...AppLocalizations.localizationsDelegates,
           ...FallbackLocalizations.delegates,
         ],
-        home: const OrderDetailPage(orderId: 5),
+        home: BlocProvider<AuthCubit>(
+          create: (_) => AuthCubit(_FakeAuthRepository()),
+          child: const OrderDetailPage(orderId: 5),
+        ),
       ),
     );
     await tester.pumpAndSettle();

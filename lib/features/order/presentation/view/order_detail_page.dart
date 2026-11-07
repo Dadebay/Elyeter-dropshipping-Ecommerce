@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/localization/failure_localizer.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../../../core/utils/formatters/phone_formatter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image/image.dart' as img;
@@ -61,10 +65,34 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   late Future<Result<PreOrder>> _future;
   bool _cancelling = false;
 
+  /// Reads the order again while a payment is being checked by the bank.
+  Timer? _pendingTimer;
+
   @override
   void initState() {
     super.initState();
     _future = _fetch();
+  }
+
+  @override
+  void dispose() {
+    _pendingTimer?.cancel();
+    super.dispose();
+  }
+
+  /// `has_pending_payment` means the bank has not answered yet: look again in
+  /// a few seconds until it has, rather than leaving a stale "checking".
+  void _watchPendingPayment(PreOrder order) {
+    if (!order.hasPendingPayment) {
+      _pendingTimer?.cancel();
+      _pendingTimer = null;
+      return;
+    }
+    if (_pendingTimer?.isActive ?? false) return;
+    _pendingTimer = Timer(const Duration(seconds: 7), () {
+      _pendingTimer = null;
+      if (mounted) unawaited(_reload());
+    });
   }
 
   /// Product ID to the photo to show for it. The order carries a photo per
@@ -121,7 +149,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     } else {
       AppSnackBar.show(
         context,
-        result.failureOrNull?.message ?? context.l10n.orderNotFound,
+        result.failureOrNull?.localize(context.l10n) ??
+            context.l10n.orderNotFound,
         icon: AppIcons.error,
         iconColor: AppColors.error,
       );
@@ -347,12 +376,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   : TextButton(
                       onPressed: _reload,
                       child: Text(
-                        snapshot.data?.failureOrNull?.message ??
+                        snapshot.data?.failureOrNull?.localize(context.l10n) ??
                             context.l10n.orderNotFound,
                       ),
                     ),
             );
           }
+          _watchPendingPayment(order);
           final data = OrderDetailData.fromPreOrder(order, photos: _photos);
 
           return AppRefreshIndicator(
@@ -373,7 +403,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   onAsk: _ask,
                   onCancel: _cancel,
                 ),
-                if (order.canPay || order.isPaid) ...[
+                if (order.canPay ||
+                    order.isPaid ||
+                    order.hasPendingPayment) ...[
                   const SizedBox(height: AppSpacing.md),
                   _Payment(
                     order: order,
@@ -549,21 +581,11 @@ class _OutcomeBadge extends StatelessWidget {
       );
     }
 
-    return Container(
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        color: AppColors.success,
-        shape: BoxShape.circle,
-      ),
-      child: Center(
-        child: HugeIcon(
-          icon: AppIcons.check,
-          size: 34,
-          strokeWidth: 3,
-          color: AppColors.white,
-        ),
-      ),
+    return SvgPicture.asset(
+      AppAssets.iconOrderDone,
+      width: 72,
+      height: 72,
+      semanticsLabel: context.l10n.orderStatusCompleted,
     );
   }
 }
@@ -661,9 +683,13 @@ class _Payment extends StatelessWidget {
               style: theme.bodySmall?.copyWith(color: AppColors.grey500),
             ),
             const SizedBox(height: AppSpacing.md),
+            // While the bank has not answered, no second Pay: the same button
+            // reads "Checking payment…" and the page reads the order again.
             ProductReviewButton(
-              label: l10n.paymentPay,
-              loading: paying,
+              label: order.hasPendingPayment
+                  ? l10n.paymentChecking
+                  : l10n.paymentPay,
+              loading: paying || order.hasPendingPayment,
               onPressed: onPay,
             ),
           ],
@@ -768,7 +794,7 @@ class _Products extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          OrderCardHeader(title: context.l10n.orderProducts, onTap: onShowAll),
+          OrderCardHeader(title: context.l10n.orderProgress, onTap: onShowAll),
           const SizedBox(height: AppSpacing.xxs),
           Text(
             context.l10n.orderItemSummary(
@@ -804,21 +830,32 @@ class _Details extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
+    // An order placed without a name carries none; the customer's own profile
+    // name (and number) stand in, so the recipient is never just a phone.
+    final user = context.watch<AuthCubit>().state.user;
+    final recipientName = order.recipientName.isNotEmpty
+        ? order.recipientName
+        : (user?.username?.trim() ?? '');
+    final recipientPhone = PhoneFormatter.display(
+      order.recipientPhone.isNotEmpty
+          ? order.recipientPhone
+          : (user?.phone ?? ''),
+    );
     final rows = <Widget>[
       if (order.pickupPoint.isNotEmpty)
         OrderInfoRow(
-          icon: AppAssets.iconPinLocation,
+          icon: AppAssets.iconOrderPin,
           label: l10n.orderPickupPoint,
           value: order.pickupPoint,
         ),
-      if (order.recipientName.isNotEmpty || order.recipientPhone.isNotEmpty)
+      if (recipientName.isNotEmpty || recipientPhone.isNotEmpty)
         OrderInfoRow(
           icon: AppAssets.iconUser,
           label: l10n.orderRecipient,
-          value: order.recipientName.isEmpty
-              ? order.recipientPhone
-              : order.recipientName,
-          secondary: order.recipientName.isEmpty ? null : order.recipientPhone,
+          value: recipientName.isEmpty ? recipientPhone : recipientName,
+          secondary: recipientName.isEmpty || recipientPhone.isEmpty
+              ? null
+              : recipientPhone,
         ),
       OrderInfoRow(
         icon: AppAssets.iconCalendar,
@@ -831,19 +868,19 @@ class _Details extends StatelessWidget {
       ),
     ];
 
+    // Rows carry their own padding so the dividers can run edge to edge.
     return OrderCard(
+      padding: EdgeInsets.zero,
       child: Column(
         children: [
           for (var i = 0; i < rows.length; i++) ...[
             if (i > 0)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
-                child: Divider(
-                  height: 1,
-                  color: context.adapt(
-                    AppColors.grey100,
-                    AppColors.backgroundDark,
-                  ),
+              Divider(
+                height: 1,
+                thickness: 1,
+                color: context.adapt(
+                  const Color(0xFFF5F5F5),
+                  AppColors.backgroundDark,
                 ),
               ),
             rows[i],

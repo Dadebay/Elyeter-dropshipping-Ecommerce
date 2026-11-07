@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/app_asset_image.dart';
+import '../../../../core/constants/app_assets.dart';
 
 import '../../../../core/widgets/app_close_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +9,7 @@ import '../../../../core/widgets/app_loader.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../auth/presentation/widgets/sign_in_required_dialog.dart';
 import '../../../../core/widgets/app_refresh_indicator.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -14,7 +17,6 @@ import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/widgets/app_page_app_bar.dart';
 import '../../domain/entities/product_reviews.dart';
 import '../../domain/repositories/product_repository.dart';
-import '../widgets/product_review_button.dart';
 import '../widgets/product_review_dialog.dart';
 import '../widgets/product_reviews_section.dart';
 import '../widgets/product_section_card.dart';
@@ -182,12 +184,15 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
     return showModalBottomSheet<(T,)>(
       context: context,
       showDragHandle: true,
+      // Lets the sheet grow to fit all the options instead of the default
+      // 9/16 cap, which pushed the title and the close button out of view.
+      isScrollControlled: true,
       backgroundColor: context.adapt(AppColors.white, AppColors.backgroundDark),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (sheetContext) => SafeArea(
-        child: SingleChildScrollView(
+        child: Padding(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.page,
             0,
@@ -198,6 +203,8 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Fixed: the title and the close button never scroll away,
+              // only the options below them do (and only on a short screen).
               Row(
                 children: [
                   Expanded(
@@ -212,25 +219,40 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
                 ],
               ),
               const SizedBox(height: AppSpacing.md),
-              for (final option in options) ...[
-                _SheetOption(
-                  selected: option.$1 == current,
-                  onTap: () => Navigator.pop(sheetContext, (option.$1,)),
-                  count: count?.call(option.$1),
-                  builder: (color) =>
-                      content?.call(option.$1, option.$2, color) ??
-                      Text(
-                        option.$2,
-                        style: sheetContext.textTheme.bodyLarge?.copyWith(
-                          color: color,
-                          fontWeight: option.$1 == current
-                              ? FontWeight.w700
-                              : FontWeight.w500,
+              Flexible(
+                child: SingleChildScrollView(
+                  // The sheet is tall enough for every option, so it never
+                  // needs to scroll (or bounce) under the finger.
+                  physics: const NeverScrollableScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (final option in options) ...[
+                        _SheetOption(
+                          selected: option.$1 == current,
+                          onTap: () =>
+                              Navigator.pop(sheetContext, (option.$1,)),
+                          count: count?.call(option.$1),
+                          builder: (color) =>
+                              content?.call(option.$1, option.$2, color) ??
+                              Text(
+                                option.$2,
+                                style: sheetContext.textTheme.bodyLarge
+                                    ?.copyWith(
+                                      color: color,
+                                      fontWeight: option.$1 == current
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
+                                    ),
+                              ),
                         ),
-                      ),
+                        const SizedBox(height: AppSpacing.sm),
+                      ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.sm),
-              ],
+              ),
             ],
           ),
         ),
@@ -260,6 +282,15 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
       }
     });
     if (result.isError) _message(context.l10n.reviewActionError);
+  }
+
+  Future<void> _resetFilters() async {
+    if (_sort == ReviewSortOption.newest && _ratingFilter == null) return;
+    setState(() {
+      _sort = ReviewSortOption.newest;
+      _ratingFilter = null;
+    });
+    await _load();
   }
 
   Future<void> _write() async {
@@ -347,17 +378,12 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
                           ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  ProductReviewButton(
+                  _WriteReviewButton(
                     onPressed: _saving || _loading ? null : _write,
                     label: reviews.myReview == null
                         ? context.l10n.reviewWrite
                         : context.l10n.reviewEdit,
                   ),
-                  if (reviews.myReview != null)
-                    TextButton(
-                      onPressed: _saving || _loading ? null : _delete,
-                      child: Text(context.l10n.reviewDelete),
-                    ),
                   if (reviews.myReview?.isHidden ?? false)
                     Padding(
                       padding: const EdgeInsets.only(top: AppSpacing.sm),
@@ -372,6 +398,14 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
                   const SizedBox(height: AppSpacing.md),
                   Row(
                     children: [
+                      _FilterIconButton(
+                        key: const Key('reviews-reset'),
+                        active:
+                            _sort != ReviewSortOption.newest ||
+                            _ratingFilter != null,
+                        onTap: _resetFilters,
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
                       _FilterChip(
                         key: const Key('reviews-sort'),
                         label: context.l10n.reviewSortBy,
@@ -410,15 +444,11 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
                     ),
                   if (!_loading)
                     for (final review in _items) ...[
-                      ProductReviewCard(
+                      ProductReviewListCard(
                         review: displayReview(context, review),
-                        width: null,
-                        maxLines: 100,
-                        color: context.adapt(
-                          AppColors.background,
-                          AppColors.categoryDark,
-                        ),
                         onHelpful: () => _toggleHelpful(review),
+                        onEdit: _saving || _loading ? null : _write,
+                        onDelete: _saving || _loading ? null : _delete,
                       ),
                       const SizedBox(height: AppSpacing.md),
                     ],
@@ -450,35 +480,125 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = active ? AppColors.primary : context.inkColor;
+
     return Material(
       color: active
-          ? AppColors.primarySoft
+          ? context.adapt(
+              AppColors.primarySoft,
+              AppColors.primary.withValues(alpha: 0.16),
+            )
           : context.adapt(AppColors.background, AppColors.categoryDark),
       borderRadius: BorderRadius.circular(AppRadius.pill),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.pill),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                style: context.textTheme.labelLarge?.copyWith(
-                  color: active ? AppColors.primary : context.inkColor,
+        child: SizedBox(
+          height: 40,
+          child: Padding(
+            // Figma: 12 px in from each edge, a small 12 px chevron, 8 px
+            // between the label and it.
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    fontSize: 14,
+                    height: 20 / 14,
+                    fontWeight: FontWeight.w500,
+                    color: color,
+                  ),
                 ),
+                const SizedBox(width: AppSpacing.sm),
+                HugeIcon(icon: AppIcons.chevronDown, size: 12, color: color),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The round filter glyph at the start of the row. It clears the sort and
+/// rating filters, and lights up while any of them is on.
+class _FilterIconButton extends StatelessWidget {
+  const _FilterIconButton({
+    super.key,
+    required this.active,
+    required this.onTap,
+  });
+
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = active ? AppColors.primary : context.inkColor;
+
+    return Material(
+      color: active
+          ? context.adapt(
+              AppColors.primarySoft,
+              AppColors.primary.withValues(alpha: 0.16),
+            )
+          : context.adapt(AppColors.background, AppColors.categoryDark),
+      shape: const CircleBorder(),
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: Center(
+            // The design's own slider glyph, tinted to follow the theme and the
+            // active state.
+            child: AppAssetImage(
+              AppAssets.iconFilterSliders,
+              width: 18,
+              height: 18,
+              color: color,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Write a review": the design's flat orange button, rather than the pill
+/// used elsewhere.
+class _WriteReviewButton extends StatelessWidget {
+  const _WriteReviewButton({required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onPressed != null;
+
+    return Material(
+      color: enabled ? AppColors.primary : AppColors.primaryFade,
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onPressed,
+        child: SizedBox(
+          height: 48,
+          width: double.infinity,
+          child: Center(
+            child: Text(
+              label,
+              style: context.textTheme.bodyMedium?.copyWith(
+                fontSize: 16,
+                height: 24 / 16,
+                fontWeight: FontWeight.w500,
+                color: AppColors.white,
               ),
-              const SizedBox(width: AppSpacing.xs),
-              Icon(
-                Icons.keyboard_arrow_down_rounded,
-                size: 18,
-                color: active ? AppColors.primary : context.inkColor,
-              ),
-            ],
+            ),
           ),
         ),
       ),

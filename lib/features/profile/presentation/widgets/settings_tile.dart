@@ -150,14 +150,28 @@ class SettingsTile extends StatelessWidget {
                   semanticsLabel: label,
                 ),
                 // iOS-style on every platform, as the design shows it.
-                TileSwitch(:final value, :final onChanged) => Transform.scale(
-                  scale: 0.8,
-                  alignment: Alignment.centerRight,
-                  transformHitTests: false,
-                  child: CupertinoSwitch(
-                    value: value,
-                    onChanged: onChanged,
-                    activeTrackColor: AppColors.primary,
+                // 24 high, like the chevron the other rows end with, so this
+                // row is no taller than they are: the switch (31 high) is
+                // scaled down and allowed to overflow that box.
+                TileSwitch(:final value, :final onChanged) => SizedBox(
+                  // A definite width as well: an OverflowBox in a Row would
+                  // otherwise size itself to infinity.
+                  width: 51,
+                  height: 24,
+                  child: OverflowBox(
+                    maxWidth: 51,
+                    maxHeight: 31,
+                    alignment: Alignment.centerRight,
+                    child: Transform.scale(
+                      scale: 0.8,
+                      alignment: Alignment.centerRight,
+                      transformHitTests: false,
+                      child: CupertinoSwitch(
+                        value: value,
+                        onChanged: onChanged,
+                        activeTrackColor: AppColors.primary,
+                      ),
+                    ),
                   ),
                 ),
               },

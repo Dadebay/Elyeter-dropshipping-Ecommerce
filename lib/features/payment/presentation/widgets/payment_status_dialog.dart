@@ -50,8 +50,8 @@ class _PaymentStatusDialog extends StatefulWidget {
 }
 
 class _PaymentStatusDialogState extends State<_PaymentStatusDialog> {
-  static const _interval = Duration(milliseconds: 2500);
-  static const _attempts = 6;
+  static const _interval = Duration(seconds: 3);
+  static const _attempts = 20;
 
   /// Null while checking.
   PaymentStatus? _status;

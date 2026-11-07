@@ -8,7 +8,6 @@ import '../../../../core/constants/app_assets.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_asset_image.dart';
-import '../../../../core/constants/app_icons.dart';
 
 /// The two cards at the top of the profile page: who is signed in, and a
 /// shortcut into the order list.
@@ -175,7 +174,13 @@ class _Avatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fallback = initials.isEmpty
-        ? const HugeIcon(icon: AppIcons.user, size: 24, color: AppColors.white)
+        // No name to take initials from: the design's orange avatar, a white
+        // head and shoulders on it, which fills the whole disc.
+        ? const AppAssetImage(
+            AppAssets.avatarPlaceholder,
+            width: 44,
+            height: 44,
+          )
         : Text(
             initials,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(

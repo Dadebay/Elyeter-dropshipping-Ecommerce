@@ -249,11 +249,15 @@ void main() {
     expect(find.text('Great'), findsOneWidget);
     await tester.tap(find.text('Edit my review'));
     await tester.pumpAndSettle();
-    expect(find.byType(Dialog), findsOneWidget);
+    // The writer is a full page over the reviews now, not a Dialog.
+    expect(find.byType(TextFormField), findsOneWidget);
     expect(find.byType(BottomSheet), findsNothing);
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
     expect(client.calls, contains('POST /products/42/reviews'));
+    // Delete lives in the "..." menu of the customer's own review.
+    await tester.tap(find.byKey(const Key('review-own-menu')));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Delete my review'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete my review').last);
@@ -270,10 +274,10 @@ void main() {
       await tester.tap(find.text('Write a review'));
       await tester.pumpAndSettle();
 
-      expect(find.byType(Dialog), findsOneWidget);
+      expect(find.byType(TextFormField), findsOneWidget);
       expect(find.byType(ProductReviewsPage), findsNothing);
       expect(find.byType(ProductDetailPage), findsOneWidget);
-      final save = find.widgetWithText(FilledButton, 'Send review');
+      final save = find.widgetWithText(FilledButton, 'Submit');
       expect(tester.widget<FilledButton>(save).onPressed, isNull);
       await tester.tap(find.byKey(const ValueKey('review-star-4')));
       await tester.pumpAndSettle();
@@ -318,7 +322,7 @@ void main() {
       tester.view.viewInsets = const FakeViewPadding(bottom: 300);
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      final save = find.widgetWithText(FilledButton, 'Send review');
+      final save = find.widgetWithText(FilledButton, 'Submit');
       expect(tester.getRect(save).bottom, lessThanOrEqualTo(340));
       expect(save.hitTestable(), findsOneWidget);
       await tester.ensureVisible(save);
@@ -326,9 +330,11 @@ void main() {
       await tester.tap(save);
       await tester.pumpAndSettle();
 
-      expect(find.byType(Dialog), findsOneWidget);
+      expect(find.byType(TextFormField), findsOneWidget);
       expect(find.text('Keep this comment'), findsOneWidget);
-      final l10n = AppLocalizations.of(tester.element(find.byType(Dialog)));
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(TextFormField)),
+      );
       expect(find.text(l10n.reviewActionError), findsOneWidget);
       client.failSave = false;
       await tester.ensureVisible(save);
@@ -352,7 +358,9 @@ void main() {
       await _mountDetail(tester, client, signedIn: false);
       await tester.tap(find.text('Write a review'));
       await tester.pumpAndSettle();
-      expect(find.byType(AlertDialog), findsOneWidget);
+      // The sign-in prompt is a designed Dialog now, not an AlertDialog.
+      expect(find.byType(Dialog), findsOneWidget);
+      expect(find.text('Sign in required'), findsOneWidget);
       expect(find.byType(TextFormField), findsNothing);
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();

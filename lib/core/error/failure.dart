@@ -94,6 +94,8 @@ abstract final class ApiCodes {
   static const preOrderNotFound = 'pre-order-not-found';
   static const invalidPreOrderTransition = 'invalid-pre-order-transition';
   static const tooManyRequests = 'too-many-requests';
+  static const preOrderInProgress = 'pre-order-in-progress';
+  static const preOrderPaymentInProgress = 'pre-order-payment-in-progress';
   static const preOrderAlreadyPaid = 'pre-order-already-paid';
   static const preOrderNotPayable = 'pre-order-not-payable';
   static const bankNotFound = 'bank-not-found';
