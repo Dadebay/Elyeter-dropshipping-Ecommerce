@@ -31,3 +31,7 @@ Android mağaza imzası için `android/key.properties.example` dosyasını örne
 - [GitHub Releases](https://github.com/Dadebay/elyeter/releases) — yeni sürüm yayımlandığında sürüm notları ve varsa doğrudan kurulabilir, imzalı Android APK burada bulunur. Özel depolardaki Release'lere yalnızca depo erişimi olan kişiler ulaşabilir. AAB dosyası son kullanıcıya kurulum dosyası olarak verilmez; iOS kurulumu için App Store bağlantısını kullanın.
 
 Her mağaza sürümünü ilgili Git commit'i ve sürüm etiketiyle eşleştirin. Yayın öncesinde format, analiz, test, platform derlemesi ve PR CI kontrollerinin sonuçlarını kaydedin.
+
+## `main` dalına birleştirme
+
+Değişiklikleri ayrı dalda incelemeye açın. İnceleme yorumları çözüldüğünde ve PR kontrolleri geçtiğinde dalı `main` dalına birleştirin; zorla push yapmayın. Uzak `main` üzerindeki CI sonucunu da doğrulayın. Sürüm etiketini ve GitHub Release'i yalnızca doğrulanmış `main` commit'inden oluşturun.
