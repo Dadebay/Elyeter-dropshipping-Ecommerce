@@ -276,7 +276,8 @@ void main() {
 
       expect(find.byType(TextFormField), findsOneWidget);
       expect(find.byType(ProductReviewsPage), findsNothing);
-      expect(find.byType(ProductDetailPage), findsOneWidget);
+      // The review editor is an opaque route; the product stays underneath.
+      expect(find.byType(ProductDetailPage), findsNothing);
       final save = find.widgetWithText(FilledButton, 'Submit');
       expect(tester.widget<FilledButton>(save).onPressed, isNull);
       await tester.tap(find.byKey(const ValueKey('review-star-4')));
@@ -332,10 +333,14 @@ void main() {
 
       expect(find.byType(TextFormField), findsOneWidget);
       expect(find.text('Keep this comment'), findsOneWidget);
+      expect(client.calls, contains('POST /products/42/reviews'));
       final l10n = AppLocalizations.of(
         tester.element(find.byType(TextFormField)),
       );
-      expect(find.text(l10n.reviewActionError), findsOneWidget);
+      expect(
+        find.text(l10n.reviewActionError, skipOffstage: false),
+        findsOneWidget,
+      );
       client.failSave = false;
       await tester.ensureVisible(save);
       await tester.pumpAndSettle();

@@ -47,15 +47,18 @@ void main() {
     expect(currency.style?.fontSize, 14);
     expect(currency.style?.fontWeight, FontWeight.w400);
     expect(currency.style?.color, const Color(0xFFFF6600));
-    expect(title.style?.fontSize, 14);
-    expect(title.style?.fontWeight, FontWeight.w400);
+    expect(title.style?.fontSize, 12);
+    expect(title.style?.fontWeight, FontWeight.w500);
     expect(title.style?.color, const Color(0xFF5C5C5C));
     expect(action.style?.fontSize, 14);
     expect(action.style?.fontWeight, FontWeight.w500);
-    final button = tester.widget<AnimatedContainer>(
-      find.byType(AnimatedContainer),
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is ColoredBox && widget.color == const Color(0xFFF3F5F7),
+      ),
+      findsOneWidget,
     );
-    expect((button.decoration as BoxDecoration).color, const Color(0xFFF3F5F7));
     expect(
       find.byWidgetPredicate(
         (widget) =>

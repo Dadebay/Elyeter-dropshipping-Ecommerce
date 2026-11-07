@@ -4,7 +4,7 @@ import 'package:elyeter/core/theme/app_theme.dart';
 import 'package:elyeter/core/utils/result.dart';
 import 'package:elyeter/features/order/domain/entities/pre_order.dart';
 import 'package:elyeter/features/order/domain/repositories/pre_order_repository.dart';
-import 'package:elyeter/features/order/presentation/view/order_list_page.dart';
+import 'package:elyeter/features/order/presentation/widgets/paged_orders_list.dart';
 import 'package:elyeter/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -46,9 +46,11 @@ void main() {
         locale: const Locale('en'),
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: OrderListPage(
-          title: activeOnly ? 'Active orders' : 'Order history',
-          activeOnly: activeOnly,
+        home: Scaffold(
+          body: PagedOrdersList(
+            activeOnly: activeOnly,
+            status: activeOnly ? null : PreOrderStatus.completed,
+          ),
         ),
       ),
     );

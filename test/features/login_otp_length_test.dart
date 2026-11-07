@@ -190,7 +190,7 @@ void main() {
   });
 
   testWidgets(
-    'complete phone auto sends once and failed sends can be retried',
+    'complete phone sends once when confirmed and failed sends can be retried',
     (tester) async {
       final repository = _OtpRepository()
         ..pendingSend = Completer<Result<OtpChallenge>>();
@@ -205,9 +205,9 @@ void main() {
       );
 
       await tester.enterText(find.byType(TextField), '62123456');
-      // Keyboard submission can arrive before the loading state rebuilds.
-      tester.widget<TextField>(find.byType(TextField)).onSubmitted!('62123456');
-      await login.sendCode('62123456');
+      await tester.pump();
+      expect(repository.sentPhones, isEmpty);
+      await tester.tap(find.byType(FilledButton));
       await tester.pump();
       expect(repository.sentPhones, ['+99362123456']);
       expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
@@ -236,6 +236,8 @@ void main() {
     await pumpLogin(tester, repository);
 
     await tester.enterText(find.byType(TextField), '62123456');
+    await tester.pump();
+    await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
     expect(repository.sentPhones, ['+99362123456']);
 
@@ -262,6 +264,8 @@ void main() {
     final login = await pumpLogin(tester, repository);
 
     await tester.enterText(find.byType(TextField), '62123456');
+    await tester.pump();
+    await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
     expect(login.state.step, LoginStep.code);
     expect(

@@ -5,7 +5,8 @@ import 'package:elyeter/features/auth/domain/entities/otp_challenge.dart';
 import 'package:elyeter/features/auth/domain/repositories/auth_repository.dart';
 import 'package:elyeter/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:elyeter/features/profile/presentation/widgets/delete_account_dialog.dart';
-import 'package:elyeter/core/constants/app_icons.dart';
+import 'package:elyeter/core/constants/app_assets.dart';
+import 'package:elyeter/core/widgets/app_asset_image.dart';
 import 'package:elyeter/core/utils/result.dart';
 import 'package:elyeter/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +96,8 @@ void main() {
       ),
     );
 
-    final deleteIcon = tester.widget<HugeIcon>(find.byType(HugeIcon));
-    expect(deleteIcon.size, 20);
+    final deleteIcon = tester.widget<AppAssetImage>(find.byType(AppAssetImage));
+    expect(deleteIcon.path, AppAssets.iconTrash);
+    expect(deleteIcon.width, 24);
   });
 }

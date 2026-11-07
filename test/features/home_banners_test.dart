@@ -15,6 +15,8 @@ import 'package:elyeter/features/category/domain/repositories/category_repositor
 import 'package:elyeter/features/home/presentation/view/home_page.dart';
 import 'package:elyeter/features/home/presentation/widgets/home_header.dart';
 import 'package:elyeter/features/home/presentation/widgets/promo_carousel.dart';
+import 'package:elyeter/features/marketplace/domain/entities/marketplace.dart';
+import 'package:elyeter/features/marketplace/domain/repositories/marketplace_repository.dart';
 import 'package:elyeter/features/product/domain/entities/product.dart';
 import 'package:elyeter/features/product/domain/entities/product_query.dart';
 import 'package:elyeter/features/product/domain/repositories/product_repository.dart';
@@ -89,6 +91,11 @@ class _ProductRepository implements ProductRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class _MarketplaceRepository implements MarketplaceRepository {
+  @override
+  Future<Result<List<Marketplace>>> list() async => const Success([]);
+}
+
 class _IdleAuthRepository implements AuthRepository {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -139,6 +146,7 @@ void main() {
       ..registerSingleton<AuthCubit>(auth)
       ..registerSingleton<CategoryRepository>(_CategoryRepository())
       ..registerSingleton<BrandRepository>(_BrandRepository())
+      ..registerSingleton<MarketplaceRepository>(_MarketplaceRepository())
       ..registerSingleton<ProductRepository>(_ProductRepository());
     addTearDown(auth.close);
     addTearDown(locale.dispose);

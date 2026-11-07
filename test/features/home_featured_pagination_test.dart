@@ -18,6 +18,8 @@ import 'package:elyeter/features/favorite/presentation/cubit/favorite_cubit.dart
 import 'package:elyeter/features/home/presentation/view/home_page.dart';
 import 'package:elyeter/features/home/presentation/widgets/home_search_field.dart';
 import 'package:elyeter/features/home/presentation/widgets/home_section_shimmer.dart';
+import 'package:elyeter/features/marketplace/domain/entities/marketplace.dart';
+import 'package:elyeter/features/marketplace/domain/repositories/marketplace_repository.dart';
 import 'package:elyeter/core/widgets/parcel_refresh_motion.dart';
 import 'package:elyeter/features/product/domain/entities/product.dart';
 import 'package:elyeter/features/product/domain/entities/product_detail.dart';
@@ -103,6 +105,11 @@ class _AuthRepository implements AuthRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class _MarketplaceRepository implements MarketplaceRepository {
+  @override
+  Future<Result<List<Marketplace>>> list() async => const Success([]);
+}
+
 class _FeaturedProducts implements ProductRepository {
   final requests = <(ProductQuery, int, int)>[];
   final firstPageReady = Completer<void>();
@@ -167,6 +174,7 @@ Future<void> _pumpHome(
     ..registerSingleton<ShopApi>(ShopApi(api ?? _EmptyApiClient()))
     ..registerSingleton<CategoryRepository>(categories ?? _Categories())
     ..registerSingleton<BrandRepository>(brands ?? _Brands())
+    ..registerSingleton<MarketplaceRepository>(_MarketplaceRepository())
     ..registerSingleton<ProductRepository>(products);
   await tester.pumpWidget(
     MultiBlocProvider(
@@ -318,6 +326,7 @@ void main() {
       ..registerSingleton<ShopApi>(ShopApi(_EmptyApiClient()))
       ..registerSingleton<CategoryRepository>(categories)
       ..registerSingleton<BrandRepository>(brands)
+      ..registerSingleton<MarketplaceRepository>(_MarketplaceRepository())
       ..registerSingleton<ProductRepository>(products);
 
     await tester.pumpWidget(

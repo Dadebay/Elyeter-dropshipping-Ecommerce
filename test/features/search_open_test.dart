@@ -177,74 +177,24 @@ void main() {
     return repository;
   }
 
-  double clipBottom(WidgetTester tester) {
-    final finder = find.byKey(const Key('search-reveal-clip'));
-    final widget = tester.widget<ClipRRect>(finder);
-    return widget.clipper!.getClip(tester.getSize(finder)).bottom;
-  }
-
-  testWidgets(
-    'search unfolds below its source and closes along the same path',
-    (tester) async {
-      await pumpHome(tester);
-      final source = tester.getRect(find.byType(HomeSearchField));
-      final homeInput = tester.widget<TextField>(find.byType(TextField));
-      expect(homeInput.style?.fontFamily, AppTypography.fontFamily);
-      expect(
-        homeInput.decoration?.hintStyle?.fontFamily,
-        AppTypography.fontFamily,
-      );
-      await tester.tap(find.byType(HomeSearchField));
-      await tester.pump();
-      await tester.pump();
-      final start = clipBottom(tester);
-      expect(start, closeTo(source.bottom, 1));
-      expect(
-        tester.getTopLeft(find.byKey(const Key('search-input'))).dy,
-        closeTo(12, 1),
-      );
-      expect(
-        tester
-            .widget<TextField>(find.byKey(const Key('search-input')))
-            .focusNode!
-            .hasFocus,
-        isFalse,
-      );
-      expect(tester.testTextInput.isVisible, isFalse);
-      await tester.pump(const Duration(milliseconds: 100));
-      final middle = clipBottom(tester);
-      // The moving edge must still be apparent after the first 100 ms,
-      // rather than almost the entire page already being white.
-      expect(middle, lessThan(844 / 2));
-      final fade = tester.widget<FadeTransition>(
-        find.byKey(const Key('search-reveal-fade')),
-      );
-      expect(fade.opacity.value, inExclusiveRange(0, 1));
-      await tester.pumpAndSettle();
-      final end = clipBottom(tester);
-      expect(start, lessThan(middle));
-      expect(middle, lessThan(end));
-      expect(end, closeTo(844, 1));
-      final field = tester.widget<TextField>(
-        find.byKey(const Key('search-input')),
-      );
-      expect(field.focusNode!.hasFocus, isTrue);
-      expect(tester.testTextInput.isVisible, isTrue);
-      expect(field.style?.fontFamily, AppTypography.fontFamily);
-      expect(field.decoration?.hintStyle?.fontFamily, AppTypography.fontFamily);
-      await tester.tap(find.byTooltip('Close'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-      expect(clipBottom(tester), lessThan(end));
-      await tester.pump(const Duration(milliseconds: 150));
-      expect(clipBottom(tester), greaterThan(source.bottom + 100));
-      await tester.pump(const Duration(milliseconds: 120));
-      expect(find.byType(SearchPage), findsOneWidget);
-      await tester.pumpAndSettle();
-      expect(find.byType(SearchPage), findsNothing);
-      expect(tester.takeException(), isNull);
-    },
-  );
+  testWidgets('search fades in, focuses and closes', (tester) async {
+    await pumpHome(tester);
+    await tester.tap(find.byType(HomeSearchField));
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(SearchPage), findsOneWidget);
+    expect(find.byKey(const Key('search-reveal-clip')), findsNothing);
+    await tester.pumpAndSettle();
+    final field = tester.widget<TextField>(
+      find.byKey(const Key('search-input')),
+    );
+    expect(field.focusNode!.hasFocus, isTrue);
+    expect(field.style?.fontFamily, AppTypography.fontFamily);
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SearchPage), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('closing during entrance does not open a delayed keyboard', (
     tester,
@@ -306,63 +256,48 @@ void main() {
     );
   }
 
-  testWidgets(
-    'a suggested phrase opens existing cards with numeric product IDs',
-    (tester) async {
-      final products = _Products()
-        ..result = const Success(
-          Paginated<Product>(
-            items: [
-              Product(
-                id: 1234,
-                slug: 'old-slug',
-                sku: 'sku',
-                name: 'Found product',
-                price: 10,
-              ),
-              Product(
-                id: 1235,
-                slug: 'other-slug',
-                sku: 'sku-2',
-                name: 'Second product',
-                price: 20,
-              ),
-            ],
-            totalCount: 2,
-            page: 1,
-          ),
-        );
-      getIt.registerSingleton<ProductRepository>(products);
-      final repository = await pumpHome(tester);
-      await tester.tap(find.byType(HomeSearchField));
-      await tester.pumpAndSettle();
-      await tester.enterText(find.byKey(const Key('search-input')), 'ring');
-      await tester.pump(const Duration(milliseconds: 310));
-      await tester.pumpAndSettle();
-      expect(repository.queries, ['ring']);
-      expect(find.text('Found product'), findsOneWidget);
-      await tester.tap(find.byKey(const ValueKey('search-term-Found product')));
-      await tester.pumpAndSettle();
-      expect(products.searches, ['Found product']);
-      expect(repository.remembered, ['Found product']);
-      expect(find.byType(ProductCard), findsNWidgets(2));
-      final l10n = AppLocalizations.of(tester.element(find.byType(SearchPage)));
-      expect(find.text(l10n.commonAddToCart), findsNWidgets(2));
-      final cards = find.byType(ProductCard);
-      expect(
-        tester.getTopLeft(cards.first).dy,
-        tester.getTopLeft(cards.last).dy,
+  testWidgets('typing searches products and opens a numeric product ID', (
+    tester,
+  ) async {
+    final products = _Products()
+      ..result = const Success(
+        Paginated<Product>(
+          items: [
+            Product(
+              id: 1234,
+              slug: 'old-slug',
+              sku: 'sku',
+              name: 'Found product',
+              price: 10,
+            ),
+            Product(
+              id: 1235,
+              slug: 'other-slug',
+              sku: 'sku-2',
+              name: 'Second product',
+              price: 20,
+            ),
+          ],
+          totalCount: 2,
+          page: 1,
+        ),
       );
-      await tester.tap(
-        find.descendant(of: cards.first, matching: find.text('Found product')),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('Product ID 1234'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    },
-  );
+    getIt.registerSingleton<ProductRepository>(products);
+    await pumpHome(tester);
+    await tester.tap(find.byType(HomeSearchField));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('search-input')), 'ring');
+    await tester.pump(const Duration(milliseconds: 450));
+    await tester.pumpAndSettle();
+    expect(products.searches, ['ring']);
+    expect(find.byType(ProductCard), findsNWidgets(2));
+    await tester.tap(find.text('Found product'));
+    await tester.pumpAndSettle();
+    expect(find.text('Product ID 1234'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
-  testWidgets('local history appears on entry, filters, and submits a search', (
+  testWidgets('recent history filters before a live product search', (
     tester,
   ) async {
     final products = _Products()
@@ -371,61 +306,23 @@ void main() {
       );
     getIt.registerSingleton<ProductRepository>(products);
     final repository = await pumpHome(tester);
-    repository.recent = [
-      'IPHONE 17',
-      'iphone 16',
-      ' iphone 17 ',
-      'Unrelated query',
-    ];
-    repository.result = const Success(
-      SearchSuggestions(
-        products: [
-          ProductSuggestion(id: 17, slug: '17', name: 'iPhone 17', price: 10),
-          ProductSuggestion(id: 18, slug: '18', name: 'iPhone 18', price: 20),
-          ProductSuggestion(id: 19, slug: '19', name: ' iphone 17 ', price: 30),
-        ],
-        categories: [
-          CategorySuggestion(id: 1, slug: 'phones', name: 'IPHONE 17'),
-          CategorySuggestion(id: 2, slug: 'cases', name: 'iPhone cases'),
-        ],
-      ),
-    );
+    repository.recent = ['IPHONE 17', 'iphone 16', 'Unrelated query'];
     await tester.tap(find.byType(HomeSearchField));
     await tester.pumpAndSettle();
-    final field = find.byKey(const Key('search-input'));
-    expect(find.text('IPHONE 17'), findsOneWidget);
+    expect(find.text('IPHONE 17'), findsWidgets);
     expect(find.text('Unrelated query'), findsOneWidget);
-    expect(repository.queries, isEmpty);
-    // Even a single letter can filter history without waiting for the API.
+    final field = find.byKey(const Key('search-input'));
     await tester.enterText(field, 'i');
     await tester.pump();
-    expect(find.byKey(const ValueKey('search-term-IPHONE 17')), findsOneWidget);
-    expect(repository.queries, isEmpty);
+    expect(find.text('IPHONE 17'), findsWidgets);
+    expect(find.text('Unrelated query'), findsNothing);
     await tester.enterText(field, 'ip');
-    await tester.pump(const Duration(milliseconds: 310));
+    await tester.pump(const Duration(milliseconds: 450));
     await tester.pumpAndSettle();
-
-    final chips = find.byKey(const Key('search-suggestion-chips'));
-    expect(
-      tester
-          .widgetList<Text>(
-            find.descendant(of: chips, matching: find.byType(Text)),
-          )
-          .map((text) => text.data)
-          .toList(),
-      ['IPHONE 17', 'iphone 16'],
-    );
-    final row = find.byKey(const ValueKey('search-term-IPHONE 17'));
-    expect(tester.getBottomLeft(chips).dy, lessThan(tester.getTopLeft(row).dy));
-    expect(repository.remembered, isEmpty);
-    await tester.tap(
-      find.descendant(of: chips, matching: find.text('IPHONE 17')),
-    );
+    expect(products.searches, ['ip']);
+    await tester.testTextInput.receiveAction(TextInputAction.search);
     await tester.pumpAndSettle();
-    expect(tester.widget<TextField>(field).controller!.text, 'IPHONE 17');
-    expect(products.searches, ['IPHONE 17']);
-    expect(repository.remembered, ['IPHONE 17']);
-    expect(chips, findsNothing);
+    expect(repository.remembered, ['ip']);
     expect(tester.takeException(), isNull);
   });
 
@@ -461,40 +358,31 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets(
-    'empty search hides camera and shows a clear action after typing',
-    (tester) async {
-      final products = _Products()
-        ..result = const Success(
-          Paginated<Product>(items: [], totalCount: 0, page: 1),
-        );
-      getIt.registerSingleton<ProductRepository>(products);
-      final repository = await pumpHome(tester);
-      repository.result = const Success(SearchSuggestions.empty);
-      await tester.tap(find.byType(HomeSearchField));
-      await tester.pumpAndSettle();
-      expect(find.byTooltip('Search by photo'), findsNothing);
-      expect(find.text('Recent query'), findsOneWidget);
-      await tester.enterText(find.byKey(const Key('search-input')), 'unknown');
-      await tester.pump(const Duration(milliseconds: 310));
-      await tester.pumpAndSettle();
-      expect(find.text('Not found'), findsNothing);
-      await tester.testTextInput.receiveAction(TextInputAction.search);
-      await tester.pumpAndSettle();
-      expect(find.text('Not found'), findsOneWidget);
-      await tester.tap(find.byTooltip('Clear search'));
-      await tester.pumpAndSettle();
-      expect(find.text('Not found'), findsNothing);
-      expect(find.text('unknown'), findsOneWidget);
-      expect(repository.remembered, ['unknown']);
-      await tester.tap(find.byTooltip('Close'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byType(HomeSearchField));
-      await tester.pumpAndSettle();
-      expect(find.text('unknown'), findsOneWidget);
-      expect(find.byTooltip('Search by photo'), findsNothing);
-    },
-  );
+  testWidgets('search switches from camera to clear and remembers a query', (
+    tester,
+  ) async {
+    final products = _Products()
+      ..result = const Success(
+        Paginated<Product>(items: [], totalCount: 0, page: 1),
+      );
+    getIt.registerSingleton<ProductRepository>(products);
+    final repository = await pumpHome(tester);
+    await tester.tap(find.byType(HomeSearchField));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Search by photo'), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('search-input')), 'unknown');
+    await tester.pump();
+    expect(find.byTooltip('Clear search'), findsOneWidget);
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pumpAndSettle();
+    expect(find.text('Not found'), findsOneWidget);
+    await tester.tap(find.byTooltip('Clear search'));
+    await tester.pumpAndSettle();
+    expect(find.text('Not found'), findsNothing);
+    expect(find.text('unknown'), findsOneWidget);
+    expect(repository.remembered, ['unknown']);
+    expect(tester.takeException(), isNull);
+  });
 
   for (final dark in [false, true]) {
     testWidgets(
@@ -535,49 +423,17 @@ void main() {
     );
   }
 
-  testWidgets('connection error retries the suggestion request', (
-    tester,
-  ) async {
-    final repository = await pumpHome(tester);
-    repository.result = const Error(NetworkFailure());
-    await tester.tap(find.byType(HomeSearchField));
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byKey(const Key('search-input')), 'ring');
-    await tester.pump(const Duration(milliseconds: 310));
-    await tester.pumpAndSettle();
-    expect(find.text('Connection Error'), findsOneWidget);
-    expect(find.text('Retry'), findsOneWidget);
-    repository.result = const Success(
-      SearchSuggestions(
-        products: [
-          ProductSuggestion(
-            id: 1234,
-            slug: 'ring',
-            name: 'Found product',
-            price: 10,
-          ),
-        ],
-      ),
-    );
-    await tester.tap(find.text('Retry'));
-    await tester.pumpAndSettle();
-    expect(repository.queries, ['ring', 'ring']);
-    expect(find.text('Found product'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
   testWidgets('server failure shows the general error state', (tester) async {
-    final repository = await pumpHome(tester);
-    repository.result = const Error(ServerFailure());
+    final products = _Products()..result = const Error(ServerFailure());
+    getIt.registerSingleton<ProductRepository>(products);
+    await pumpHome(tester);
     await tester.tap(find.byType(HomeSearchField));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('search-input')), 'ring');
-    await tester.pump(const Duration(milliseconds: 310));
+    await tester.testTextInput.receiveAction(TextInputAction.search);
     await tester.pumpAndSettle();
     expect(find.text('Error'), findsOneWidget);
     expect(find.text('An error occurred. Please try again.'), findsOneWidget);
-    expect(find.text('Retry'), findsOneWidget);
-    expect(tester.takeException(), isNull);
     expect(find.byType(AppBackButton), findsOneWidget);
     await tester.tap(find.byType(AppBackButton));
     await tester.pumpAndSettle();

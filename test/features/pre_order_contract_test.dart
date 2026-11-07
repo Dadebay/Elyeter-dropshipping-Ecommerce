@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:elyeter/core/network/api_client.dart';
 import 'package:elyeter/features/order/data/datasources/pre_order_remote_data_source.dart';
 import 'package:elyeter/features/order/data/models/pre_order_model.dart';
