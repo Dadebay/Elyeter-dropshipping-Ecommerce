@@ -6,17 +6,20 @@ import 'package:elyeter/core/localization/fallback_localizations.dart';
 import 'package:elyeter/core/network/api_response.dart';
 import 'package:elyeter/core/theme/app_theme.dart';
 import 'package:elyeter/core/utils/result.dart';
+import 'package:elyeter/features/auth/domain/repositories/auth_repository.dart';
+import 'package:elyeter/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:elyeter/features/order/domain/entities/pre_order.dart';
 import 'package:elyeter/features/order/domain/repositories/pre_order_repository.dart';
 import 'package:elyeter/features/order/presentation/model/order_detail_data.dart';
 import 'package:elyeter/features/order/presentation/receipt/order_receipt_pdf.dart';
 import 'package:elyeter/features/order/presentation/view/order_detail_page.dart';
-import 'package:elyeter/features/order/presentation/view/order_list_page.dart';
+import 'package:elyeter/features/order/presentation/widgets/paged_orders_list.dart';
 import 'package:elyeter/features/order/presentation/widgets/order_progress_timeline.dart';
 import 'package:elyeter/features/order/presentation/widgets/order_total_card.dart';
 import 'package:elyeter/features/product/presentation/widgets/product_price_details_sheet.dart';
 import 'package:elyeter/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:image/image.dart' as img;
@@ -42,6 +45,8 @@ class _Orders extends Fake implements PreOrderRepository {
   }) async => Success(Paginated(items: [_order], totalCount: 1, page: 1));
 }
 
+class _Auth extends Fake implements AuthRepository {}
+
 Widget _app(Widget child, {String locale = 'tk'}) => MaterialApp(
   theme: AppTheme.light,
   locale: Locale(locale),
@@ -50,7 +55,10 @@ Widget _app(Widget child, {String locale = 'tk'}) => MaterialApp(
     ...AppLocalizations.localizationsDelegates,
     ...FallbackLocalizations.delegates,
   ],
-  home: child,
+  home: BlocProvider<AuthCubit>(
+    create: (_) => AuthCubit(_Auth()),
+    child: child,
+  ),
 );
 
 void main() {
@@ -207,7 +215,9 @@ void main() {
 
   testWidgets('order history renders a dated order in Turkmen', (tester) async {
     getIt.registerSingleton<PreOrderRepository>(_Orders());
-    await tester.pumpWidget(_app(const OrderListPage(title: 'Sargytlar')));
+    await tester.pumpWidget(
+      _app(const Scaffold(body: PagedOrdersList(activeOnly: true))),
+    );
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.text('Okt 20, 00:33'), findsOneWidget);

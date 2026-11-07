@@ -4,6 +4,7 @@ import 'package:elyeter/features/product/presentation/widgets/product_detail_sec
 import 'package:elyeter/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 void main() {
   testWidgets('price card stays compact with aligned currency and grey arrow', (
@@ -51,7 +52,7 @@ void main() {
       const Color(0xFFAD1F2B),
     );
     expect(
-      tester.widget<Icon>(find.byIcon(Icons.arrow_forward_ios)).color,
+      tester.widget<HugeIcon>(find.byType(HugeIcon)).color,
       AppColors.grey700,
     );
     expect(tester.takeException(), isNull);

@@ -116,7 +116,7 @@ class ProductPriceCard extends StatelessWidget {
       ),
 
       child: ProductSectionCard(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 8, AppSpacing.sm, 8),
+        padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 6, AppSpacing.sm, 6),
         child: Row(
           children: [
             Expanded(

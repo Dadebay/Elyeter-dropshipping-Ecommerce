@@ -90,7 +90,7 @@ class SettingsTile extends StatelessWidget {
             // The 34pt flag needs less inset than a 24pt chevron so both
             // settings rows keep the same overall height.
             vertical:
-                verticalPadding ?? (trailing is TileFlag ? 7 : AppSpacing.md),
+                verticalPadding ?? (trailing is TileFlag ? 6 : AppSpacing.md),
           ),
           child: Row(
             children: [

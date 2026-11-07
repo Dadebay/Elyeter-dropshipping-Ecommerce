@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/constants/app_icons.dart';
@@ -8,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/utils/formatters/currency_formatter.dart';
+import '../../../../core/utils/formatters/date_formatter.dart';
 import '../../../product/presentation/widgets/product_image_view.dart';
 import '../../domain/entities/pre_order.dart';
 
@@ -18,8 +18,6 @@ class OrderListCard extends StatelessWidget {
 
   final PreOrder order;
   final VoidCallback onTap;
-
-  static final _dateFormat = DateFormat('dd.MM.yyyy • HH:mm');
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +45,9 @@ class OrderListCard extends StatelessWidget {
                 // The date never shrinks: when the row is tight it is the status
                 // chip that gives way.
                 Text(
-                  created == null ? order.number : _dateFormat.format(created),
+                  created == null
+                      ? order.number
+                      : DateFormatter.monthDayTime(created, locale: locale),
                   maxLines: 1,
                   softWrap: false,
                   style: theme.titleMedium?.copyWith(
