@@ -28,7 +28,7 @@ Android mağaza imzası için `android/key.properties.example` dosyasını örne
 
 - [App Store: Elyeter TM](https://apps.apple.com/us/app/elyeter-tm/id6824987693) — bu projenin iOS bundle ID'si `com.sanlyadim.elyeter` ile eşleşir.
 - Google Play — bu projenin Android kimliği `com.gurbanov.elyeter` için doğrulanmış herkese açık bağlantı henüz bulunmadı. Yayına çıktığında bağlantıyı burada ekleyin; farklı kimlikli eski Elyeter uygulamasına yönlendirmeyin.
-- [GitHub Releases](https://github.com/Dadebay/elyeter/releases) — yeni sürüm yayımlandığında sürüm notları ve varsa doğrudan kurulabilir, imzalı Android APK burada bulunur. Özel depolardaki Release'lere yalnızca depo erişimi olan kişiler ulaşabilir. AAB dosyası son kullanıcıya kurulum dosyası olarak verilmez; iOS kurulumu için App Store bağlantısını kullanın.
+- [GitHub Release v1.0.0+1](https://github.com/Dadebay/elyeter/releases/tag/v1.0.0%2B1) — [imzalı Android APK'yı indir](https://github.com/Dadebay/elyeter/releases/download/v1.0.0%2B1/Elyeter-1.0.0-build1-android.apk). SHA-256: `3215ae98db0ed6aefc20da632c96203980e390d80ffaeacc5bcfd9143bd53253`. Android cihazda fiziksel duman testi bu sürüm hazırlanırken yapılamadı; ayrıntılar Release notlarında. AAB son kullanıcı kurulum dosyası değildir; iOS kurulumu için App Store bağlantısını kullanın.
 
 Her mağaza sürümünü ilgili Git commit'i ve sürüm etiketiyle eşleştirin. Yayın öncesinde format, analiz, test, platform derlemesi ve PR CI kontrollerinin sonuçlarını kaydedin.
 
