@@ -258,15 +258,18 @@ class _GalleryState extends State<_Gallery> {
                       ),
                     ),
             ),
-            // Hairline frame (Figma: 0.65px #EBEBEB, inner) so photos with a
-            // white backdrop don't dissolve into the page.
+            // Hairline frame (Figma: 0.65px, inner) so photos with a white
+            // backdrop don't dissolve into the page. #EBEBEB on light,
+            // #333333 on dark.
             Positioned.fill(
               child: IgnorePointer(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(AppRadius.lg),
                     border: Border.all(
-                      color: const Color(0xFFEBEBEB),
+                      color: context.isDark
+                          ? AppColors.strokeDark
+                          : AppColors.strokeLight,
                       width: 0.65,
                     ),
                   ),
