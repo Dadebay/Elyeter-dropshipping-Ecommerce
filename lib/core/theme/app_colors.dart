@@ -50,6 +50,12 @@ abstract final class AppColors {
   static const categoryDark = Color(0xFF262626);
   static const categoryLight = Color(0xFFF7F7F7);
 
+  /// Hairline frame round a product photo: dark / light mode. The light one
+  /// keeps white-backdrop photos from dissolving into the page; the dark one
+  /// is quiet enough not to read as a bright outline on the dark surface.
+  static const strokeDark = Color(0xFF333333);
+  static const strokeLight = Color(0xFFEBEBEB);
+
   // Semantic — order statuses in the designs
   static const success = Color(0xFF2ECC71);
   static const warning = Color(0xFFF5A623);
